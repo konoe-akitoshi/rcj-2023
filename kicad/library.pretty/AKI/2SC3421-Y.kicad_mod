@@ -1,0 +1,17 @@
+(module 2SC3421-Y (layer F.Cu) (tedit 5B014D7F)
+  (fp_text reference REF** (at  0 -3.15) (layer F.SilkS)
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (fp_text value 2SC3421-Y (at 0 -4.65) (layer F.Fab) hide
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (pad 1 thru_hole rect(at 0 0)(size 2.2 2.2)(drill 1.2)(layers *.Cu *.Mask F.SilkS))
+(pad 2 thru_hole circle(at 0 2.3)(size 2.2 2.2)(drill 1.2)(layers *.Cu *.Mask F.SilkS))
+(pad 3 thru_hole circle(at 0 4.6)(size 2.2 2.2)(drill 1.2)(layers *.Cu *.Mask F.SilkS))
+(fp_line(start -1.27 -1.15)(end 1.6 -1.15)(layer F.SilkS)(width 0.15))
+(fp_line(start -1.27 5.75)(end 1.6 5.75)(layer F.SilkS)(width 0.15))
+(fp_line(start -1.27 -1.15)(end -1.27 5.75)(layer F.SilkS)(width 0.15))
+(fp_line(start 1.6 -1.15)(end 1.6 5.75)(layer F.SilkS)(width 0.15))
+(fp_line(start 1.1 -1.15)(end 1.1 5.75)(layer F.SilkS)(width 0.15))
+
+)

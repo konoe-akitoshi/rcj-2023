@@ -1,0 +1,16 @@
+(module NSV45060JDT4G (layer F.Cu) (tedit 5B014D80)
+  (fp_text reference REF** (at  0 -3.745) (layer F.SilkS)
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (fp_text value NSV45060JDT4G (at 0 -5.245) (layer F.Fab) hide
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (pad 1 smd rect (at 0 0) (size 2.1 0.8) (layers F.Cu F.Paste F.Mask))
+(pad 3 smd rect (at 0 4.58) (size 2.1 0.8) (layers F.Cu F.Paste F.Mask))
+(pad 4 smd rect (at 7.525 2.29) (size 10.85 5.38) (layers F.Cu F.Paste F.Mask))
+(fp_line(start -1.25 -1.745)(end -1.25 6.325)(layer F.SilkS)(width 0.15))
+(fp_line(start -1.25 6.325)(end 13.15 6.325)(layer F.SilkS)(width 0.15))
+(fp_line(start 13.15 6.325)(end 13.15 -1.745)(layer F.SilkS)(width 0.15))
+(fp_line(start -1.25 -1.745)(end 13.15 -1.745)(layer F.SilkS)(width 0.15))
+
+)

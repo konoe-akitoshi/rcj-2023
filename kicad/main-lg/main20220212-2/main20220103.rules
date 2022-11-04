@@ -1,0 +1,174 @@
+
+(rules PCB main20220103
+  (snap_angle 
+    fortyfive_degree
+  )
+  (autoroute_settings
+    (fanout off)
+    (eu.mihosoft.freerouting.autoroute on)
+    (postroute on)
+    (vias on)
+    (via_costs 50)
+    (plane_via_costs 5)
+    (start_ripup_costs 100)
+    (start_pass_no 1)
+    (layer_rule F.Cu
+      (active on)
+      (preferred_direction horizontal)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 2.2)
+    )
+    (layer_rule B.Cu
+      (active on)
+      (preferred_direction vertical)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 1.8)
+    )
+  )
+  (rule
+    (width 250.0)
+    (clear 200.2)
+    (clear 125.0 (type smd_to_turn_gap))
+    (clear 500.2 (type default_hpower))
+    (clear 300.2 (type default_power2.0))
+    (clear 300.2 (type default_power3.0))
+    (clear 50.0 (type smd_smd))
+    (clear 500.2 (type smd_hpower))
+    (clear 300.2 (type smd_power2.0))
+    (clear 300.2 (type smd_power3.0))
+    (clear 500.2 (type "kicad_default"_hpower))
+    (clear 300.2 (type "kicad_default"_power2.0))
+    (clear 300.2 (type "kicad_default"_power3.0))
+    (clear 500.2 (type hpower_hpower))
+    (clear 500.2 (type hpower_power2.0))
+    (clear 500.2 (type hpower_power3.0))
+    (clear 500.2 (type hpower_power5))
+    (clear 300.2 (type power2.0_power2.0))
+    (clear 300.2 (type power2.0_power3.0))
+    (clear 300.2 (type power2.0_power5))
+    (clear 300.2 (type power3.0_power3.0))
+    (clear 300.2 (type power3.0_power5))
+  )
+  (padstack "Via[0-1]_800:400_um"
+    (shape
+      (circle F.Cu 800.0 0.0 0.0)
+    )
+    (shape
+      (circle B.Cu 800.0 0.0 0.0)
+    )
+    (attach off)
+  )
+  (via 
+    "Via[0-1]_800:400_um" "Via[0-1]_800:400_um" default
+  )
+  (via 
+    "Via[0-1]_800:400_um-kicad_default" "Via[0-1]_800:400_um" "kicad_default"
+  )
+  (via 
+    "Via[0-1]_800:400_um-hpower" "Via[0-1]_800:400_um" hpower
+  )
+  (via 
+    "Via[0-1]_800:400_um-power2.0" "Via[0-1]_800:400_um" power2.0
+  )
+  (via 
+    "Via[0-1]_800:400_um-power3.0" "Via[0-1]_800:400_um" power3.0
+  )
+  (via 
+    "Via[0-1]_800:400_um-power5" "Via[0-1]_800:400_um" power5
+  )
+  (via_rule
+    default "Via[0-1]_800:400_um"
+  )
+  (via_rule
+    "kicad_default" "Via[0-1]_800:400_um-kicad_default"
+  )
+  (via_rule
+    hpower "Via[0-1]_800:400_um-hpower"
+  )
+  (via_rule
+    power2.0 "Via[0-1]_800:400_um-power2.0"
+  )
+  (via_rule
+    power3.0 "Via[0-1]_800:400_um-power3.0"
+  )
+  (via_rule
+    power5 "Via[0-1]_800:400_um-power5"
+  )
+  (class default
+    /AUX1/3 /AUX1/4 "Net-(D1-Pad1)" +5V "Net-(D2-Pad2)" "Net-(D6-Pad2)" "Net-(D3-Pad2)" "Net-(D4-Pad1)"
+    "Net-(D4-Pad2)" "Net-(J1-Pad2)" "Net-(J3-Pad1)" "Net-(D5-Pad2)" "Net-(J6-Pad1)" "Net-(J1-Pad1)" "Net-(J1-Pad4)" "Net-(J2-Pad2)"
+    "Net-(J2-Pad4)" "Net-(J3-Pad2)" "Net-(J8-Pad1)" "Net-(J8-Pad2)" "Net-(J8-Pad4)" "Net-(J3-Pad4)" "Net-(J4-Pad1)" "Net-(J4-Pad2)"
+    "Net-(J10-Pad1)" "Net-(J10-Pad3)" "Net-(J11-Pad1)" "Net-(J4-Pad4)" "Net-(J11-Pad3)" "Net-(J5-Pad1)" "Net-(J5-Pad3)" +3V3
+    "Net-(J6-Pad3)" "Net-(J10-Pad2)" "Net-(J13-Pad1)" "Net-(J13-Pad3)" "Net-(J10-Pad4)" "Net-(J10-Pad5)" "Net-(J15-Pad1)" "Net-(J15-Pad2)"
+    "Net-(J15-Pad3)" "Net-(J15-Pad5)" "Net-(J15-Pad6)" "Net-(J21-Pad1)" "Net-(J21-Pad2)" "Net-(J21-Pad3)" "Net-(Q1-Pad1)" "Net-(J21-Pad4)"
+    "Net-(J21-Pad5)" "Net-(J21-Pad6)" PROG "/Switch/SW_GOAL" "Net-(R1-Pad1)" "/Switch/SW_START" "Net-(R1-Pad2)" "unconnected-(U1-Pad12)"
+    "unconnected-(U1-Pad11)" "unconnected-(U1-Pad10)" "unconnected-(U1-Pad9)" "unconnected-(U1-Pad8)" "Net-(R4-Pad1)" "Net-(R5-Pad1)" "Net-(R13-Pad1)" "Net-(R14-Pad1)"
+    "Net-(R16-Pad1)" "Net-(R17-Pad1)" "Net-(J15-Pad4)" "Net-(R26-Pad2)" "unconnected-(U2-Pad4)" "unconnected-(U2-Pad5)" "unconnected-(U2-Pad6)" "unconnected-(U2-Pad7)"
+    "Net-(R15-Pad1)" "unconnected-(U2-Pad14)" "unconnected-(U2-Pad15)" "Net-(U2-Pad16)" "Net-(U2-Pad17)" "Net-(U2-Pad18)" "Net-(U2-Pad19)" "Net-(U2-Pad20)"
+    "Net-(U2-Pad21)" Vbatt "unconnected-(U2-Pad23)" "unconnected-(U2-Pad24)" "unconnected-(U2-Pad25)" "unconnected-(U2-Pad26)" "unconnected-(U2-Pad31)" "unconnected-(U2-Pad40)"
+    "unconnected-(U2-Pad52)" "unconnected-(U2-Pad54)" "/Switch/SW_led_R" "/Switch/SW_led_G" /LED/LED4 /LED/LED3 /LED/LED2 /LED/LED1
+    "unconnected-(U2-Pad55)" "unconnected-(U2-Pad56)" "unconnected-(U2-Pad57)" "unconnected-(U2-Pad58)" "unconnected-(U2-Pad64)" "unconnected-(U2-Pad65)" "unconnected-(U2-Pad66)" "unconnected-(U2-Pad69)"
+    "unconnected-(U2-Pad75)" "unconnected-(U2-Pad80)" "unconnected-(U2-Pad81)" "unconnected-(U2-Pad82)" "unconnected-(U2-Pad83)" "unconnected-(U2-Pad84)" "unconnected-(U2-Pad85)" "unconnected-(U2-Pad86)"
+    "Net-(U3-Pad11)" "Net-(U3-Pad12)" "Net-(J2-Pad1)" "Net-(U3-Pad13)" "unconnected-(U4-Pad12)" "Net-(Q1-Pad3)" "Net-(R27-Pad2)"
+    (clearance_class default)
+    (via_rule default)
+    (rule
+      (width 250.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class "kicad_default"
+    (clearance_class "kicad_default")
+    (via_rule kicad_default)
+    (rule
+      (width 250.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class hpower
+    (clearance_class hpower)
+    (via_rule hpower)
+    (rule
+      (width 250.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class power2.0
+    (clearance_class power2.0)
+    (via_rule power2.0)
+    (rule
+      (width 2000.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class power3.0
+    "Net-(F1-Pad2)" "Net-(J14-Pad2)"
+    (clearance_class power3.0)
+    (via_rule power3.0)
+    (rule
+      (width 3000.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class power5
+    GND "Net-(C5-Pad2)" "Net-(D7-Pad2)" +15V
+    (clearance_class power5)
+    (via_rule power5)
+    (rule
+      (width 500.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+)

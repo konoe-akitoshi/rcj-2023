@@ -1,0 +1,15 @@
+(module 1N4148 (layer F.Cu) (tedit 5B014D80)
+  (fp_text reference REF** (at 7.62 -2) (layer F.SilkS)
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (fp_text value 1N4148 (at 7.62 -3.5) (layer F.Fab) hide
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (pad 1 thru_hole rect(at 0 0)(size 2 2)(drill 1)(layers *.Cu *.Mask F.SilkS))(pad 2 thru_hole circle(at 15.24 0)(size 2 2)(drill 1)(layers *.Cu *.Mask F.SilkS))(fp_line(start 5.495 -0.925)(end 5.495 0.925)(layer F.SilkS)(width 0.15))
+(fp_line(start 5.495 0.925)(end 9.745 0.925)(layer F.SilkS)(width 0.15))
+(fp_line(start 9.745 0.925)(end 9.745 -0.925)(layer F.SilkS)(width 0.15))
+(fp_line(start 5.495 -0.925)(end 9.745 -0.925)(layer F.SilkS)(width 0.15))
+(fp_line(start 1.2 0)(end 5.495 0)(layer F.SilkS)(width 0.15))
+(fp_line(start 9.745 0)(end 14.04 0)(layer F.SilkS)(width 0.15))
+
+)

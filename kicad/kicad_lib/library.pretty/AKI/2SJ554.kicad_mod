@@ -1,0 +1,17 @@
+(module 2SJ554 (layer F.Cu) (tedit 5B014D80)
+  (fp_text reference REF** (at  0 -4.725) (layer F.SilkS)
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (fp_text value 2SJ554 (at 0 -6.225) (layer F.Fab) hide
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (pad 1 thru_hole rect(at 0 0)(size 2.4 2.4)(drill 1.4)(layers *.Cu *.Mask F.SilkS))
+(pad 2 thru_hole circle(at 0 5.45)(size 2.4 2.4)(drill 1.4)(layers *.Cu *.Mask F.SilkS))
+(pad 3 thru_hole circle(at 0 10.9)(size 2.4 2.4)(drill 1.4)(layers *.Cu *.Mask F.SilkS))
+(fp_line(start -1.27 -2.725)(end 2.8 -2.725)(layer F.SilkS)(width 0.15))
+(fp_line(start -1.27 13.625)(end 2.8 13.625)(layer F.SilkS)(width 0.15))
+(fp_line(start -1.27 -2.725)(end -1.27 13.625)(layer F.SilkS)(width 0.15))
+(fp_line(start 2.8 -2.725)(end 2.8 13.625)(layer F.SilkS)(width 0.15))
+(fp_line(start 2.3 -2.725)(end 2.3 13.625)(layer F.SilkS)(width 0.15))
+
+)

@@ -1,0 +1,15 @@
+(module AL0410-100K (layer F.Cu) (tedit 5B014D81)
+  (fp_text reference REF** (at 11.43 -2) (layer F.SilkS)
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (fp_text value AL0410-100K (at 11.43 -3.5) (layer F.Fab) hide
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (pad 1 thru_hole rect(at 0 0)(size 2 2)(drill 1)(layers *.Cu *.Mask F.SilkS))(pad 2 thru_hole circle(at 22.86 0)(size 2 2)(drill 1)(layers *.Cu *.Mask F.SilkS))(fp_line(start 5.43 -2)(end 5.43 2)(layer F.SilkS)(width 0.15))
+(fp_line(start 5.43 2)(end 17.43 2)(layer F.SilkS)(width 0.15))
+(fp_line(start 17.43 2)(end 17.43 -2)(layer F.SilkS)(width 0.15))
+(fp_line(start 5.43 -2)(end 17.43 -2)(layer F.SilkS)(width 0.15))
+(fp_line(start 1.2 0)(end 5.43 0)(layer F.SilkS)(width 0.15))
+(fp_line(start 17.43 0)(end 21.66 0)(layer F.SilkS)(width 0.15))
+
+)

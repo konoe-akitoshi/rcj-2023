@@ -1,0 +1,18 @@
+(module TTB1067B_Q_H (layer F.Cu) (tedit 5B014D7F)
+  (fp_text reference REF** (at  0 -3.15) (layer F.SilkS)
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (fp_text value TTB1067B_Q_H (at 0 -4.65) (layer F.Fab) hide
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (pad 1 thru_hole rect(at 0 0)(size 2.2 2.2)(drill 1.2)(layers *.Cu *.Mask F.SilkS))
+(pad 2 thru_hole circle(at 0 2.3)(size 2.2 2.2)(drill 1.2)(layers *.Cu *.Mask F.SilkS))
+(pad 3 thru_hole circle(at 0 4.6)(size 2.2 2.2)(drill 1.2)(layers *.Cu *.Mask F.SilkS))
+(fp_line(start 5 -1.15)(end 13.7 -1.15)(layer F.SilkS)(width 0.15))
+(fp_line(start 5 5.75)(end 13.7 5.75)(layer F.SilkS)(width 0.15))
+(fp_line(start 5 -1.15)(end 5 5.75)(layer F.SilkS)(width 0.15))
+(fp_line(start 13.7 -1.15)(end 13.7 5.75)(layer F.SilkS)(width 0.15))
+(fp_line(start 7.7 -1.15)(end 7.7 5.75)(layer F.SilkS)(width 0.15))
+(pad "" np_thru_hole circle (at 10.7 2.3) (size 3.3 3.3) (drill 3.3) (layers *.Cu *.Mask F.SilkS))
+
+)

@@ -1,0 +1,513 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 2 2
+Title "main board"
+Date "2021-11-07"
+Rev "V1.0"
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Regulator_Switching:CRE1S0305S3C U7
+U 1 1 618DF9C1
+P 3050 1950
+F 0 "U7" H 3050 2417 50  0000 C CNN
+F 1 "XL6009/HW-432" H 3050 2326 50  0000 C CNN
+F 2 "0.main.robot:XL6009_HW432" H 3050 1550 50  0001 C CNN
+F 3 "http://power.murata.com/datasheet?/data/power/ncl/kdc_cre1.pdf" H 3050 1450 50  0001 C CNN
+	1    3050 1950
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R25
+U 1 1 5D468AE0
+P 4500 1750
+F 0 "R25" V 4293 1750 50  0000 C CNN
+F 1 "100" V 4384 1750 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0411_L9.9mm_D3.6mm_P20.32mm_Horizontal" V 4430 1750 50  0001 C CNN
+F 3 "~" H 4500 1750 50  0001 C CNN
+	1    4500 1750
+	0    1    1    0   
+$EndComp
+$Comp
+L Relay:G5V-1 K1
+U 1 1 5D46AB5D
+P 5350 1850
+F 0 "K1" V 5917 1850 50  0000 C CNN
+F 1 "G5V-1/12V" V 5826 1850 50  0000 C CNN
+F 2 "Relay_THT:Relay_SPDT_Omron_G5V-1" H 6480 1820 50  0001 C CNN
+F 3 "http://omronfs.omron.com/en_US/ecb/products/pdf/en-g5v_1.pdf" H 5350 1850 50  0001 C CNN
+	1    5350 1850
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:CP C7
+U 1 1 5D46BA32
+P 6150 1900
+F 0 "C7" H 6268 1946 50  0000 L CNN
+F 1 "2200uF/63V" H 6268 1855 50  0000 L CNN
+F 2 "Capacitor_THT:CP_Radial_D16.0mm_P7.50mm" H 6188 1750 50  0001 C CNN
+F 3 "~" H 6150 1900 50  0001 C CNN
+	1    6150 1900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3650 2500 3650 2150
+Wire Wire Line
+	3650 2150 3550 2150
+Wire Wire Line
+	2550 2150 2450 2150
+Wire Wire Line
+	2450 2150 2450 2500
+Wire Wire Line
+	2450 2500 3050 2500
+Wire Wire Line
+	5800 2500 5800 2050
+Wire Wire Line
+	5800 2050 5650 2050
+Connection ~ 3650 2500
+Wire Wire Line
+	3150 4150 4800 4150
+Wire Wire Line
+	4800 2050 5050 2050
+$Comp
+L Device:R R26
+U 1 1 5D467868
+P 2300 4050
+F 0 "R26" V 2093 4050 50  0000 C CNN
+F 1 "120" V 2184 4050 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 2230 4050 50  0001 C CNN
+F 3 "~" H 2300 4050 50  0001 C CNN
+	1    2300 4050
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4650 1750 5050 1750
+Wire Wire Line
+	5650 1650 6150 1650
+Wire Wire Line
+	6150 1650 6150 1750
+Wire Wire Line
+	1550 4050 2150 4050
+Wire Wire Line
+	5050 1550 4800 1550
+Wire Wire Line
+	4800 1550 4800 1000
+Wire Wire Line
+	4800 1000 8200 1000
+Wire Wire Line
+	5800 2500 6150 2500
+Connection ~ 5800 2500
+Wire Wire Line
+	6150 2050 6150 2500
+Connection ~ 6150 2500
+Wire Wire Line
+	2850 4450 2850 4550
+Wire Wire Line
+	2300 1750 2300 3650
+Wire Wire Line
+	2300 3650 2850 3650
+Wire Wire Line
+	2850 3650 2850 3850
+Connection ~ 2300 1750
+Wire Wire Line
+	2300 1750 2550 1750
+Wire Wire Line
+	2300 1550 2300 1750
+Wire Wire Line
+	3050 2500 3050 2650
+Connection ~ 3050 2500
+Wire Wire Line
+	3050 2500 3650 2500
+$Comp
+L power:GND #PWR?
+U 1 1 5D70EF52
+P 3050 2650
+AR Path="/5D575FCD/5D70EF52" Ref="#PWR?"  Part="1" 
+AR Path="/5D70EF52" Ref="#PWR?"  Part="1" 
+AR Path="/5D6B571E/5D70EF52" Ref="#PWR?"  Part="1" 
+AR Path="/61861093/5D70EF52" Ref="#PWR032"  Part="1" 
+F 0 "#PWR032" H 3050 2400 50  0001 C CNN
+F 1 "GND" H 3050 2500 50  0000 C CNN
+F 2 "" H 3050 2650 50  0001 C CNN
+F 3 "" H 3050 2650 50  0001 C CNN
+	1    3050 2650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3550 1750 4050 1750
+Wire Wire Line
+	3650 2500 3850 2500
+Connection ~ 4050 1750
+Wire Wire Line
+	4050 1750 4350 1750
+Connection ~ 6150 1650
+$Comp
+L Connector_Generic:Conn_01x03 J16
+U 1 1 5E442271
+P 3650 3250
+F 0 "J16" H 3568 3567 50  0000 C CNN
+F 1 "Conn_01x03" H 3568 3476 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 3650 3250 50  0001 C CNN
+F 3 "~" H 3650 3250 50  0001 C CNN
+	1    3650 3250
+	-1   0    0    -1  
+$EndComp
+$Comp
+L Device:R_POT RV1
+U 1 1 5E442FB2
+P 4200 3250
+F 0 "RV1" H 4130 3296 50  0000 R CNN
+F 1 "20k" H 4130 3205 50  0000 R CNN
+F 2 "0.main.robot:Trim-GF063X" H 4200 3250 50  0001 C CNN
+F 3 "~" H 4200 3250 50  0001 C CNN
+	1    4200 3250
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	3850 3150 4000 3150
+Wire Wire Line
+	4000 3150 4000 3050
+Wire Wire Line
+	4000 3050 4200 3050
+Wire Wire Line
+	4200 3050 4200 3100
+Wire Wire Line
+	3850 3350 4000 3350
+Wire Wire Line
+	4000 3350 4000 3450
+Wire Wire Line
+	4000 3450 4200 3450
+Wire Wire Line
+	4200 3450 4200 3400
+Wire Wire Line
+	3850 3250 4050 3250
+$Comp
+L Connector:TestPoint TP1
+U 1 1 5E442208
+P 4050 1650
+F 0 "TP1" H 4108 1768 50  0000 L CNN
+F 1 "V+" H 4108 1677 50  0000 L CNN
+F 2 "TestPoint:TestPoint_Loop_D2.60mm_Drill0.9mm_Beaded" H 4250 1650 50  0001 C CNN
+F 3 "~" H 4250 1650 50  0001 C CNN
+	1    4050 1650
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:TestPoint TP2
+U 1 1 5E44233E
+P 3850 2400
+F 0 "TP2" H 3908 2518 50  0000 L CNN
+F 1 "GND" H 3908 2427 50  0000 L CNN
+F 2 "TestPoint:TestPoint_Loop_D2.60mm_Drill0.9mm_Beaded" H 4050 2400 50  0001 C CNN
+F 3 "~" H 4050 2400 50  0001 C CNN
+	1    3850 2400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3850 2400 3850 2500
+Connection ~ 3850 2500
+Wire Wire Line
+	4050 1650 4050 1750
+Wire Wire Line
+	4800 2050 4800 4150
+Wire Wire Line
+	5800 2500 5800 4550
+$Comp
+L Connector_Generic:Conn_01x02 J14
+U 1 1 5E7290C7
+P 8700 1850
+F 0 "J14" H 8780 1842 50  0000 L CNN
+F 1 "Kicker1" H 8780 1751 50  0000 L CNN
+F 2 "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical" H 8700 1850 50  0001 C CNN
+F 3 "~" H 8700 1850 50  0001 C CNN
+	1    8700 1850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8200 1850 8500 1850
+Wire Wire Line
+	8500 1950 8350 1950
+Wire Wire Line
+	8350 1950 8350 2500
+$Comp
+L Device:R R24
+U 1 1 5E73D14D
+P 7200 1650
+F 0 "R24" V 7407 1650 50  0000 C CNN
+F 1 "30k" V 7316 1650 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal" V 7130 1650 50  0001 C CNN
+F 3 "~" H 7200 1650 50  0001 C CNN
+	1    7200 1650
+	0    -1   -1   0   
+$EndComp
+$Comp
+L 1.Robot.prtty:LED D6
+U 1 1 5E73FA30
+P 7600 2050
+F 0 "D6" V 7596 1973 50  0000 R CNN
+F 1 "LED" V 7505 1973 50  0000 R CNN
+F 2 "LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 7600 2225 50  0001 C CNN
+F 3 "" H 7550 2050 50  0001 C CNN
+	1    7600 2050
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	7350 1650 7600 1650
+Wire Wire Line
+	7600 1650 7600 1950
+Wire Wire Line
+	7600 2250 7600 2500
+Connection ~ 7600 2500
+Wire Wire Line
+	6150 2500 6750 2500
+Wire Wire Line
+	6150 1650 6750 1650
+Wire Wire Line
+	3850 2500 5800 2500
+$Comp
+L Device:C C8
+U 1 1 5F1DA88D
+P 4150 3900
+F 0 "C8" H 4265 3946 50  0000 L CNN
+F 1 "1uF" H 4265 3855 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 4188 3750 50  0001 C CNN
+F 3 "~" H 4150 3900 50  0001 C CNN
+	1    4150 3900
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+15V #PWR031
+U 1 1 61892787
+P 2300 1550
+F 0 "#PWR031" H 2300 1400 50  0001 C CNN
+F 1 "+15V" H 2315 1723 50  0000 C CNN
+F 2 "" H 2300 1550 50  0001 C CNN
+F 3 "" H 2300 1550 50  0001 C CNN
+	1    2300 1550
+	1    0    0    -1  
+$EndComp
+Text HLabel 1550 4050 0    50   Input ~ 0
+kick_in
+Text HLabel 1550 4250 0    50   Input ~ 0
+kick_GND
+Wire Wire Line
+	7600 2500 8350 2500
+Wire Wire Line
+	8200 1000 8200 1850
+Wire Wire Line
+	4150 3650 4150 3750
+Wire Wire Line
+	4150 4550 5800 4550
+Wire Wire Line
+	2850 4550 4150 4550
+Connection ~ 4150 4550
+Wire Wire Line
+	4150 4050 4150 4550
+Connection ~ 2850 3650
+Wire Wire Line
+	2850 3650 4150 3650
+Wire Wire Line
+	1550 4250 2550 4250
+Wire Wire Line
+	2450 4050 2550 4050
+$Comp
+L Kikker20200725-rescue:TLP157-Akizuki U8
+U 1 1 5D464C10
+P 2850 4150
+F 0 "U8" H 3194 4203 60  0000 L CNN
+F 1 "TLP152" H 3194 4097 60  0000 L CNN
+F 2 "0.main.robot:TLP152" H 2950 4350 60  0001 L CNN
+F 3 "" H 3050 4450 60  0001 L CNN
+	1    2850 4150
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:D_Schottky D?
+U 1 1 6191EE2D
+P 4150 6000
+AR Path="/618DF8AB/6191EE2D" Ref="D?"  Part="1" 
+AR Path="/61861093/6191EE2D" Ref="D7"  Part="1" 
+F 0 "D7" V 4104 6079 50  0000 L CNN
+F 1 "SX34F" V 4195 6079 50  0000 L CNN
+F 2 "Diode_SMD:D_SMA" H 4150 6000 50  0001 C CNN
+F 3 "~" H 4150 6000 50  0001 C CNN
+	1    4150 6000
+	0    1    1    0   
+$EndComp
+$Comp
+L Connector_Generic:Conn_01x02 J?
+U 1 1 6191EE33
+P 6100 5900
+AR Path="/618DF8AB/6191EE33" Ref="J?"  Part="1" 
+AR Path="/61861093/6191EE33" Ref="J17"  Part="1" 
+F 0 "J17" H 6180 5892 50  0000 L CNN
+F 1 "DribblerMotor" H 6180 5801 50  0000 L CNN
+F 2 "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical" H 6100 5900 50  0001 C CNN
+F 3 "~" H 6100 5900 50  0001 C CNN
+	1    6100 5900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 6191EE39
+P 2200 6400
+AR Path="/618DF8AB/6191EE39" Ref="R?"  Part="1" 
+AR Path="/61861093/6191EE39" Ref="R27"  Part="1" 
+F 0 "R27" V 1993 6400 50  0000 C CNN
+F 1 "120" V 2084 6400 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 2130 6400 50  0001 C CNN
+F 3 "~" H 2200 6400 50  0001 C CNN
+	1    2200 6400
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	2350 6400 2450 6400
+Wire Wire Line
+	2750 6800 2750 6950
+Wire Wire Line
+	2750 6950 3450 6950
+Wire Wire Line
+	4150 6950 4150 6700
+Wire Wire Line
+	3050 6500 3850 6500
+Wire Wire Line
+	4150 6300 4150 6200
+Wire Wire Line
+	2750 6200 2750 5700
+Wire Wire Line
+	2750 5700 3450 5700
+Wire Wire Line
+	5900 5700 5900 5900
+Wire Wire Line
+	4150 5850 4150 5700
+Connection ~ 4150 5700
+Wire Wire Line
+	4150 5700 5500 5700
+Wire Wire Line
+	5900 6000 5900 6200
+Connection ~ 4150 6200
+Wire Wire Line
+	4150 6200 4150 6150
+Text Notes 1850 5450 0    157  ~ 0
+[Dribbler Part]
+Connection ~ 4150 6950
+$Comp
+L Device:C C?
+U 1 1 6191EE65
+P 3450 6000
+AR Path="/618DF8AB/6191EE65" Ref="C?"  Part="1" 
+AR Path="/61861093/6191EE65" Ref="C9"  Part="1" 
+F 0 "C9" H 3565 6046 50  0000 L CNN
+F 1 "1uF" H 3565 5955 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 3488 5850 50  0001 C CNN
+F 3 "~" H 3450 6000 50  0001 C CNN
+	1    3450 6000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3450 5700 3450 5850
+Connection ~ 3450 5700
+Wire Wire Line
+	3450 5700 4150 5700
+Wire Wire Line
+	3450 6150 3450 6950
+Connection ~ 3450 6950
+Wire Wire Line
+	3450 6950 4150 6950
+$Comp
+L 1.Robot.prtty:TLP152 U?
+U 1 1 6191EE7A
+P 2750 6500
+AR Path="/618DF8AB/6191EE7A" Ref="U?"  Part="1" 
+AR Path="/61861093/6191EE7A" Ref="U9"  Part="1" 
+F 0 "U9" H 3094 6553 60  0000 L CNN
+F 1 "TLP152" H 3094 6447 60  0000 L CNN
+F 2 "0.main.robot:TLP152" H 2850 6700 60  0001 L CNN
+F 3 "" H 2950 6800 60  0001 L CNN
+	1    2750 6500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector_Generic:Conn_01x02 J?
+U 1 1 61921019
+P 6100 6700
+AR Path="/618DF8AB/61921019" Ref="J?"  Part="1" 
+AR Path="/61861093/61921019" Ref="J18"  Part="1" 
+F 0 "J18" H 6180 6692 50  0000 L CNN
+F 1 "DribblerPower" H 6180 6601 50  0000 L CNN
+F 2 "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical" H 6100 6700 50  0001 C CNN
+F 3 "~" H 6100 6700 50  0001 C CNN
+	1    6100 6700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5900 6700 5500 6700
+Wire Wire Line
+	5500 6700 5500 5700
+Connection ~ 5500 5700
+Wire Wire Line
+	5500 5700 5900 5700
+Wire Wire Line
+	5900 6800 5500 6800
+Wire Wire Line
+	5500 6800 5500 6950
+Wire Wire Line
+	5500 6950 4150 6950
+Wire Wire Line
+	1450 6400 2050 6400
+Text HLabel 1450 6400 0    50   Input ~ 0
+drib_in
+Text HLabel 1450 6600 0    50   Input ~ 0
+drib_GND
+Wire Wire Line
+	1450 6600 2450 6600
+Text Notes 2000 1050 0    157  ~ 0
+[Kicker Part]
+$Comp
+L Connector_Generic:Conn_01x02 J?
+U 1 1 61FF4B78
+P 7050 2050
+AR Path="/618DF8AB/61FF4B78" Ref="J?"  Part="1" 
+AR Path="/61861093/61FF4B78" Ref="J15"  Part="1" 
+F 0 "J15" H 7130 2042 50  0000 L CNN
+F 1 "CAP" H 7130 1951 50  0000 L CNN
+F 2 "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical" H 7050 2050 50  0001 C CNN
+F 3 "~" H 7050 2050 50  0001 C CNN
+	1    7050 2050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6750 1650 6750 2050
+Wire Wire Line
+	6750 2050 6850 2050
+Connection ~ 6750 1650
+Wire Wire Line
+	6750 1650 7050 1650
+Wire Wire Line
+	6850 2150 6750 2150
+Wire Wire Line
+	6750 2150 6750 2500
+Connection ~ 6750 2500
+Wire Wire Line
+	6750 2500 7600 2500
+$Comp
+L Transistor_FET:NP52N06SLG Q2
+U 1 1 61E59C90
+P 4050 6500
+F 0 "Q2" H 4255 6546 50  0000 L CNN
+F 1 "NP52N06SLG" H 4255 6455 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:TO-252-2" H 4250 6425 50  0001 L CIN
+F 3 "https://www.infineon.com/dgdl/Infineon-IPD50R380CE-DS-v02_01-en.pdf?fileId=db3a30433ecb86d4013ed0a2ef580f38" H 4050 6500 50  0001 L CNN
+	1    4050 6500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4150 6200 5900 6200
+$EndSCHEMATC

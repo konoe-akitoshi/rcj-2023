@@ -1,0 +1,20 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP JY-901
+D IMU
+K IMU
+$ENDCMP
+#
+$CMP PCF8574
+D Remote 8-Bit I/O Expander for I2C Bus
+K I2C I/O Expander
+F http://www.ti.com/lit/gpn/sn74LS137
+$ENDCMP
+#
+$CMP SW_NKK_B-12CCPRM
+D Switch, single pole double throw, illuminated paddle, red and green LEDs
+K switch single-pole double-throw spdt ON-ON illuminated red green
+F http://www.nkkswitches.com/pdf/gwillum.pdf
+$ENDCMP
+#
+#End Doc Library

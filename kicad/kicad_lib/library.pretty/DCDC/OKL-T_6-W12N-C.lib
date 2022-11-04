@@ -1,0 +1,35 @@
+EESchema-LIBRARY Version 2.3
+#encoding utf-8
+#SamacSys ECAD Model OKL-T_6-W12N-C
+#/370584/50409/2.42/12/4/Undefined or Miscellaneous
+DEF OKL-T_6-W12N-C U 0 30 Y Y 1 F N
+F0 "U" 1150 300 50 H V L CNN
+F1 "OKL-T_6-W12N-C" 1150 200 50 H V L CNN
+F2 "OKL-T/3-W5" 1150 100 50 H I L CNN
+F3 "http://www.mouser.com/ds/2/281/okl-t6-w12-21493.pdf" 1150 0 50 H I L CNN
+F4 "MURATA POWER SOLUTIONS - OKL-T/6-W12N-C - DC/DC CONVERTER, 30W, ADJ OUTPUT" 1150 -100 50 H I L CNN "Description"
+F5 "" 1150 -200 50 H I L CNN "Height"
+F6 "Murata Electronics" 1150 -300 50 H I L CNN "Manufacturer_Name"
+F7 "OKL-T/6-W12N-C" 1150 -400 50 H I L CNN "Manufacturer_Part_Number"
+F8 "580-OKL-T/6-W12N-C" 1150 -500 50 H I L CNN "Mouser Part Number"
+F9 "https://www.mouser.com/Search/Refine.aspx?Keyword=580-OKL-T%2F6-W12N-C" 1150 -600 50 H I L CNN "Mouser Price/Stock"
+F10 "1736944P" 1150 -700 50 H I L CNN "RS Part Number"
+F11 "http://uk.rs-online.com/web/p/products/1736944P" 1150 -800 50 H I L CNN "RS Price/Stock"
+DRAW
+X ON/OFF 1 0 0 200 R 50 50 0 0 B
+X VIN 2 0 -100 200 R 50 50 0 0 B
+X GND_1 3 0 -200 200 R 50 50 0 0 B
+X VOUT 4 0 -300 200 R 50 50 0 0 B
+X SENSE 5 0 -400 200 R 50 50 0 0 B
+X TRIM 6 0 -500 200 R 50 50 0 0 B
+X GND_2 7 1300 0 200 L 50 50 0 0 B
+X NC_1 8 1300 -100 200 L 50 50 0 0 B
+X SEQ 9 1300 -200 200 L 50 50 0 0 B
+X PGOOD 10 1300 -300 200 L 50 50 0 0 B
+X NC_2 11 1300 -400 200 L 50 50 0 0 B
+X NC_3 12 1300 -500 200 L 50 50 0 0 B
+P 5 0 1 6 200 100 1100 100 1100 -600 200 -600 200 100 N
+ENDDRAW
+ENDDEF
+#
+#End Library

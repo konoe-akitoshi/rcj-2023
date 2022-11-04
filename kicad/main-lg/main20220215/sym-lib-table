@@ -1,0 +1,5 @@
+(sym_lib_table
+  (lib (name "0.main.mega")(type "Legacy")(uri "C:/Users/hidekazu/Dropbox/RoboCup/Robot2020/PCB/mainboard20200825/0.main.mega.lib")(options "")(descr "")(disabled))
+  (lib (name "1.Robot.prtty")(type "Legacy")(uri "C:/Users/hidekazu/Dropbox/RoboCup/Robot2020/PCB/Kikker20210202/1.Robot.prtty.lib")(options "")(descr "")(disabled))
+  (lib (name "Kikker20200725-rescue")(type "Legacy")(uri "C:/Users/hidekazu/Dropbox/RoboCup/Robot2020/PCB/Kikker20210202/Kikker20200725-rescue.lib")(options "")(descr "")(disabled))
+)

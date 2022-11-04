@@ -1,0 +1,15 @@
+(module AL0307-471K (layer F.Cu) (tedit 5B014D81)
+  (fp_text reference REF** (at 10.16 -2) (layer F.SilkS)
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (fp_text value AL0307-471K (at 10.16 -3.5) (layer F.Fab) hide
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (pad 1 thru_hole rect(at 0 0)(size 1.8 1.8)(drill 0.8)(layers *.Cu *.Mask F.SilkS))(pad 2 thru_hole circle(at 20.32 0)(size 1.8 1.8)(drill 0.8)(layers *.Cu *.Mask F.SilkS))(fp_line(start 6.16 -1.5)(end 6.16 1.5)(layer F.SilkS)(width 0.15))
+(fp_line(start 6.16 1.5)(end 14.16 1.5)(layer F.SilkS)(width 0.15))
+(fp_line(start 14.16 1.5)(end 14.16 -1.5)(layer F.SilkS)(width 0.15))
+(fp_line(start 6.16 -1.5)(end 14.16 -1.5)(layer F.SilkS)(width 0.15))
+(fp_line(start 1.1 0)(end 6.16 0)(layer F.SilkS)(width 0.15))
+(fp_line(start 14.16 0)(end 19.22 0)(layer F.SilkS)(width 0.15))
+
+)

@@ -1,0 +1,16 @@
+(module IRLML6402 (layer F.Cu) (tedit 5B014D80)
+  (fp_text reference REF** (at  0 -2.45) (layer F.SilkS)
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (fp_text value IRLML6402 (at 0 -3.95) (layer F.Fab) hide
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (pad 1 smd rect (at 0 0) (size 1.2 0.5) (layers F.Cu F.Paste F.Mask))
+(pad 2 smd rect (at 0 1.4) (size 1.2 0.5) (layers F.Cu F.Paste F.Mask))
+(pad 3 smd rect (at 2.04 0.7) (size 1.2 0.5) (layers F.Cu F.Paste F.Mask))
+(fp_line(start -0.8 -0.45)(end -0.8 1.85)(layer F.SilkS)(width 0.15))
+(fp_line(start -0.8 1.85)(end 2.84 1.85)(layer F.SilkS)(width 0.15))
+(fp_line(start 2.84 1.85)(end 2.84 -0.45)(layer F.SilkS)(width 0.15))
+(fp_line(start -0.8 -0.45)(end 2.84 -0.45)(layer F.SilkS)(width 0.15))
+
+)

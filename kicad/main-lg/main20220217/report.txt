@@ -1,0 +1,161 @@
+情報: コンポーネント "R15:/618DF468:Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" を処理中です。
+情報: コンポーネント "R1:/5E148B20:Resistor_SMD:R_0603_1608Metric" を処理中です。
+情報: コンポーネント "R2:/5D3450D7:Resistor_SMD:R_0603_1608Metric" を処理中です。
+情報: コンポーネント "R3:/5D2A40DB:Resistor_SMD:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal" を処理中です。
+情報: コンポーネント "R4:/5D2A4B28:Resistor_SMD:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal" を処理中です。
+情報: コンポーネント "R5:/5E147A4E:Resistor_SMD:R_0603_1608Metric" を処理中です。
+情報: コンポーネント "R6:/5D07041C:Resistor_SMD:R_0603_1608Metric" を処理中です。
+情報: コンポーネント "R7:/5D070B18:Resistor_SMD:R_0603_1608Metric" を処理中です。
+情報: コンポーネント "R8:/5F1C6285:Resistor_SMD:R_0603_1608Metric" を処理中です。
+情報: コンポーネント "R9:/61861093/5E73D14D:Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal" を処理中です。
+情報: コンポーネント "R10:/61861093/5D468AE0:Resistor_THT:R_Axial_DIN0411_L9.9mm_D3.6mm_P20.32mm_Horizontal" を処理中です。
+情報: コンポーネント "R11:/61861093/5D467868:Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal" を処理中です。
+情報: コンポーネント "R12:/618DF41F:Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" を処理中です。
+情報: コンポーネント "R13:/618DF438:Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" を処理中です。
+情報: コンポーネント "R14:/618DF43E:Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" を処理中です。
+情報: コンポーネント "C2:/5CE69484:Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder" を処理中です。
+情報: コンポーネント "R16:/618DF481:Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" を処理中です。
+情報: コンポーネント "R17:/618DF48F:Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" を処理中です。
+情報: コンポーネント "RV1:/61861093/5E442FB2:0.main.robot:Trim-GF063X" を処理中です。
+情報: コンポーネント "SW1:/5E9B4BD1:0.main.robot:THAU13-AB-R" を処理中です。
+情報: コンポーネント "TP1:/61861093/5E442208:TestPoint:TestPoint_Loop_D2.60mm_Drill0.9mm_Beaded" を処理中です。
+情報: コンポーネント "TP2:/61861093/5E44233E:TestPoint:TestPoint_Loop_D2.60mm_Drill0.9mm_Beaded" を処理中です。
+情報: コンポーネント "U1:/5CE9D6AA:0.main.robot:OKL-T3-W12N-C" を処理中です。
+情報: コンポーネント "U2:/5EF49BEC:0.main.robot:TLP2361" を処理中です。
+情報: コンポーネント "U3:/5E0E5BBC:0.main.robot:SOP14W" を処理中です。
+情報: コンポーネント "U4:/5F29DCDF:0.main.robot:Teensy35_36_x" を処理中です。
+情報: コンポーネント "U8:/618DF451:0.main.robot:XBEE-S2C" を処理中です。
+情報: コンポーネント "U7:/61861093/5D464C10:0.main.robot:TLP157" を処理中です。
+情報: コンポーネント "U6:/61861093/5D467880:0.main.robot:XL6009_HW432" を処理中です。
+情報: コンポーネント "U5:/5EB84C6A:0.main.robot:SOP14W" を処理中です。
+情報: コンポーネント "K1:/61861093/5D46AB5D:Relay_THT:Relay_SPDT_Omron_G5V-1" を処理中です。
+情報: コンポーネント "C3:/5E149C20:Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder" を処理中です。
+情報: コンポーネント "C4:/5E726A4F:Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder" を処理中です。
+情報: コンポーネント "C5:/61861093/5D46BA32:Capacitor_THT:CP_Radial_D16.0mm_P7.50mm" を処理中です。
+情報: コンポーネント "C6:/61861093/5F1DA88D:Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder" を処理中です。
+情報: コンポーネント "D1:/5F5F8433:0.main.robot:LED_SMLE13WBC8W1" を処理中です。
+情報: コンポーネント "D2:/5D1FEDA8:Diode_SMD:D_SMA" を処理中です。
+情報: コンポーネント "D3:/61861093/5E73FA30:LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder" を処理中です。
+情報: コンポーネント "D4:/618DF462:LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder" を処理中です。
+情報: コンポーネント "D5:/618DF47B:LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder" を処理中です。
+情報: コンポーネント "D6:/618DF489:LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder" を処理中です。
+情報: コンポーネント "J1:/5D188A3C:Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical" を処理中です。
+情報: コンポーネント "J2:/61355805:0.main.robot:JSTB6B-ZR" を処理中です。
+情報: コンポーネント "J3:/5D04B76D:0.main.robot:JSTB4B-ZR" を処理中です。
+情報: コンポーネント "J4:/5E439BD2:0.main.robot:JSTB4B-ZR" を処理中です。
+情報: コンポーネント "J14:/5DE15CEE:0.main.robot:JSTB4B-ZR" を処理中です。
+情報: コンポーネント "J15:/61861093/5E7290C7:Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical" を処理中です。
+情報: コンポーネント "J16:/61861093/5E442271:Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" を処理中です。
+情報: コンポーネント "Q1:/5E37F344:Package_TO_SOT_SMD:SOT-23_Handsoldering" を処理中です。
+情報: コンポーネント "J13:/5D55AAF7:0.main.robot:JSTB4B-ZR" を処理中です。
+情報: コンポーネント "J12:/5DA167B5:0.main.robot:JSTB4B-ZR" を処理中です。
+情報: コンポーネント "J11:/5FC1289D:0.main.robot:JSTB8B-ZR" を処理中です。
+情報: コンポーネント "J5:/5CE26F88:0.main.robot:JSTB4B-ZR" を処理中です。
+情報: コンポーネント "C1:/5CE68D67:Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder" を処理中です。
+情報: コンポーネント "J6:/60F38C81:0.main.robot:JSTB6B-ZR" を処理中です。
+情報: コンポーネント "J7:/5F34A640:0.main.robot:JSTB4B-ZR" を処理中です。
+情報: コンポーネント "J8:/5F325639:0.main.robot:JSTB4B-ZR" を処理中です。
+情報: コンポーネント "J9:/5F326B7D:0.main.robot:JSTB4B-ZR" を処理中です。
+情報: コンポーネント "J10:/5F34B277:0.main.robot:JSTB4B-ZR" を処理中です。
+孤立したパッドのネット Net-(U4-Pad66) を削除します。
+孤立したパッドのネット Net-(U4-Pad64) を削除します。
+孤立したパッドのネット Net-(U4-Pad6) を削除します。
+孤立したパッドのネット Net-(U4-Pad58) を削除します。
+孤立したパッドのネット Net-(U4-Pad57) を削除します。
+孤立したパッドのネット Net-(U4-Pad56) を削除します。
+孤立したパッドのネット Net-(U4-Pad55) を削除します。
+孤立したパッドのネット Net-(U4-Pad54) を削除します。
+U8 ピン 20 を Net-(U8-Pad20) に接続します。
+孤立したパッドのネット Net-(U4-Pad52) を削除します。
+孤立したパッドのネット Net-(U4-Pad65) を削除します。
+孤立したパッドのネット Net-(U4-Pad5) を削除します。
+孤立したパッドのネット Net-(U4-Pad40) を削除します。
+孤立したパッドのネット Net-(U4-Pad4) を削除します。
+孤立したパッドのネット Net-(U4-Pad31) を削除します。
+孤立したパッドのネット Net-(U4-Pad28) を削除します。
+孤立したパッドのネット Net-(U4-Pad26) を削除します。
+孤立したパッドのネット Net-(U4-Pad25) を削除します。
+孤立したパッドのネット Net-(U4-Pad24) を削除します。
+孤立したパッドのネット Net-(U4-Pad15) を削除します。
+孤立したパッドのネット Net-(U4-Pad14) を削除します。
+孤立したパッドのネット Net-(U8-Pad9) を削除します。
+孤立したパッドのネット Net-(R3-Pad2) を削除します。
+孤立したパッドのネット Net-(J5-Pad1) を削除します。
+孤立したパッドのネット Net-(U5-Pad12) を削除します。
+孤立したパッドのネット Net-(U8-Pad8) を削除します。
+孤立したパッドのネット Net-(U8-Pad7) を削除します。
+孤立したパッドのネット Net-(U8-Pad4) を削除します。
+孤立したパッドのネット Net-(U8-Pad20) を削除します。
+孤立したパッドのネット Net-(U8-Pad19) を削除します。
+孤立したパッドのネット Net-(U8-Pad18) を削除します。
+孤立したパッドのネット Net-(U8-Pad17) を削除します。
+孤立したパッドのネット Net-(U8-Pad16) を削除します。
+孤立したパッドのネット Net-(U8-Pad15) を削除します。
+孤立したパッドのネット Net-(U8-Pad14) を削除します。
+孤立したパッドのネット Net-(U8-Pad13) を削除します。
+孤立したパッドのネット Net-(U8-Pad12) を削除します。
+孤立したパッドのネット Net-(U8-Pad11) を削除します。
+孤立したパッドのネット Net-(U4-Pad67) を削除します。
+孤立したパッドのネット Net-(U4-Pad86) を削除します。
+孤立したパッドのネット Net-(U4-Pad85) を削除します。
+孤立したパッドのネット Net-(U4-Pad84) を削除します。
+孤立したパッドのネット Net-(U4-Pad83) を削除します。
+孤立したパッドのネット Net-(U4-Pad82) を削除します。
+孤立したパッドのネット Net-(U4-Pad81) を削除します。
+孤立したパッドのネット Net-(U4-Pad80) を削除します。
+孤立したパッドのネット Net-(U4-Pad8) を削除します。
+孤立したパッドのネット Net-(U4-Pad75) を削除します。
+孤立したパッドのネット Net-(U4-Pad7) を削除します。
+孤立したパッドのネット Net-(U4-Pad69) を削除します。
+孤立したパッドのネット Net-(U4-Pad68) を削除します。
+U4 ピン 82 を Net-(U4-Pad82) に接続します。
+U8 ピン 19 を Net-(U8-Pad19) に接続します。
+U4 ピン 40 を Net-(U4-Pad40) に接続します。
+U4 ピン 52 を Net-(U4-Pad52) に接続します。
+U4 ピン 54 を Net-(U4-Pad54) に接続します。
+U4 ピン 55 を Net-(U4-Pad55) に接続します。
+U4 ピン 56 を Net-(U4-Pad56) に接続します。
+U4 ピン 57 を Net-(U4-Pad57) に接続します。
+U4 ピン 58 を Net-(U4-Pad58) に接続します。
+U4 ピン 75 を Net-(U4-Pad75) に接続します。
+U4 ピン 67 を Net-(U4-Pad67) に接続します。
+U4 ピン 68 を Net-(U4-Pad68) に接続します。
+U4 ピン 69 を Net-(U4-Pad69) に接続します。
+U4 ピン 4 を Net-(U4-Pad4) に接続します。
+U4 ピン 81 を Net-(U4-Pad81) に接続します。
+U4 ピン 80 を Net-(U4-Pad80) に接続します。
+U4 ピン 83 を Net-(U4-Pad83) に接続します。
+U4 ピン 84 を Net-(U4-Pad84) に接続します。
+U4 ピン 86 を Net-(U4-Pad86) に接続します。
+U4 ピン 85 を Net-(U4-Pad85) に接続します。
+U4 ピン 66 を Net-(U4-Pad66) に接続します。
+U4 ピン 64 を Net-(U4-Pad64) に接続します。
+U4 ピン 65 を Net-(U4-Pad65) に接続します。
+R3 ピン 2 を Net-(R3-Pad2) に接続します。
+J5 ピン 1 を Net-(J5-Pad1) に接続します。
+U8 ピン 8 を Net-(U8-Pad8) に接続します。
+U8 ピン 18 を Net-(U8-Pad18) に接続します。
+U8 ピン 17 を Net-(U8-Pad17) に接続します。
+U8 ピン 16 を Net-(U8-Pad16) に接続します。
+U8 ピン 15 を Net-(U8-Pad15) に接続します。
+U8 ピン 14 を Net-(U8-Pad14) に接続します。
+U8 ピン 13 を Net-(U8-Pad13) に接続します。
+U8 ピン 12 を Net-(U8-Pad12) に接続します。
+U8 ピン 11 を Net-(U8-Pad11) に接続します。
+U8 ピン 4 を Net-(U8-Pad4) に接続します。
+U8 ピン 7 を Net-(U8-Pad7) に接続します。
+U4 ピン 5 を Net-(U4-Pad5) に接続します。
+U8 ピン 9 を Net-(U8-Pad9) に接続します。
+U5 ピン 12 を Net-(U5-Pad12) に接続します。
+U4 ピン 15 を Net-(U4-Pad15) に接続します。
+U4 ピン 14 を Net-(U4-Pad14) に接続します。
+U4 ピン 24 を Net-(U4-Pad24) に接続します。
+U4 ピン 25 を Net-(U4-Pad25) に接続します。
+U4 ピン 26 を Net-(U4-Pad26) に接続します。
+U4 ピン 28 を Net-(U4-Pad28) に接続します。
+U4 ピン 31 を Net-(U4-Pad31) に接続します。
+U4 ピン 8 を Net-(U4-Pad8) に接続します。
+U4 ピン 7 を Net-(U4-Pad7) に接続します。
+U4 ピン 6 を Net-(U4-Pad6) に接続します。
+エラー: U1 を追加できません。(フットプリント "0.main.robot:OKL-T3-W12N-C" が見つかりません)
+エラー: SW1 を追加できません。(フットプリント "0.main.robot:THAU13-AB-R" が見つかりません)

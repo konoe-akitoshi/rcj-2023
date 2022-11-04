@@ -1,0 +1,18 @@
+(module MBR3060FCT_H (layer F.Cu) (tedit 5B014D7F)
+  (fp_text reference REF** (at  0 -3.27) (layer F.SilkS)
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (fp_text value MBR3060FCT_H (at 0 -4.77) (layer F.Fab) hide
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (pad 1 thru_hole rect(at 0 0)(size 2.2 2.2)(drill 1.2)(layers *.Cu *.Mask F.SilkS))
+(pad 2 thru_hole circle(at 0 2.54)(size 2.2 2.2)(drill 1.2)(layers *.Cu *.Mask F.SilkS))
+(pad 3 thru_hole circle(at 0 5.08)(size 2.2 2.2)(drill 1.2)(layers *.Cu *.Mask F.SilkS))
+(fp_line(start 5 -1.27)(end 19.8 -1.27)(layer F.SilkS)(width 0.15))
+(fp_line(start 5 6.35)(end 19.8 6.35)(layer F.SilkS)(width 0.15))
+(fp_line(start 5 -1.27)(end 5 6.35)(layer F.SilkS)(width 0.15))
+(fp_line(start 19.8 -1.27)(end 19.8 6.35)(layer F.SilkS)(width 0.15))
+(fp_line(start 13.8 -1.27)(end 13.8 6.35)(layer F.SilkS)(width 0.15))
+(pad "" np_thru_hole circle (at 16.8 2.54) (size 3.3 3.3) (drill 3.3) (layers *.Cu *.Mask F.SilkS))
+
+)

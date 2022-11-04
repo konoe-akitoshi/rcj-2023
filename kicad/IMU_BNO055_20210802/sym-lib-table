@@ -1,0 +1,5 @@
+(sym_lib_table
+  (lib (name XBee-Breakout-v12_v1-rescue)(type Legacy)(uri ${KIPRJMOD}/XBee-Breakout-v12_v1-rescue.lib)(options "")(descr "")(disabled))
+  (lib (name XBee-Control20200912-rescue)(type Legacy)(uri ${KIPRJMOD}/XBee-Control20200912-rescue.lib)(options "")(descr "")(disabled))
+  (lib (name XBee-Regulated-v14-eagle-import)(type Legacy)(uri C:/Users/hidekazu/Dropbox/RoboCup/Robot2020/PCB/Xbee_test/XBee-Regulated-v14/XBee-Regulated-v14-eagle-import.lib)(options "")(descr "")(disabled))
+)

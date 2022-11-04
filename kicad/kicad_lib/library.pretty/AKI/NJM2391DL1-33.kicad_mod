@@ -1,0 +1,16 @@
+(module NJM2391DL1-33 (layer F.Cu) (tedit 5B014D80)
+  (fp_text reference REF** (at  0 -3.715) (layer F.SilkS)
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (fp_text value NJM2391DL1-33 (at 0 -5.215) (layer F.Fab) hide
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (pad 1 smd rect (at 0 0) (size 1.6 0.75) (layers F.Cu F.Paste F.Mask))
+(pad 3 smd rect (at 0 4.56) (size 1.6 0.75) (layers F.Cu F.Paste F.Mask))
+(pad 4 smd rect (at 6.65 2.28) (size 10.1 5.31) (layers F.Cu F.Paste F.Mask))
+(fp_line(start -1 -1.715)(end -1 6.275)(layer F.SilkS)(width 0.15))
+(fp_line(start -1 6.275)(end 11.9 6.275)(layer F.SilkS)(width 0.15))
+(fp_line(start 11.9 6.275)(end 11.9 -1.715)(layer F.SilkS)(width 0.15))
+(fp_line(start -1 -1.715)(end 11.9 -1.715)(layer F.SilkS)(width 0.15))
+
+)
