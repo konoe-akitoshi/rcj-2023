@@ -28,7 +28,7 @@ const int DR2PWM = 6;
 
 void motorCh1(int data) {  // CH1のモーターを動かすプログラム
     int power;
-    if (data == 0) {                  // data == 0　なら停止
+    if (data == 0) {                  // data == 0 なら停止
         analogWrite(CH1PWM, 0);       // power = 0
         digitalWrite(CH1DIR1, HIGH);  // Brake
         digitalWrite(CH1DIR2, HIGH);
@@ -41,10 +41,11 @@ void motorCh1(int data) {  // CH1のモーターを動かすプログラム
         digitalWrite(CH1DIR1, LOW);  // Reverse
         digitalWrite(CH1DIR2, HIGH);
     }
-    power = abs(data);  //  -100～+100のデータを0～250に変換する
-    if (power > 100)    //  data > 100 の場合は100にする
+    power = abs(data);  //  -100 ~ +100 のデータを 0～250 に変換する
+    if (power > 100) {  //  data > 100 の場合は 100 にする
         power = 100;
-    power = (power << 1) + (power >> 1);  // power=power*2.5
+    }
+    power = (power << 1) + (power >> 1);  // power *= 2.5
     analogWrite(CH1PWM, power);           // 0 < power < 250
 }
 
@@ -64,9 +65,10 @@ void motorCh2(int data) {  // CH2のモーターを動かすプログラム
         digitalWrite(CH2DIR2, HIGH);
     }
     power = abs(data);
-    if (power > 100)
+    if (power > 100) {
         power = 100;
-    power = (power << 1) + (power >> 1);  // power=power*2.5
+    }
+    power = (power << 1) + (power >> 1);  // power *= 2.5
     analogWrite(CH2PWM, power);           // 0 < power < 250
 }
 
@@ -86,9 +88,10 @@ void motorCh3(int data) {  // CH3のモーターを動かすプログラム
         digitalWrite(CH3DIR2, HIGH);
     }
     power = abs(data);
-    if (power > 100)
+    if (power > 100) {
         power = 100;
-    power = (power << 1) + (power >> 1);  // power=power*2.5
+    }
+    power = (power << 1) + (power >> 1);  // power *= 2.5
     analogWrite(CH3PWM, power);           // 0 < power < 250
 }
 
@@ -108,9 +111,10 @@ void motorCh4(int data) {  // CH4のモーターを動かすプログラム
         digitalWrite(CH4DIR2, HIGH);
     }
     power = abs(data);
-    if (power > 100)
+    if (power > 100) {
         power = 100;
-    power = (power << 1) + (power >> 1);  // power=power*2.5
+    }
+    power = (power << 1) + (power >> 1);  // power *= 2.5
     analogWrite(CH4PWM, power);           // 0 < power < 250
 }
 
@@ -129,7 +133,7 @@ void motorInit() {  // Arduinoのモーター制御を初期化する
     pinMode(CH3PWM, OUTPUT);
     pinMode(CH4PWM, OUTPUT);
 
-    analogWriteFrequency(CH1PWM, 37000);  // set PWM=37KHz
+    analogWriteFrequency(CH1PWM, 37000);  // set PWM = 37KHz
     analogWriteFrequency(CH2PWM, 37000);
     analogWriteFrequency(CH3PWM, 37000);
     analogWriteFrequency(CH4PWM, 37000);
@@ -140,7 +144,7 @@ void motorInit() {  // Arduinoのモーター制御を初期化する
     motorCh4(0);
 }
 
-void dribInit() {  // ドリブラモーターのPWMピンを初期化する
+void dribInit() {  // ドリブラモーターの PW Mピンを初期化する
 
     pinMode(DR1PWM, OUTPUT);
     pinMode(DR2PWM, OUTPUT);
@@ -159,14 +163,16 @@ void motorfunction(float z, int power, int rotation) {
     float x[4], x_max, w;
     int i;
 
-    if (power > 100)  // powerを±100以下にする
+    if (power > 100) {  // powerを ±100 以下にする
         power = 100;
-    else if (power < -100)
+    } else if (power < -100) {
         power = -100;
-    if (rotation > 100)  // rotationを±100以下にする
+    }
+    if (rotation > 100) {  // rotation を ±100 以下にする
         rotation = 100;
-    else if (rotation < -100)
+    } else if (rotation < -100) {
         rotation = -100;
+    }
 
     x[0] = -(sin(z - 3.14159 / 4.0));
     x[1] = -(sin(z - 3 * 3.14159 / 4.0));
@@ -175,23 +181,29 @@ void motorfunction(float z, int power, int rotation) {
 
     x_max = 0.0;
     for (i = 0; i < 4; i++) {
-        if (x_max < abs(x[i]))
+        if (x_max < abs(x[i])) {
             x_max = abs(x[i]);
+        }
     };
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < 4; i++) {
         x[i] = x[i] / x_max;
+    }
     w = -(rotation / 100.0);
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < 4; i++) {
         x[i] = x[i] + w;
+    }
     x_max = 0.0;
     for (i = 0; i < 4; i++) {
-        if (x_max < abs(x[i]))
+        if (x_max < abs(x[i])) {
             x_max = abs(x[i]);
+        }
     };
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < 4; i++) {
         x[i] = x[i] / x_max;
-    for (i = 0; i < 4; i++)
+    }
+    for (i = 0; i < 4; i++) {
         x[i] = x[i] * power;
+    }
     /*
       Serial.print(" Z=");
       Serial.print(z);
@@ -258,8 +270,9 @@ void motorFree() {
 }
 
 void dribbler1(int power) {  // ドリブラ１を回す. 0 < power <100
-    if (power < 0 || power > 100)
+    if (power < 0 || power > 100) {
         return;
+    }
     if (power == 0) {
         analogWrite(DR1PWM, 0);
     } else {
@@ -269,8 +282,9 @@ void dribbler1(int power) {  // ドリブラ１を回す. 0 < power <100
 }
 
 void dribbler2(int power) {  // ドリブラ１を回す. 0 < power <100
-    if (power < 0 || power > 100)
+    if (power < 0 || power > 100) {
         return;
+    }
     if (power == 0) {
         analogWrite(DR2PWM, 0);
     } else {

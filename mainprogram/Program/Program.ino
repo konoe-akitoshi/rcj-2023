@@ -4,20 +4,19 @@
 #include <VL6180X.h>
 #include <Wire.h>
 #include "NT_Robot202111.h"  // Header file for Teensy 3.5
-#include "motorDRV6.h"       //  モーター制御のプログラムを読み込む
+#include "motorDRV6.h"       // モーター制御のプログラムを読み込む
 
 VL6180X ToF_front;  // create front ToF object
 
 // const int angle = 0;
 const int Vlow = 13.0;  // Low limit voltage 1.1*12 = 13.2
-// Mi-NHなら13.0,Li-poなら13.5(Li-poは過放電するので注意！)
+// Mi-NH なら 13.0, Li-po なら 13.5 (Li-po は過放電するので注意！)
 const float Vstep = 0.01811;  // Voltage step 15.3V/845 = 0.01811
 
 int blob_count, i;
 static int openMV[39];
 static int x_data_ball, y_data_ball, w_data_ball, h_data_ball;
-static int x_data_yellowgoal, y_data_yellowgoal, w_data_yellowgoal,
-    h_data_yellowgoal;
+static int x_data_yellowgoal, y_data_yellowgoal, w_data_yellowgoal, h_data_yellowgoal;
 static int x_data_bluegoal, y_data_bluegoal, w_data_bluegoal, h_data_bluegoal;
 
 static int8_t gyro_o;
@@ -136,8 +135,7 @@ void setup() {
 
     Wire.begin();
     /*
-      CE端子をLOWにするとデバイスがリセットされアドレスが初期値に
-      　戻るので注意
+      CE端子をLOWにするとデバイスがリセットされアドレスが初期値に戻るので注意
     */
 
     delay(10);
@@ -179,7 +177,7 @@ void setup() {
     Serial2.begin(115200);  // WT901 IMU Sener
     Serial1.begin(9600);    // xbee
 
-    lineflag = false;  // reset outofbounds　flag
+    lineflag = false;  // reset outofbounds flag
     for (i = 0; i < 4; i++) line[i] = false;
     robot_dir = 0;  // reset robot direction
 
@@ -187,12 +185,12 @@ void setup() {
 
     attachInterrupt(INT_29, intHandle, RISING);
 
-    // LEDを初期化する
+    // LED を初期化する
     // LED_Init();
-    digitalWrite(LED_R, LOW);  // LED_R消灯
-    digitalWrite(LED_Y, LOW);  // LED_Y消灯
-    digitalWrite(LED_G, LOW);  // LED_G消灯
-    digitalWrite(LED_B, LOW);  // LED_B消灯
+    digitalWrite(LED_R, LOW);  // LED_R 消灯
+    digitalWrite(LED_Y, LOW);  // LED_Y 消灯
+    digitalWrite(LED_G, LOW);  // LED_G 消灯
+    digitalWrite(LED_B, LOW);  // LED_B 消灯
 
     digitalWrite(SWR, HIGH);
     digitalWrite(SWG, HIGH);
@@ -200,8 +198,7 @@ void setup() {
     Serial.println("Initialize end");
 }
 
-void loop()  ////////////////////////////////////////////////////////////////////////////////////
-{
+void loop() {
     digitalWrite(LED_B, LOW);
     blob_count = get_openMV_coordinate();
     x_data_ball = (openMV[5] & 0b0000000000111111) + ((openMV[6] & 0b0000000000111111) << 6);
@@ -224,21 +221,23 @@ void loop()  ///////////////////////////////////////////////////////////////////
     }
 
     // get gyrodata
-    if (Serial2.available() > 0)
-        while (Serial2.available() != 0) {  //  Gyroの方位データをgyroに取り込む
+    if (Serial2.available() > 0) {
+        while (Serial2.available() != 0) {  //  Gyro の方位データを gyro に取り込む
             gyro_o = Serial2.read();
         }
+    }
 
     gyro = gyro_o;
 
     // Xbeeからの信号を読む
-    if (Serial1.available() > 0)
+    if (Serial1.available() > 0) {
         while (Serial1.available() > 0) {
             p_ball = Serial1.read();
         }
+    }
     // openMVのデーターを変換
 
-    sig = openMV[1];  //  openMVのデータをsig,x,y,w,hに取り込む
+    sig = openMV[1];  //  openMVのデータを sig, x, y, w, h に取り込む
     x = x_data_ball;
     y = y_data_ball;
     w = w_data_ball;
@@ -261,7 +260,7 @@ void loop()  ///////////////////////////////////////////////////////////////////
         x = 156 - x;
         y = 67 - y;
     }
-    if (digitalRead(GoalSW)) {  // 　青色ゴールをする場合
+    if (digitalRead(GoalSW)) {  // 青色ゴールをする場合
         if (y_sig != 0) {
             yg_x = 154 - yg_x;
             yg_y = yg_y - 184;
@@ -292,7 +291,7 @@ void loop()  ///////////////////////////////////////////////////////////////////
       bg_y = (bg_y * 194600) / (140200 + 708 * sqrt(bg_y * bg_y + 28900));
       }*/
 
-    if (sig != 0) {  // xbeedate生成
+    if (sig != 0) {  // xbeedate 生成
         xbee_x = x;
         xbee_y = y;
     }
@@ -304,7 +303,7 @@ void loop()  ///////////////////////////////////////////////////////////////////
 
     ball_dist = sqrt(x * x + y * y);
 
-    Serial1.write(xbee_date);  // xbeeへ出力
+    Serial1.write(xbee_date);  // xbee へ出力
 
     Serial.print("ball_x:");
     Serial.print(x);
@@ -322,7 +321,7 @@ void loop()  ///////////////////////////////////////////////////////////////////
 
     ball_front = ToF_front.readRangeSingleMillimeters();
 
-    if (digitalRead(StartSW) == LOW) {  // STartSW == Lowでスタート
+    if (digitalRead(StartSW) == LOW) {  // STartSW == Low でスタート
         digitalWrite(SWR, HIGH);
         digitalWrite(SWG, HIGH);
 
@@ -336,8 +335,8 @@ void loop()  ///////////////////////////////////////////////////////////////////
         checkvoltage(Vlow);
         if (emergency == true) {          // 電池の電圧が下がっていたら
             digitalWrite(LINE_LED, LOW);  // ラインセンサのLEDを消灯
-            motorFree();                  // 　モーターを停止
-            while (1) {                   // 　無限ループ
+            motorFree();                  // モーターを停止
+            while (1) {                   // 無限ループ
                 digitalWrite(SWR, LOW);
                 digitalWrite(SWG, LOW);
                 delay(300);
@@ -376,7 +375,6 @@ void loop()  ///////////////////////////////////////////////////////////////////
         wrap = 0;
     }
 }
-//////////// main ////////////
 
 void keeper() {
     dribbler1(0);
@@ -429,8 +427,8 @@ void attacker() {
         goal_x = yg_x;
         goal_y = -yg_y;
     }
-    //  PID制御をするので
-    // 　制御値＝誤差(方位)値＋誤差(方位)の時間積分値＋誤差(方位)の時間微分値
+    // PID制御をするので
+    // 制御値＝誤差(方位)値＋誤差(方位)の時間積分値＋誤差(方位)の時間微分値
     //
     // Convert coordinates data
     if (blob_count != 0) {  // 物体を検出したら
@@ -452,18 +450,18 @@ void attacker() {
     pre_dir = ball_dir;                                                   // 今回の値を代入し次周期から見て前回観測値にする
 
     digitalWrite(LED_BUILTIN, LOW);
-    if (-5 <= y && y <= 30) {  // ボールが前(0≦y≦30)にあるとき
+    if (-5 <= y && y <= 30) {  // ボールが前(0 <= y <= 0)にあるとき
         dribbler1(100);
         wrap = 0;
         if (abs(x) < 5) {                // 目の前
-            if (ball_front <= 60) {      // yの距離近い
+            if (ball_front <= 60) {      // y の距離近い
                 if (ball_front <= 30) {  // 保持
                     data_sum = 0;
-                    // curr = millis();//始めだけ値をとりたい
+                    // curr = millis(); //始めだけ値をとりたい
                     // if(prev == 0){
-                    // prev = curr;
+                    //     prev = curr;
                     // }
-                    // if((curr - prev)>= interval){
+                    // if((curr - prev) >= interval) {
                     // 動作
                     if (goal_sig == 0) {  // ゴールなし
                         motorfunction(0, 80, -gyro);
@@ -485,13 +483,13 @@ void attacker() {
                 } else {  // 目の前のボールを保持しに行く
                     kick = false;
                     data_sum = 0;
-                    // prev = 0;//ボール保持時間リセット
+                    // prev = 0; //ボール保持時間リセット
                     motorfunction(0, 50, -gyro);
                 }
             } else {
                 z = atan2(x, y);
                 motorfunction(z, powerLimit(Pmax, Pcontrol),
-                              -gyro);  ////ココボール前　制御甘い？
+                              -gyro);  // ココボール前 制御甘い？
             }
         } else {
             z = atan2(x, y);
@@ -553,18 +551,15 @@ void attacker() {
     Serial.print(" kick ");
     Serial.println(kick);
 }
-//
-// **** end of main loop ******************************************************
-//
 
 int powerLimit(int max,
                int power) {  // powerの値がmax(ex.100)を超えないようにする
-    if (power > max)
+    if (power > max) {
         return max;
-    else if (power < -max)
+    } else if (power < -max) {
         return -max;
-    else
-        return power;
+    }
+    return power;
 }
 
 int get_openMV_coordinate() {  // get the coordinate data of orange ball
@@ -620,8 +615,9 @@ void intHandle() {  // Lineを踏んだらlineflagをセットして止まる。
     digitalWrite(LED_B, LOW);
     digitalWrite(LED_R, LOW);
 
-    if (lineflag == false)  // センサーの反応がない場合は何もしない
+    if (lineflag == false) {  // センサーの反応がない場合は何もしない
         return;
+    }
     lineflag = true;  // set lineflag
     motorStop();      // ラインから外れたらモーターstop
     return;
@@ -649,66 +645,63 @@ void back_Line2(int power) {  // Lineセンサ2が反応しなくなるまで左
     digitalWrite(LED_Y, LOW);  // LED_Y点灯
     while ((digitalRead(LINE2D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE4D) == HIGH)) {
         if (digitalRead(LINE1D) == HIGH) {
-            azimuth = 3.14159 * 5.0 / 4.0;  // 後ろ方向(2+1)をradianに変換
+            azimuth = 3.14159 * 5.0 / 4.0;  // 後ろ方向(2+1)を radian に変換
         } else if (digitalRead(LINE3D) == HIGH) {
-            azimuth = 3.14159 * 7.0 / 4.0;  // 後ろ方向(2+3)をradianに変換
+            azimuth = 3.14159 * 7.0 / 4.0;  // 後ろ方向(2+3)を radian に変換
         } else {
-            azimuth = 3.14159 * 6.0 / 4.0;  // 後ろ方向(4)をradianに変換
+            azimuth = 3.14159 * 6.0 / 4.0;  // 後ろ方向(4)を radian に変換
         }
-        motorfunction(azimuth, power, 0);  // azimuthの方向に進ませる
+        motorfunction(azimuth, power, 0);  // azimuth の方向に進ませる
     }
-    digitalWrite(LED_Y, LOW);  // LED_Y消灯
+    digitalWrite(LED_Y, LOW);  // LED_Y 消灯
     motorStop();
 }
 
-void back_Line3(int power) {  // Lineセンサ3が反応しなくなるまで前に進む
+void back_Line3(int power) {  // Lineセンサ3 が反応しなくなるまで前に進む
     float azimuth;
     digitalWrite(LED_G, LOW);  // LED_G点灯
     while ((digitalRead(LINE3D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE1D) == HIGH)) {
         if (digitalRead(LINE4D) == HIGH) {
-            azimuth = 3.14159 * 1.0 / 4.0;  // 後ろ方向(3+4)をradianに変換
+            azimuth = 3.14159 * 1.0 / 4.0;  // 後ろ方向(3+4)を radian に変換
         } else if (digitalRead(LINE2D) == HIGH) {
-            azimuth = 3.14159 * 7.0 / 4.0;  // 後ろ方向(3+2)をradianに変換
+            azimuth = 3.14159 * 7.0 / 4.0;  // 後ろ方向(3+2)を radian に変換
         } else {
-            azimuth = 3.14159 * 0.0 / 4.0;  // 後ろ方向(1)をradianに変換
+            azimuth = 3.14159 * 0.0 / 4.0;  // 後ろ方向(1)を radian に変換
         }
-        motorfunction(azimuth, power, 0);  // azimuthの方向に進ませる
+        motorfunction(azimuth, power, 0);  // azimuth の方向に進ませる
     }
-    digitalWrite(LED_G, LOW);  // LED_G消灯
+    digitalWrite(LED_G, LOW);  // LED_G 消灯
     motorStop();
 }
 
-void back_Line4(int power) {  // Lineセンサ4が反応しなくなるまで右に進む
+void back_Line4(int power) {  // Lineセンサ4 が反応しなくなるまで右に進む
     float azimuth;
-    digitalWrite(LED_B, LOW);  // LED_B点灯
+    digitalWrite(LED_B, LOW);  // LED_B 点灯
     while ((digitalRead(LINE4D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE2D) == HIGH)) {
         if (digitalRead(LINE3D) == HIGH) {
-            azimuth = 3.14159 * 1.0 / 4.0;  // 後ろ方向(4+3)をradianに変換
+            azimuth = 3.14159 * 1.0 / 4.0;  // 後ろ方向(4+3)を radian に変換
         } else if (digitalRead(LINE1D) == HIGH) {
-            azimuth = 3.14159 * 3.0 / 4.0;  // 後ろ方向(4+1)をradianに変換
+            azimuth = 3.14159 * 3.0 / 4.0;  // 後ろ方向(4+1)を radian に変換
         } else {
-            azimuth = 3.14159 * 2.0 / 4.0;  // 後ろ方向(2)をradianに変換
+            azimuth = 3.14159 * 2.0 / 4.0;  // 後ろ方向(2)を radian に変換
         }
-        motorfunction(azimuth, power, 0);  // azimuthの方向に進ませる
+        motorfunction(azimuth, power, 0);  // azimuth の方向に進ませる
     }
-    digitalWrite(LED_B, LOW);  // LED_B消灯
+    digitalWrite(LED_B, LOW);  // LED_B 消灯
     motorStop();
 }
 
-//
 // 割り込みの処理プログラム終わり
 //*****************************************************************************
-//
 
-//
-// 電池電圧を監視して電圧が下がったらOutOfBounceさせる処理**********************
-//
+//*****************************************************************************
+// 電池電圧を監視して電圧が下がったらOutOfBounceさせる処理
 
 float checkvoltage(float Vlow) {  // 電池電圧を監視する。
     int voltage, limit;
     limit = Vlow / 0.01811;
     voltage = analogRead(Vbatt);  // Get Volatge
-    if (voltage < limit) {        // 電圧が　Vlow以下であればemergencyをセットする。
+    if (voltage < limit) {        // 電圧が Vlow 以下であれば emergency をセットする。
         emergency = true;
         digitalWrite(SWG, HIGH);
         digitalWrite(SWR, HIGH);
@@ -716,10 +709,10 @@ float checkvoltage(float Vlow) {  // 電池電圧を監視する。
     return voltage * 0.01811;
 }
 
-void doOutofbound() {  // 強制的にOut of bounds させる。
+void doOutofbound() {  // 強制的に Out of bounds させる。
 
     detachInterrupt(5);           // Out of bounds するために割込みを禁止する
-    digitalWrite(LINE_LED, LOW);  // ラインセンサのLEDを消灯
+    digitalWrite(LINE_LED, LOW);  // ラインセンサの LED を消灯
 
     while (true) {  // 無限ループ
         if (digitalRead(StartSW) == LOW)

@@ -27,7 +27,7 @@ Servo myservo1, myservo2;  // create servo object to control a servo
 
 void motorCh1(int data) {  // CH1のモーターを動かすプログラム
     int power;
-    if (data == 0) {                  // data == 0　なら停止
+    if (data == 0) {                  // data == 0 なら停止
         analogWrite(CH1PWM, 0);       // power = 0
         digitalWrite(CH1DIR1, HIGH);  // Brake
         digitalWrite(CH1DIR2, HIGH);
@@ -40,10 +40,11 @@ void motorCh1(int data) {  // CH1のモーターを動かすプログラム
         digitalWrite(CH1DIR1, LOW);  // Reverse
         digitalWrite(CH1DIR2, HIGH);
     }
-    power = abs(data);  //  -100～+100のデータを0～250に変換する
-    if (power > 100)    //  data > 100 の場合は100にする
+    power = abs(data);  //  -100 ~ +100 のデータを 0 ~ 250 に変換する
+    if (power > 100) {  //  data > 100 の場合は 100 にする
         power = 100;
-    power = (power << 1) + (power >> 1);  // power=power*2.5
+    }
+    power = (power << 1) + (power >> 1);  // power *= 2.5
     analogWrite(CH1PWM, power);           // 0 < power < 250
 }
 
@@ -63,9 +64,10 @@ void motorCh2(int data) {  // CH2のモーターを動かすプログラム
         digitalWrite(CH2DIR2, HIGH);
     }
     power = abs(data);
-    if (power > 100)
+    if (power > 100) {
         power = 100;
-    power = (power << 1) + (power >> 1);  // power=power*2.5
+    }
+    power = (power << 1) + (power >> 1);  // power *= 2.5
     analogWrite(CH2PWM, power);           // 0 < power < 250
 }
 
@@ -87,7 +89,7 @@ void motorCh3(int data) {  // CH3のモーターを動かすプログラム
     power = abs(data);
     if (power > 100)
         power = 100;
-    power = (power << 1) + (power >> 1);  // power=power*2.5
+    power = (power << 1) + (power >> 1);  // power *= 2.5
     analogWrite(CH3PWM, power);           // 0 < power < 250
 }
 
@@ -107,13 +109,14 @@ void motorCh4(int data) {  // CH4のモーターを動かすプログラム
         digitalWrite(CH4DIR2, HIGH);
     }
     power = abs(data);
-    if (power > 100)
+    if (power > 100) {
         power = 100;
-    power = (power << 1) + (power >> 1);  // power=power*2.5
+    }
+    power = (power << 1) + (power >> 1);  // power *= 2.5
     analogWrite(CH4PWM, power);           // 0 < power < 250
 }
 
-void motorInit() {  // Arduinoのモーター制御を初期化する
+void motorInit() {  // Arduino のモーター制御を初期化する
     pinMode(CH1DIR1, OUTPUT);
     pinMode(CH1DIR2, OUTPUT);
     pinMode(CH2DIR1, OUTPUT);
@@ -139,15 +142,15 @@ void motorInit() {  // Arduinoのモーター制御を初期化する
     motorCh4(0);
 }
 
-void dribInit() {  // ドリブラモーターのESCを初期化する
+void dribInit() {  // ドリブラモーターの ESC を初期化する
 
     pinMode(DR1PWM, OUTPUT);
     pinMode(DR2PWM, OUTPUT);
 
     myservo1.attach(DR1PWM, 1000, 2000);  // attaches the servo on pin D7 to the servo object
-    // 　1000us < Pulse < 2000us
+    // 1000us < Pulse < 2000us
     myservo2.attach(DR2PWM, 1000, 2000);  // attaches the servo on pin D7 to the servo object
-    // 　1000us < Pulse < 2000us
+    // 1000us < Pulse < 2000us
     myservo1.writeMicroseconds(2000);  // To reset ESC, max_value 3sec.
     myservo2.writeMicroseconds(2000);
     delay(2000);
@@ -166,14 +169,16 @@ void motorfunction(float z, int power, int rotation) {
     float x[4], x_max, w;
     int i;
 
-    if (power > 100)  // powerを±100以下にする
+    if (power > 100) {  // powerを ±100 以下にする
         power = 100;
-    else if (power < -100)
+    } else if (power < -100) {
         power = -100;
-    if (rotation > 100)  // rotationを±100以下にする
+    }
+    if (rotation > 100) {  // rotationを ±100 以下にする
         rotation = 100;
-    else if (rotation < -100)
+    } else if (rotation < -100) {
         rotation = -100;
+    }
 
     x[0] = -(sin(z - 3.14159 / 4.0));
     x[1] = -(sin(z - 3 * 3.14159 / 4.0));
@@ -182,23 +187,29 @@ void motorfunction(float z, int power, int rotation) {
 
     x_max = 0.0;
     for (i = 0; i < 4; i++) {
-        if (x_max < abs(x[i]))
+        if (x_max < abs(x[i])) {
             x_max = abs(x[i]);
+        }
     };
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < 4; i++) {
         x[i] = x[i] / x_max;
+    }
     w = -(rotation / 100.0);
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < 4; i++) {
         x[i] = x[i] + w;
+    }
     x_max = 0.0;
     for (i = 0; i < 4; i++) {
-        if (x_max < abs(x[i]))
+        if (x_max < abs(x[i])) {
             x_max = abs(x[i]);
+        }
     };
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < 4; i++) {
         x[i] = x[i] / x_max;
-    for (i = 0; i < 4; i++)
+    }
+    for (i = 0; i < 4; i++) {
         x[i] = x[i] * power;
+    }
     /*
       Serial.print(" Z=");
       Serial.print(z);
@@ -218,7 +229,6 @@ void motorfunction(float z, int power, int rotation) {
 }
 
 //  時計回りに回転する
-
 void turnCW(int power) {
     motorCh1(-power);
     motorCh2(-power);
@@ -227,7 +237,6 @@ void turnCW(int power) {
 }
 
 //  反時計回りに回転する
-
 void turnCCW(int power) {
     motorCh1(power);
     motorCh2(power);
@@ -236,7 +245,6 @@ void turnCCW(int power) {
 }
 
 //  モーターを止める(Brake)
-
 void motorStop() {
     motorCh1(0);
     motorCh2(0);
@@ -245,7 +253,6 @@ void motorStop() {
 }
 
 //  モーターを止める(Free)
-
 void motorFree() {
     digitalWrite(CH1PWM, HIGH);  // power = 0
     digitalWrite(CH1DIR1, LOW);  // Off
@@ -264,16 +271,18 @@ void motorFree() {
     digitalWrite(CH4DIR2, LOW);
 }
 
-void dribbler1(int power) {  // ドリブラ１を回す. 0 < power <100
-    if (power < 0 || power > 100)
+void dribbler1(int power) {  // ドリブラ1 を回す. 0 < power <100
+    if (power < 0 || power > 100) {
         return;
+    }
     myservo1.writeMicroseconds(1000 + power * 10);
     return;
 }
 
-void dribbler2(int power) {  // ドリブラ２を回す. 0 < power <100
-    if (power < 0 || power > 100)
+void dribbler2(int power) {  // ドリブラ2 を回す. 0 < power <100
+    if (power < 0 || power > 100) {
         return;
+    }
     myservo2.writeMicroseconds(1000 + power * 10);
     return;
 }
