@@ -192,7 +192,9 @@ void setup() {
     Serial1.begin(9600);    // xbee
 
     lineflag = false;  // reset outofbounds flag
-    for (int i = 0; i < 4; i++) line[i] = false;
+    for (int i = 0; i < 4; ++i) {
+        line[i] = false;
+    }
     robot_dir = 0;  // reset robot direction
 
     // Caution D29 -> Interrupt5
@@ -582,7 +584,7 @@ int get_openMV_coordinate() {  // get the coordinate data of orange ball
     while ((openMV[0] = getOpenMV()) != 254) {
         ;  // wait for "254"
     }
-    for (int i = 1; i < 39; i++) {
+    for (int i = 1; i < 39; ++i) {
         openMV[i] = getOpenMV();
     }
     return openMV[0];
