@@ -1,5 +1,17 @@
+#ifndef NT_ROBOT202111_H
+#define NT_ROBOT202111_H
+
 //  NT_Robot202111.h
 //  for Teemsy 3.5  Ver.1.2
+
+#ifdef LOCAL_INCLUDE
+#include "../local/arduino_deps.h"
+// 以下定義ファイルが見つからないので適当に作成
+#define A21 0
+#define A22 0
+#define A25 0
+#define A26 0
+#endif
 
 const int ledPin = 13;  // native LED
 
@@ -60,3 +72,5 @@ const uint8_t TOF_5 = 0x5A;
 const uint8_t TOF_6 = 0x5C;
 
 const uint8_t I2C_LCD = 0x7C;
+
+#endif

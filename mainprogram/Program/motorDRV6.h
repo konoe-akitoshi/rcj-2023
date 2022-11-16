@@ -1,9 +1,16 @@
+#ifndef MOTOR_DRV6_H
+#define MOTOR_DRV6_H
+
 // FourWheel Motor control module
 // for Teensy 3.5
 // for Faulharber Motor PWM=37KHz
 // モーターを動かすサブプログラム
 
+#ifdef LOCAL_INCLUDE
+#include "../local/arduino_deps.h"
+#else
 #include "Servo.h"
+#endif
 
 //  IOピンを設定する
 
@@ -315,3 +322,5 @@ void dribbler(int power) {
     dribbler1(power);
     return;
 }
+
+#endif

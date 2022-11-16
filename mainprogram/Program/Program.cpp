@@ -1,8 +1,12 @@
-// Robot main program
-
-// Motor control program
+// なぜか、inoファイルでset filetype=cppするとclangdが正常に機能しなくなるので、cppファイルで作業してinoにコピーする。
+#ifdef LOCAL_INCLUDE
+#include "../local/arduino_deps.hpp"
+#include "../local/vl6180x.hpp"
+#include "../local/wire.hpp"
+#else
 #include <VL6180X.h>
 #include <Wire.h>
+#endif
 #include "NT_Robot202111.h"  // Header file for Teensy 3.5
 #include "motorDRV6.h"       // モーター制御のプログラムを読み込む
 
@@ -62,6 +66,20 @@ static float Pmax;
 static float fx, fy;
 static bool kick;
 static unsigned long prev, curr, interval;
+
+void keeper();
+void attacker();
+int powerLimit(int max, int power);
+int get_openMV_coordinate();
+int getOpenMV();
+void intHandle();
+void back_Line1(int power);
+void back_Line2(int power);
+void back_Line3(int power);
+void back_Line4(int power);
+float checkvoltage(float Vlow);
+void doOutofbound();
+
 void setup() {
     prev = 0;
     interval = 500;  // 待機時間
@@ -591,7 +609,7 @@ void intHandle() {  // Lineを踏んだらlineflagをセットして止まる。
     int power;
     digitalWrite(LED_B, HIGH);
 
-    if (digitalRead(StartSW) == HIGH) { // スイッチがOFFなら何もしない。
+    if (digitalRead(StartSW) == HIGH) {  // スイッチがOFFなら何もしない。
         return;
     }
     power = 30;
@@ -719,8 +737,7 @@ void doOutofbound() {  // 強制的に Out of bounds させる。
     while (true) {  // 無限ループ
         if (digitalRead(StartSW) == LOW) {
             motorfunction(3.14159 / 2.0, 30, 0);
-        }
-        else { // スタートスイッチが切られたら止まる
+        } else {  // スタートスイッチが切られたら止まる
             motorfunction(3.14159 / 2.0, 0, 0);
         }
         digitalWrite(SWG, LOW);
