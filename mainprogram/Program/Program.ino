@@ -35,12 +35,9 @@ float goal_x, goal_y;
 float y_sig, b_sig, goal_sig;
 int ball_front;
 
-int level;
 float xbee_x, xbee_y;
 uint8_t xbee_date;
 float p_ball;
-int ball_x, ball_y;
-char buf[64];
 
 float ball_dist, wrap;
 
