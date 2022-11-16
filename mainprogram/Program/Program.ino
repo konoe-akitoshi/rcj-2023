@@ -50,7 +50,6 @@ uint32_t color;
 
 float gyro;
 
-float Pcontrol;
 float fx, fy;
 bool kick;
 unsigned long prev, curr, interval;
@@ -452,7 +451,7 @@ void attacker() {
     }
     data_diff = ball_dir - pre_dir;                                       // 前回の方位との差分を計算
     data_sum += data_diff;                                                // 方位誤差の累積を計算
-    Pcontrol = power * (Kp * ball_dir + Ki * data_sum + Kd * data_diff);  // PIDの制御値を計算
+    float Pcontrol = power * (Kp * ball_dir + Ki * data_sum + Kd * data_diff);  // PIDの制御値を計算
     pre_dir = ball_dir;                                                   // 今回の値を代入し次周期から見て前回観測値にする
 
     digitalWrite(LED_BUILTIN, LOW);
