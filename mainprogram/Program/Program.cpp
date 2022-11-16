@@ -49,7 +49,7 @@ float p_ball;
 int ball_x, ball_y;
 char buf[64];
 
-float az, ball_dist, wrap;
+float ball_dist, wrap;
 
 float gyro;
 
@@ -416,7 +416,7 @@ void keeper() {
             motorfunction(0, 0, 0);
         }
     } else {  // ボールとの距離の差が遠い、自ら近づく
-        az = atan2(x, sqrt(y));
+        float az = atan2(x, sqrt(y));
         motorfunction(az, sqrt(x * x + y * y / 4), -gyro);
     }
 }
