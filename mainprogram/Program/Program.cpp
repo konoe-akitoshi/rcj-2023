@@ -17,22 +17,22 @@ VL6180X ToF_front;  // create front ToF object
 const int Vlow = 13.0;
 
 int blob_count;
-static int openMV[39];
-static int x_data_ball, y_data_ball, w_data_ball, h_data_ball;
-static int x_data_yellowgoal, y_data_yellowgoal, w_data_yellowgoal, h_data_yellowgoal;
-static int x_data_bluegoal, y_data_bluegoal, w_data_bluegoal, h_data_bluegoal;
+int openMV[39];
+int x_data_ball, y_data_ball, w_data_ball, h_data_ball;
+int x_data_yellowgoal, y_data_yellowgoal, w_data_yellowgoal, h_data_yellowgoal;
+int x_data_bluegoal, y_data_bluegoal, w_data_bluegoal, h_data_bluegoal;
 
-static int8_t gyro_o;
-static int robot_dir, power;
-static float ball_dir, pre_dir;
-static float Kp, Kd, Ki;
-static float data_sum, data_diff;
+int8_t gyro_o;
+int robot_dir, power;
+float ball_dir, pre_dir;
+float Kp, Kd, Ki;
+float data_sum, data_diff;
 
-static int emergency;
-static int outofbounds;  // "out of bounds" flag
+int emergency;
+int outofbounds;  // "out of bounds" flag
 
-static int lineflag;  // line
-static int line[4];
+int lineflag;  // line
+int line[4];
 
 int sig, w, h, area;
 int bg_w, bg_h, bg_area;
@@ -60,10 +60,10 @@ uint32_t color;
 
 float gyro;
 
-static float Pcontrol;
-static float fx, fy;
-static bool kick;
-static unsigned long prev, curr, interval;
+float Pcontrol;
+float fx, fy;
+bool kick;
+unsigned long prev, curr, interval;
 
 void keeper();
 void attacker();
@@ -603,13 +603,12 @@ int getOpenMV() {  // get serial data from openMV
 // Lineを踏んだらバックする
 
 void intHandle() {  // Lineを踏んだらlineflagをセットして止まる。
-    int power;
     digitalWrite(LED_B, HIGH);
 
     if (digitalRead(StartSW) == HIGH) {  // スイッチがOFFなら何もしない。
         return;
     }
-    power = 30;
+    int power = 30;
 
     while (digitalRead(INT_29) == HIGH) {   // Lineセンサが反応している間は繰り返す
         if (digitalRead(LINE1D) == HIGH) {  // lineを踏んだセンサーを調べる
@@ -715,9 +714,8 @@ void back_Line4(int power) {  // Lineセンサ4 が反応しなくなるまで�
 // 電池電圧を監視して電圧が下がったらOutOfBounceさせる処理
 
 float checkvoltage(float Vlow) {  // 電池電圧を監視する。
-    int voltage, limit;
-    limit = Vlow / 0.01811;
-    voltage = analogRead(Vbatt);  // Get Volatge
+    int limit = Vlow / 0.01811;
+    int voltage = analogRead(Vbatt);  // Get Volatge
     if (voltage < limit) {        // 電圧が Vlow 以下であれば emergency をセットする。
         emergency = true;
         digitalWrite(SWG, HIGH);
