@@ -29,7 +29,7 @@ float Kp, Kd, Ki;
 float data_sum, data_diff;
 
 bool emergency;
-int outofbounds;  // "out of bounds" flag
+bool outofbounds;  // "out of bounds" flag
 
 int lineflag;  // line
 int line[4];
