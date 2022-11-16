@@ -16,7 +16,7 @@ VL6180X ToF_front;  // create front ToF object
 // Mi-NH なら 13.0, Li-po なら 13.5 (Li-po は過放電するので注意！)
 const int Vlow = 13.0;
 
-int blob_count, i;
+int blob_count;
 static int openMV[39];
 static int x_data_ball, y_data_ball, w_data_ball, h_data_ball;
 static int x_data_yellowgoal, y_data_yellowgoal, w_data_yellowgoal, h_data_yellowgoal;
@@ -192,7 +192,7 @@ void setup() {
     Serial1.begin(9600);    // xbee
 
     lineflag = false;  // reset outofbounds flag
-    for (i = 0; i < 4; i++) line[i] = false;
+    for (int i = 0; i < 4; i++) line[i] = false;
     robot_dir = 0;  // reset robot direction
 
     // Caution D29 -> Interrupt5
@@ -576,14 +576,13 @@ int powerLimit(int max, int power) {  // powerの値がmax(ex.100)を超えな�
 }
 
 int get_openMV_coordinate() {  // get the coordinate data of orange ball
-    int i;
     while (Serial3.available() != 0) {  // buffer flush
         Serial3.read();
     }
     while ((openMV[0] = getOpenMV()) != 254) {
         ;  // wait for "254"
     }
-    for (i = 1; i < 39; i++) {
+    for (int i = 1; i < 39; i++) {
         openMV[i] = getOpenMV();
     }
     return openMV[0];
