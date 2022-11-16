@@ -42,18 +42,14 @@ float goal_x, goal_y;
 float y_sig, b_sig, goal_sig;
 int ball_front;
 
-int level, data;
+int level;
 float xbee_x, xbee_y;
 uint8_t xbee_date;
 float p_ball;
-int blocks;
 int ball_x, ball_y;
 char buf[64];
 
 float az, ball_dist, wrap;
-float angle;
-int pixel;
-uint32_t color;
 
 float gyro;
 
@@ -91,8 +87,6 @@ void setup() {
 
     // IOピンのモード設定
     pinMode(ledPin, OUTPUT);
-
-    // pinMode(angle, INPUT);
 
     pinMode(LINE_LED, OUTPUT);
     pinMode(LINE1D, INPUT_PULLUP);
