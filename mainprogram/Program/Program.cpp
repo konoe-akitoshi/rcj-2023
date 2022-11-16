@@ -428,7 +428,7 @@ void keeper() {
 }
 
 void attacker() {
-    int Pmax = power;
+    float Pmax = power;
     if (digitalRead(GoalSW)) {  // GoalSWは攻める方向をスイッチに入れる,
         // 相手ゴールの座標は機体中心
         goal_sig = b_sig;
