@@ -1,6 +1,3 @@
-// Robot main program
-
-// Motor control program
 #include <VL6180X.h>
 #include <Wire.h>
 #include "NT_Robot202111.h"  // Header file for Teensy 3.5
@@ -8,28 +5,27 @@
 
 VL6180X ToF_front;  // create front ToF object
 
-// const int angle = 0;
-const int Vlow = 13.0;  // Low limit voltage 1.1*12 = 13.2
+// Low limit voltage 1.1*12 = 13.2
 // Mi-NH なら 13.0, Li-po なら 13.5 (Li-po は過放電するので注意！)
-const float Vstep = 0.01811;  // Voltage step 15.3V/845 = 0.01811
+const int Vlow = 13.0;
 
-int blob_count, i;
-static int openMV[39];
-static int x_data_ball, y_data_ball, w_data_ball, h_data_ball;
-static int x_data_yellowgoal, y_data_yellowgoal, w_data_yellowgoal, h_data_yellowgoal;
-static int x_data_bluegoal, y_data_bluegoal, w_data_bluegoal, h_data_bluegoal;
+int blob_count;
+int openMV[39];
+int x_data_ball, y_data_ball, w_data_ball, h_data_ball;
+int x_data_yellowgoal, y_data_yellowgoal, w_data_yellowgoal, h_data_yellowgoal;
+int x_data_bluegoal, y_data_bluegoal, w_data_bluegoal, h_data_bluegoal;
 
-static int8_t gyro_o;
-static int robot_dir, power;
-static float ball_dir, pre_dir;
-static float Kp, Kd, Ki;
-static float data_sum, data_diff;
+int8_t gyro_o;
+int robot_dir, power;
+float ball_dir, pre_dir;
+float Kp, Kd, Ki;
+float data_sum, data_diff;
 
-static int emergency;
-static int outofbounds;  // "out of bounds" flag
+bool emergency;
+bool outofbounds;  // "out of bounds" flag
 
-static int lineflag;  // line
-static int line[4];
+bool lineflag;  // line
+int line[4];
 
 int sig, w, h, area;
 int bg_w, bg_h, bg_area;
@@ -57,11 +53,24 @@ uint32_t color;
 
 float gyro;
 
-static float Pcontrol;
-static float Pmax;
-static float fx, fy;
-static bool kick;
-static unsigned long prev, curr, interval;
+float Pcontrol;
+float fx, fy;
+bool kick;
+unsigned long prev, curr, interval;
+
+void keeper();
+void attacker();
+int powerLimit(int max, int power);
+int get_openMV_coordinate();
+int getOpenMV();
+void intHandle();
+void back_Line1(int power);
+void back_Line2(int power);
+void back_Line3(int power);
+void back_Line4(int power);
+float checkvoltage(float Vlow);
+void doOutofbound();
+
 void setup() {
     prev = 0;
     interval = 500;  // 待機時間
@@ -176,7 +185,9 @@ void setup() {
     Serial1.begin(9600);    // xbee
 
     lineflag = false;  // reset outofbounds flag
-    for (i = 0; i < 4; i++) line[i] = false;
+    for (int i = 0; i < 4; ++i) {
+        line[i] = false;
+    }
     robot_dir = 0;  // reset robot direction
 
     // Caution D29 -> Interrupt5
@@ -214,7 +225,7 @@ void loop() {
     w_data_bluegoal = (openMV[35] & 0b0000000000111111) + ((openMV[36] & 0b0000000000111111) << 6);
     h_data_bluegoal = (openMV[37] & 0b0000000000111111) + ((openMV[38] & 0b0000000000111111) << 6);
 
-    if (lineflag == true) {
+    if (lineflag) {
         lineflag = false;
     }
 
@@ -324,14 +335,14 @@ void loop() {
         digitalWrite(SWG, HIGH);
 
         // checkvoltage(Vlow);  //  電池の電圧をチェック
-        if (emergency == true) {
+        if (emergency) {
             Serial.println("");
             Serial.println("  Battery Low!");
             doOutofbound();  //  故障なのでコートの外へ
         }
 
         checkvoltage(Vlow);
-        if (emergency == true) {          // 電池の電圧が下がっていたら
+        if (emergency) {          // 電池の電圧が下がっていたら
             digitalWrite(LINE_LED, LOW);  // ラインセンサのLEDを消灯
             motorFree();                  // モーターを停止
             while (1) {                   // 無限ループ
@@ -344,7 +355,7 @@ void loop() {
             }
         }
         digitalWrite(LINE_LED, HIGH);  // ラインセンサのLEDを点灯
-        if (lineflag == true) {
+        if (lineflag) {
             lineflag = false;
         }
         // PID
@@ -414,7 +425,7 @@ void keeper() {
 }
 
 void attacker() {
-    Pmax = power;
+    int Pmax = power;
     if (digitalRead(GoalSW)) {  // GoalSWは攻める方向をスイッチに入れる,
         // 相手ゴールの座標は機体中心
         goal_sig = b_sig;
@@ -560,14 +571,13 @@ int powerLimit(int max, int power) {  // powerの値がmax(ex.100)を超えな�
 }
 
 int get_openMV_coordinate() {  // get the coordinate data of orange ball
-    int i;
     while (Serial3.available() != 0) {  // buffer flush
         Serial3.read();
     }
     while ((openMV[0] = getOpenMV()) != 254) {
         ;  // wait for "254"
     }
-    for (i = 1; i < 39; i++) {
+    for (int i = 1; i < 39; ++i) {
         openMV[i] = getOpenMV();
     }
     return openMV[0];
@@ -586,13 +596,12 @@ int getOpenMV() {  // get serial data from openMV
 // Lineを踏んだらバックする
 
 void intHandle() {  // Lineを踏んだらlineflagをセットして止まる。
-    int power;
     digitalWrite(LED_B, HIGH);
 
-    if (digitalRead(StartSW) == HIGH) { // スイッチがOFFなら何もしない。
+    if (digitalRead(StartSW) == HIGH) {  // スイッチがOFFなら何もしない。
         return;
     }
-    power = 30;
+    int power = 30;
 
     while (digitalRead(INT_29) == HIGH) {   // Lineセンサが反応している間は繰り返す
         if (digitalRead(LINE1D) == HIGH) {  // lineを踏んだセンサーを調べる
@@ -698,9 +707,8 @@ void back_Line4(int power) {  // Lineセンサ4 が反応しなくなるまで�
 // 電池電圧を監視して電圧が下がったらOutOfBounceさせる処理
 
 float checkvoltage(float Vlow) {  // 電池電圧を監視する。
-    int voltage, limit;
-    limit = Vlow / 0.01811;
-    voltage = analogRead(Vbatt);  // Get Volatge
+    int limit = Vlow / 0.01811;
+    int voltage = analogRead(Vbatt);  // Get Volatge
     if (voltage < limit) {        // 電圧が Vlow 以下であれば emergency をセットする。
         emergency = true;
         digitalWrite(SWG, HIGH);
@@ -717,8 +725,7 @@ void doOutofbound() {  // 強制的に Out of bounds させる。
     while (true) {  // 無限ループ
         if (digitalRead(StartSW) == LOW) {
             motorfunction(3.14159 / 2.0, 30, 0);
-        }
-        else { // スタートスイッチが切られたら止まる
+        } else {  // スタートスイッチが切られたら止まる
             motorfunction(3.14159 / 2.0, 0, 0);
         }
         digitalWrite(SWG, LOW);
