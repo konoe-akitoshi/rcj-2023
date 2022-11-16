@@ -61,7 +61,6 @@ uint32_t color;
 float gyro;
 
 static float Pcontrol;
-static float Pmax;
 static float fx, fy;
 static bool kick;
 static unsigned long prev, curr, interval;
@@ -431,7 +430,7 @@ void keeper() {
 }
 
 void attacker() {
-    Pmax = power;
+    int Pmax = power;
     if (digitalRead(GoalSW)) {  // GoalSWは攻める方向をスイッチに入れる,
         // 相手ゴールの座標は機体中心
         goal_sig = b_sig;
