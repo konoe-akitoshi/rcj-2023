@@ -31,7 +31,7 @@ float data_sum, data_diff;
 bool emergency;
 bool outofbounds;  // "out of bounds" flag
 
-int lineflag;  // line
+bool lineflag;  // line
 int line[4];
 
 int sig, w, h, area;
@@ -232,7 +232,7 @@ void loop() {
     w_data_bluegoal = (openMV[35] & 0b0000000000111111) + ((openMV[36] & 0b0000000000111111) << 6);
     h_data_bluegoal = (openMV[37] & 0b0000000000111111) + ((openMV[38] & 0b0000000000111111) << 6);
 
-    if (lineflag == true) {
+    if (lineflag) {
         lineflag = false;
     }
 
@@ -362,7 +362,7 @@ void loop() {
             }
         }
         digitalWrite(LINE_LED, HIGH);  // ラインセンサのLEDを点灯
-        if (lineflag == true) {
+        if (lineflag) {
             lineflag = false;
         }
         // PID
