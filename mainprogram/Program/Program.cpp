@@ -1,6 +1,6 @@
 // なぜか、inoファイルでset filetype=cppするとclangdが正常に機能しなくなるので、cppファイルで作業してinoにコピーする。
 #ifdef LOCAL_INCLUDE
-#include "../local/arduino_deps.hpp"
+#include "../local/arduino_deps.h"
 #include "../local/vl6180x.hpp"
 #include "../local/wire.hpp"
 #else
@@ -83,8 +83,6 @@ void doOutofbound();
 void setup() {
     prev = 0;
     interval = 500;  // 待機時間
-
-    int pin;
 
     // 制御パラメータの設定
     Kp = 0.45;      //  比例要素の感度
