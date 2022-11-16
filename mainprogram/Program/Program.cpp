@@ -28,7 +28,7 @@ float ball_dir, pre_dir;
 float Kp, Kd, Ki;
 float data_sum, data_diff;
 
-int emergency;
+bool emergency;
 int outofbounds;  // "out of bounds" flag
 
 int lineflag;  // line
@@ -342,14 +342,14 @@ void loop() {
         digitalWrite(SWG, HIGH);
 
         // checkvoltage(Vlow);  //  電池の電圧をチェック
-        if (emergency == true) {
+        if (emergency) {
             Serial.println("");
             Serial.println("  Battery Low!");
             doOutofbound();  //  故障なのでコートの外へ
         }
 
         checkvoltage(Vlow);
-        if (emergency == true) {          // 電池の電圧が下がっていたら
+        if (emergency) {          // 電池の電圧が下がっていたら
             digitalWrite(LINE_LED, LOW);  // ラインセンサのLEDを消灯
             motorFree();                  // モーターを停止
             while (1) {                   // 無限ループ
