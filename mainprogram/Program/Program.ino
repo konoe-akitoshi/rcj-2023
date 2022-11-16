@@ -46,7 +46,6 @@ float ball_dist, wrap;
 
 float gyro;
 
-float fx, fy;
 bool kick;
 unsigned long prev, curr, interval;
 
@@ -431,8 +430,8 @@ void attacker() {
     //
     // Convert coordinates data
     if (blob_count != 0) {  // 物体を検出したら
-        fx = 150 - x;       // ロボットが原点に来るようjに座標を変換
-        fy = 130 - y;
+        float fx = 150 - x;       // ロボットが原点に来るようjに座標を変換
+        float fy = 130 - y;
 
         if (fy > 0) {  // 正面から見たボールの方位(radian)を計算
             ball_dir = atan(fx / fy);
