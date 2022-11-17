@@ -31,7 +31,6 @@ float ball_dir, pre_dir;
 float data_sum, data_diff;
 
 bool emergency;
-bool outofbounds;  // "out of bounds" flag
 
 bool lineflag;  // line
 int line[4];
@@ -132,7 +131,6 @@ void setup() {
     // Set initial value tovariable
 
     emergency = false;
-    outofbounds = false;
     //*****************************************************************************
 
     Wire.begin();
