@@ -26,14 +26,15 @@ int blob_count;
 int openMV[39];
 
 int8_t gyro_o;
-int robot_dir;
-float ball_dir, pre_dir;
-float data_sum, data_diff;
+int robot_dir = 0;  // robot direction
+float ball_dir = 0;
+float pre_dir = 0;    // 前回観測値
+float data_sum = 0;   // 誤差(観測値)の累積値
+float data_diff = 0;  // 前回観測値と今回観測値の差分
 
-bool emergency;
-
-bool lineflag;  // line
-int line[4];
+bool emergency = false;
+bool lineflag = false;
+bool line[4] = {false, false, false, false};
 
 int sig;
 float z, m;  // arctan
@@ -46,14 +47,16 @@ int ball_front;
 
 float xbee_x, xbee_y;
 uint8_t xbee_date;
-float p_ball;
-
-float ball_dist, wrap;
+float p_ball = 255;
+float ball_dist;
+float wrap;
 
 float gyro;
 
 bool kick;
-unsigned long prev, curr, interval;
+unsigned long prev = 0;
+unsigned long curr;
+unsigned long interval = 500;  // 待機時間
 
 void keeper();
 void attacker();
@@ -84,14 +87,6 @@ const component::LedLight LedB(PIN_LED_B);
 const component::LedLight BuiltinLed(LED_BUILTIN);
 
 void setup() {
-    prev = 0;
-    interval = 500;  // 待機時間
-
-    data_diff = 0;  // 前回観測値と今回観測値の差分
-    data_sum = 0;   // 誤差(観測値)の累積値
-    ball_dir = 0;
-    pre_dir = 0;  // 前回観測値
-
     pinMode(StartSW, INPUT_PULLUP);
 
     // IOピンのモード設定
@@ -126,12 +121,6 @@ void setup() {
 
     Serial.begin(9600);  //  シリアル出力を初期化
     Serial.println("Starting...");
-
-    //*****************************************************************************
-    // Set initial value tovariable
-
-    emergency = false;
-    //*****************************************************************************
 
     Wire.begin();
     /*
@@ -177,19 +166,12 @@ void setup() {
     Serial2.begin(115200);  // WT901 IMU Sener
     Serial1.begin(9600);    // xbee
 
-    lineflag = false;  // reset outofbounds flag
-    for (int i = 0; i < 4; ++i) {
-        line[i] = false;
-    }
-    robot_dir = 0;  // reset robot direction
-
     // Caution D29 -> Interrupt5
 
     attachInterrupt(INT_29, intHandle, RISING);
 
     digitalWrite(SWR, HIGH);
     digitalWrite(SWG, HIGH);
-    p_ball = 255;
     Serial.println("Initialize end");
 }
 
