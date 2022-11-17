@@ -4,8 +4,8 @@
 
 #include <VL6180X.h>
 #include <Wire.h>
-#include "NT_Robot202111.h"  // Header file for Teensy 3.5
-#include "motorDRV6.h"  // モーター制御のプログラムを読み込む
+#include "NT_Robot202111.h"
+#include "motorDRV6.h"
 #include "components/led_light.hpp"
 
 VL6180X ToF_front;  // create front ToF object
@@ -140,12 +140,6 @@ void setup() {
     delay(100);
     digitalWrite(Kicker, LOW);
     delay(1000);
-    /*digitalWrite(Kick_Dir, HIGH);
-      delay(100);
-      digitalWrite(Kicker, HIGH);
-      delay(100);
-      digitalWrite(Kicker, LOW);
-      delay(100);*/
 
     Serial.println("Initialize 3 ...");
 
@@ -201,7 +195,7 @@ void loop() {
     }
     // openMVのデーターを変換
 
-    sig = openMV[1];  //  openMVのデータを sig, x, y, w, h に取り込む
+    sig = openMV[1];  //  openMVのデータを sig, x, y に取り込む
     x = x_data_ball;
     y = y_data_ball;
     b_sig = openMV[27];
@@ -235,17 +229,6 @@ void loop() {
         }
     }
 
-    /*if (sig != 0) { //補正
-      }
-      if (y_sig != 0) {
-      yg_x = -(yg_x * 211800) / (140200 + 708 * sqrt(yg_x * yg_x + 28900));
-      yg_y = (yg_y * 194600) / (140200 + 708 * sqrt(yg_y * yg_y + 28900));
-      }
-      if (b_sig != 0) {
-      bg_x = -(bg_x * 211800) / (140200 + 708 * sqrt(bg_x * bg_x + 28900));
-      bg_y = (bg_y * 194600) / (140200 + 708 * sqrt(bg_y * bg_y + 28900));
-      }*/
-
     if (sig != 0) {  // xbeedate 生成
         xbee_x = x;
         xbee_y = y;
@@ -272,7 +255,6 @@ void loop() {
     Serial.print(bg_y);
     Serial.print(" ,tan=");
     Serial.println(atan2(bg_x, -bg_y));
-    //    Serial.println();
 
     ball_front = ToF_front.readRangeSingleMillimeters();
 
@@ -291,7 +273,7 @@ void loop() {
         if (emergency) {        // 電池の電圧が下がっていたら
             LineLed.TernOff();  // ラインセンサのLEDを消灯
             motorFree();        // モーターを停止
-            while (1) {         // 無限ループ
+            while (true) {
                 digitalWrite(SWR, LOW);
                 digitalWrite(SWG, LOW);
                 delay(300);
@@ -319,7 +301,6 @@ void loop() {
                 attacker();
             }
         }
-
     } else {  // ロボット停止
         motorFree();
         dribbler1(0);
@@ -352,7 +333,7 @@ void keeper() {
         } else if (goal_y > 23) {  // ゴールから遠い
             z = atan2(goal_x, goal_y - 23) + PI;
             motorfunction(z, 100, -gyro);
-        } else if (goal_y < 23 && goal_y > 15 && abs(goal_x) > 33) {  // x座標が０から遠い
+        } else if (goal_y < 23 && goal_y > 15 && abs(goal_x) > 33) {  // x座標が 0 から遠い
             z = atan2(goal_x, goal_y - 23) + PI;
             motorfunction(z, 100, -gyro);
         } else if (goal_y < 15) {  // ゴールエリアの横にいるとき
@@ -383,8 +364,8 @@ void attacker() {
         goal_y = -yg_y;
     }
     // PID制御をするので
-    // 制御値＝誤差(方位)値＋誤差(方位)の時間積分値＋誤差(方位)の時間微分値
-    //
+    // 制御値 = 誤差(方位)値 + 誤差(方位)の時間積分値 + 誤差(方位)の時間微分値
+
     // Convert coordinates data
     if (blob_count != 0) {   // 物体を検出したら
         float fx = 150 - x;  // ロボットが原点に来るようjに座標を変換
@@ -495,7 +476,12 @@ void attacker() {
     Serial.println(kick);
 }
 
-int powerLimit(int max, int power) {  // powerの値がmax(ex.100)を超えないようにする
+/**
+ * powerの値がmax(ex.100)を超えないようにする
+ *
+ * Note: C++17 からは std::clamp() が使える
+ */
+int powerLimit(int max, int power) {
     if (power > max) {
         return max;
     } else if (power < -max) {
@@ -667,12 +653,11 @@ float checkvoltage(float Vlow) {  // 電池電圧を監視する。
     return voltage * 0.01811;
 }
 
-void doOutofbound() {  // 強制的に Out of bounds させる。
-
+void doOutofbound() {    // 強制的に Out of bounds させる。
     detachInterrupt(5);  // Out of bounds するために割込みを禁止する
     LineLed.TernOff();   // ラインセンサの LED を消灯
 
-    while (true) {  // 無限ループ
+    while (true) {
         if (digitalRead(StartSW) == LOW) {
             motorfunction(PI / 2.0, 30, 0);
         } else {  // スタートスイッチが切られたら止まる
