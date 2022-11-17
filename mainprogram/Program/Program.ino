@@ -73,9 +73,9 @@ void setup() {
     pinMode(StartSW, INPUT_PULLUP);
 
     // IOピンのモード設定
-    pinMode(ledPin, OUTPUT);
+    pinMode(PIN_NATIVE_LED, OUTPUT);
 
-    pinMode(LINE_LED, OUTPUT);
+    pinMode(PIN_LINE_LED, OUTPUT);
     pinMode(LINE1D, INPUT_PULLUP);
     pinMode(LINE2D, INPUT_PULLUP);
     pinMode(LINE3D, INPUT_PULLUP);
@@ -98,10 +98,10 @@ void setup() {
 
     pinMode(GoalSW, INPUT_PULLUP);
 
-    pinMode(LED_R, OUTPUT);
-    pinMode(LED_Y, OUTPUT);
-    pinMode(LED_G, OUTPUT);
-    pinMode(LED_B, OUTPUT);
+    pinMode(PIN_LED_R, OUTPUT);
+    pinMode(PIN_LED_Y, OUTPUT);
+    pinMode(PIN_LED_G, OUTPUT);
+    pinMode(PIN_LED_B, OUTPUT);
 
     digitalWrite(Kick1, LOW);
     digitalWrite(Kick_Dir, LOW);
@@ -180,10 +180,10 @@ void setup() {
 
     // LED を初期化する
     // LED_Init();
-    digitalWrite(LED_R, LOW);  // LED_R 消灯
-    digitalWrite(LED_Y, LOW);  // LED_Y 消灯
-    digitalWrite(LED_G, LOW);  // LED_G 消灯
-    digitalWrite(LED_B, LOW);  // LED_B 消灯
+    digitalWrite(PIN_LED_R, LOW);  // LED_R 消灯
+    digitalWrite(PIN_LED_Y, LOW);  // LED_Y 消灯
+    digitalWrite(PIN_LED_G, LOW);  // LED_G 消灯
+    digitalWrite(PIN_LED_B, LOW);  // LED_B 消灯
 
     digitalWrite(SWR, HIGH);
     digitalWrite(SWG, HIGH);
@@ -192,7 +192,7 @@ void setup() {
 }
 
 void loop() {
-    digitalWrite(LED_B, LOW);
+    digitalWrite(PIN_LED_B, LOW);
     blob_count = get_openMV_coordinate();
     int x_data_ball = (openMV[5] & 0b0000000000111111) + ((openMV[6] & 0b0000000000111111) << 6);
     int y_data_ball = (openMV[7] & 0b0000000000111111) + ((openMV[8] & 0b0000000000111111) << 6);
@@ -318,7 +318,7 @@ void loop() {
 
         checkvoltage(Vlow);
         if (emergency) {          // 電池の電圧が下がっていたら
-            digitalWrite(LINE_LED, LOW);  // ラインセンサのLEDを消灯
+            digitalWrite(PIN_LINE_LED, LOW);  // ラインセンサのLEDを消灯
             motorFree();                  // モーターを停止
             while (1) {                   // 無限ループ
                 digitalWrite(SWR, LOW);
@@ -329,7 +329,7 @@ void loop() {
                 delay(300);
             }
         }
-        digitalWrite(LINE_LED, HIGH);  // ラインセンサのLEDを点灯
+        digitalWrite(PIN_LINE_LED, HIGH);  // ラインセンサのLEDを点灯
         if (lineflag) {
             lineflag = false;
         }
@@ -353,7 +353,7 @@ void loop() {
         motorFree();
         dribbler1(0);
         dribbler2(0);
-        digitalWrite(LINE_LED, LOW);  // ラインセンサのLEDを消灯
+        digitalWrite(PIN_LINE_LED, LOW);  // ラインセンサのLEDを消灯
         digitalWrite(SWR, HIGH);
         digitalWrite(SWG, HIGH);
         wrap = 0;
@@ -571,7 +571,7 @@ int getOpenMV() {  // get serial data from openMV
 // Lineを踏んだらバックする
 
 void intHandle() {  // Lineを踏んだらlineflagをセットして止まる。
-    digitalWrite(LED_B, HIGH);
+    digitalWrite(PIN_LED_B, HIGH);
 
     if (digitalRead(StartSW) == HIGH) {  // スイッチがOFFなら何もしない。
         return;
@@ -592,12 +592,12 @@ void intHandle() {  // Lineを踏んだらlineflagをセットして止まる。
             back_Line4(power);
             lineflag = true;  // set lineflag
         } else {
-            digitalWrite(LED_R, HIGH);
+            digitalWrite(PIN_LED_R, HIGH);
         }
     }
 
-    digitalWrite(LED_B, LOW);
-    digitalWrite(LED_R, LOW);
+    digitalWrite(PIN_LED_B, LOW);
+    digitalWrite(PIN_LED_R, LOW);
 
     if (lineflag == false) {  // センサーの反応がない場合は何もしない
         return;
@@ -609,7 +609,7 @@ void intHandle() {  // Lineを踏んだらlineflagをセットして止まる。
 
 void back_Line1(int power) {  // Lineセンサ1が反応しなくなるまで後ろに進む
     float azimuth;
-    digitalWrite(LED_R, LOW);  // LED_R点灯
+    digitalWrite(PIN_LED_R, LOW);  // LED_R点灯
     while ((digitalRead(LINE1D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE3D) == HIGH)) {
         if (digitalRead(LINE4D) == HIGH) {
             azimuth = 3.14159 * 3.0 / 4.0;  // 後ろ方向(1+4)をradianに変換
@@ -620,13 +620,13 @@ void back_Line1(int power) {  // Lineセンサ1が反応しなくなるまで後
         }
         motorfunction(azimuth, power, 0);  // azimuthの方向に進ませる
     }
-    digitalWrite(LED_R, LOW);  // LED_R消灯
+    digitalWrite(PIN_LED_R, LOW);  // LED_R消灯
     motorStop();
 }
 
 void back_Line2(int power) {  // Lineセンサ2が反応しなくなるまで左に進む
     float azimuth;
-    digitalWrite(LED_Y, LOW);  // LED_Y点灯
+    digitalWrite(PIN_LED_Y, LOW);  // LED_Y点灯
     while ((digitalRead(LINE2D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE4D) == HIGH)) {
         if (digitalRead(LINE1D) == HIGH) {
             azimuth = 3.14159 * 5.0 / 4.0;  // 後ろ方向(2+1)を radian に変換
@@ -637,13 +637,13 @@ void back_Line2(int power) {  // Lineセンサ2が反応しなくなるまで左
         }
         motorfunction(azimuth, power, 0);  // azimuth の方向に進ませる
     }
-    digitalWrite(LED_Y, LOW);  // LED_Y 消灯
+    digitalWrite(PIN_LED_Y, LOW);  // LED_Y 消灯
     motorStop();
 }
 
 void back_Line3(int power) {  // Lineセンサ3 が反応しなくなるまで前に進む
     float azimuth;
-    digitalWrite(LED_G, LOW);  // LED_G点灯
+    digitalWrite(PIN_LED_G, LOW);  // LED_G点灯
     while ((digitalRead(LINE3D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE1D) == HIGH)) {
         if (digitalRead(LINE4D) == HIGH) {
             azimuth = 3.14159 * 1.0 / 4.0;  // 後ろ方向(3+4)を radian に変換
@@ -654,13 +654,13 @@ void back_Line3(int power) {  // Lineセンサ3 が反応しなくなるまで�
         }
         motorfunction(azimuth, power, 0);  // azimuth の方向に進ませる
     }
-    digitalWrite(LED_G, LOW);  // LED_G 消灯
+    digitalWrite(PIN_LED_G, LOW);  // LED_G 消灯
     motorStop();
 }
 
 void back_Line4(int power) {  // Lineセンサ4 が反応しなくなるまで右に進む
     float azimuth;
-    digitalWrite(LED_B, LOW);  // LED_B 点灯
+    digitalWrite(PIN_LED_B, LOW);  // LED_B 点灯
     while ((digitalRead(LINE4D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE2D) == HIGH)) {
         if (digitalRead(LINE3D) == HIGH) {
             azimuth = 3.14159 * 1.0 / 4.0;  // 後ろ方向(4+3)を radian に変換
@@ -671,7 +671,7 @@ void back_Line4(int power) {  // Lineセンサ4 が反応しなくなるまで�
         }
         motorfunction(azimuth, power, 0);  // azimuth の方向に進ませる
     }
-    digitalWrite(LED_B, LOW);  // LED_B 消灯
+    digitalWrite(PIN_LED_B, LOW);  // LED_B 消灯
     motorStop();
 }
 
@@ -695,7 +695,7 @@ float checkvoltage(float Vlow) {  // 電池電圧を監視する。
 void doOutofbound() {  // 強制的に Out of bounds させる。
 
     detachInterrupt(5);           // Out of bounds するために割込みを禁止する
-    digitalWrite(LINE_LED, LOW);  // ラインセンサの LED を消灯
+    digitalWrite(PIN_LINE_LED, LOW);  // ラインセンサの LED を消灯
 
     while (true) {  // 無限ループ
         if (digitalRead(StartSW) == LOW) {

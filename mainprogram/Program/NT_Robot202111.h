@@ -13,7 +13,7 @@
 #define A26 0
 #endif
 
-const int ledPin = 13;  // native LED
+const int PIN_NATIVE_LED = 13;  // native LED
 
 const int Xbee_RX = 0;  // Serial1
 const int Xbee_TX = 1;
@@ -22,7 +22,7 @@ const int OpenMV_TX = 8;
 const int IMU_RX = 9;  // Serial2
 const int IMU_TX = 10;
 
-const int LINE_LED = 30;
+const int PIN_LINE_LED = 30;
 const int LINE1D = 24;
 const int LINE1A = A21;
 const int LINE2D = 25;
@@ -53,10 +53,10 @@ const int INT_29 = 29;
 const int Vbatt = 33;  // Battery Voltage
                        // 0.01811V/count
 
-const int LED_B = 20;
-const int LED_Y = 21;
-const int LED_G = 22;
-const int LED_R = 23;
+const int PIN_LED_B = 20;
+const int PIN_LED_Y = 21;
+const int PIN_LED_G = 22;
+const int PIN_LED_R = 23;
 
 const int Aux1 = 40;
 const int Aux2 = 41;
