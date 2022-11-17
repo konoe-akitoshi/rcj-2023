@@ -28,7 +28,6 @@ int openMV[39];
 int8_t gyro_o;
 int robot_dir;
 float ball_dir, pre_dir;
-float Kp, Kd, Ki;
 float data_sum, data_diff;
 
 bool emergency;
@@ -70,7 +69,12 @@ void back_Line4(int power);
 float checkvoltage(float Vlow);
 void doOutofbound();
 
-constexpr int Power = 70; // initial motor power
+// 制御パラメータの設定
+constexpr float Kp = 0.45;   //  比例要素の感度
+constexpr float Ki = 0.1;    //  積分要素の感度
+constexpr float Kd = 0.025;  //  微分要素の感度
+
+constexpr int Power = 70;  // initial motor power
 
 const component::LedLight NativeLed(PIN_NATIVE_LED);
 const component::LedLight LineLed(PIN_LINE_LED);
@@ -84,10 +88,6 @@ void setup() {
     prev = 0;
     interval = 500;  // 待機時間
 
-    // 制御パラメータの設定
-    Kp = 0.45;      //  比例要素の感度
-    Ki = 0.1;       //  積分要素の感度
-    Kd = 0.025;     //  微分要素の感度
     data_diff = 0;  // 前回観測値と今回観測値の差分
     data_sum = 0;   // 誤差(観測値)の累積値
     ball_dir = 0;
