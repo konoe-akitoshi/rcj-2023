@@ -26,7 +26,6 @@ int blob_count;
 int openMV[39];
 
 int8_t gyro_o;
-int robot_dir = 0;  // robot direction
 float ball_dir = 0;
 float pre_dir = 0;    // 前回観測値
 float data_sum = 0;   // 誤差(観測値)の累積値
@@ -34,7 +33,6 @@ float data_diff = 0;  // 前回観測値と今回観測値の差分
 
 bool emergency = false;
 bool lineflag = false;
-bool line[4] = {false, false, false, false};
 
 int sig;
 float z, m;  // arctan
@@ -54,9 +52,6 @@ float wrap;
 float gyro;
 
 bool kick;
-unsigned long prev = 0;
-unsigned long curr;
-unsigned long interval = 500;  // 待機時間
 
 void keeper();
 void attacker();
@@ -425,12 +420,6 @@ void attacker() {
             if (ball_front <= 60) {      // y の距離近い
                 if (ball_front <= 30) {  // 保持
                     data_sum = 0;
-                    // curr = millis(); //始めだけ値をとりたい
-                    // if(prev == 0){
-                    //     prev = curr;
-                    // }
-                    // if((curr - prev) >= interval) {
-                    // 動作
                     if (goal_sig == 0) {  // ゴールなし
                         motorfunction(0, 80, -gyro);
                     } else if (goal_y <= 33 && abs(goal_x) < 17) {  // ゴールにけれる距離
@@ -451,7 +440,6 @@ void attacker() {
                 } else {  // 目の前のボールを保持しに行く
                     kick = false;
                     data_sum = 0;
-                    // prev = 0; //ボール保持時間リセット
                     motorfunction(0, 50, -gyro);
                 }
             } else {
@@ -511,10 +499,6 @@ void attacker() {
     Serial.print(data_diff);
     Serial.print(" Pcontrol ");
     Serial.print(Pcontrol);
-    Serial.print(" prev ");
-    Serial.print(prev);
-    Serial.print(" curr ");
-    Serial.print(curr);
     Serial.print(" kick ");
     Serial.println(kick);
 }
