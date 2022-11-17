@@ -1,4 +1,9 @@
 // なぜか、inoファイルでset filetype=cppするとclangdが正常に機能しなくなるので、cppファイルで作業してinoにコピーする。
+
+// デバッグ: 1
+// リリース: 0
+#define DEBUG_MODE 1
+
 #ifdef LOCAL_INCLUDE
 #include "../local/arduino_deps.h"
 #include "../local/vl6180x.hpp"
@@ -9,6 +14,7 @@
 #endif
 #include "NT_Robot202111.h"  // Header file for Teensy 3.5
 #include "motorDRV6.h"       // モーター制御のプログラムを読み込む
+#include "components/led_light.hpp"
 
 VL6180X ToF_front;  // create front ToF object
 
@@ -64,6 +70,14 @@ void back_Line4(int power);
 float checkvoltage(float Vlow);
 void doOutofbound();
 
+const component::LedLight NativeLed(PIN_NATIVE_LED);
+const component::LedLight LineLed(PIN_LINE_LED);
+const component::LedLight LedR(PIN_LED_R);
+const component::LedLight LedY(PIN_LED_Y);
+const component::LedLight LedG(PIN_LED_G);
+const component::LedLight LedB(PIN_LED_B);
+const component::LedLight BuiltinLed(LED_BUILTIN);
+
 void setup() {
     prev = 0;
     interval = 500;  // 待機時間
@@ -80,9 +94,6 @@ void setup() {
     pinMode(StartSW, INPUT_PULLUP);
 
     // IOピンのモード設定
-    pinMode(PIN_NATIVE_LED, OUTPUT);
-
-    pinMode(PIN_LINE_LED, OUTPUT);
     pinMode(LINE1D, INPUT_PULLUP);
     pinMode(LINE2D, INPUT_PULLUP);
     pinMode(LINE3D, INPUT_PULLUP);
@@ -105,18 +116,10 @@ void setup() {
 
     pinMode(GoalSW, INPUT_PULLUP);
 
-    pinMode(PIN_LED_R, OUTPUT);
-    pinMode(PIN_LED_Y, OUTPUT);
-    pinMode(PIN_LED_G, OUTPUT);
-    pinMode(PIN_LED_B, OUTPUT);
-
     digitalWrite(Kick1, LOW);
     digitalWrite(Kick_Dir, LOW);
     digitalWrite(SWR, HIGH);
     digitalWrite(SWG, HIGH);
-
-    // initialize digital pin LED_BUILTIN as an output.
-    pinMode(LED_BUILTIN, OUTPUT);
 
     pinMode(INT_29, INPUT_PULLUP);  // interrupt port set
 
@@ -185,13 +188,6 @@ void setup() {
 
     attachInterrupt(INT_29, intHandle, RISING);
 
-    // LED を初期化する
-    // LED_Init();
-    digitalWrite(PIN_LED_R, LOW);  // LED_R 消灯
-    digitalWrite(PIN_LED_Y, LOW);  // LED_Y 消灯
-    digitalWrite(PIN_LED_G, LOW);  // LED_G 消灯
-    digitalWrite(PIN_LED_B, LOW);  // LED_B 消灯
-
     digitalWrite(SWR, HIGH);
     digitalWrite(SWG, HIGH);
     p_ball = 255;
@@ -199,7 +195,7 @@ void setup() {
 }
 
 void loop() {
-    digitalWrite(PIN_LED_B, LOW);
+    LedB.TernOff();
     blob_count = get_openMV_coordinate();
     int x_data_ball = (openMV[5] & 0b0000000000111111) + ((openMV[6] & 0b0000000000111111) << 6);
     int y_data_ball = (openMV[7] & 0b0000000000111111) + ((openMV[8] & 0b0000000000111111) << 6);
@@ -325,7 +321,7 @@ void loop() {
 
         checkvoltage(Vlow);
         if (emergency) {          // 電池の電圧が下がっていたら
-            digitalWrite(PIN_LINE_LED, LOW);  // ラインセンサのLEDを消灯
+            LineLed.TernOff();  // ラインセンサのLEDを消灯
             motorFree();                  // モーターを停止
             while (1) {                   // 無限ループ
                 digitalWrite(SWR, LOW);
@@ -336,7 +332,7 @@ void loop() {
                 delay(300);
             }
         }
-        digitalWrite(PIN_LINE_LED, HIGH);  // ラインセンサのLEDを点灯
+        LineLed.TernOn(); // ラインセンサのLEDを点灯
         if (lineflag) {
             lineflag = false;
         }
@@ -360,7 +356,7 @@ void loop() {
         motorFree();
         dribbler1(0);
         dribbler2(0);
-        digitalWrite(PIN_LINE_LED, LOW);  // ラインセンサのLEDを消灯
+        LineLed.TernOff();  // ラインセンサのLEDを消灯
         digitalWrite(SWR, HIGH);
         digitalWrite(SWG, HIGH);
         wrap = 0;
@@ -381,7 +377,7 @@ void keeper() {
         goal_y = bg_y;
     }
 
-    digitalWrite(LED_BUILTIN, LOW);
+    BuiltinLed.TernOff();
     if (ball_dist - p_ball < 60 || sig == 0) {  // ボールとの距離の差が近い、ボールを任せてゴール前に帰る
         if (goal_sig == 0) {
             motorfunction(PI, 100, -gyro);
@@ -440,7 +436,7 @@ void attacker() {
     float Pcontrol = power * (Kp * ball_dir + Ki * data_sum + Kd * data_diff);  // PIDの制御値を計算
     pre_dir = ball_dir;                                                   // 今回の値を代入し次周期から見て前回観測値にする
 
-    digitalWrite(LED_BUILTIN, LOW);
+    BuiltinLed.TernOff();
     if (-5 <= y && y <= 30) {  // ボールが前(0 <= y <= 0)にあるとき
         dribbler1(100);
         wrap = 0;
@@ -578,7 +574,7 @@ int getOpenMV() {  // get serial data from openMV
 // Lineを踏んだらバックする
 
 void intHandle() {  // Lineを踏んだらlineflagをセットして止まる。
-    digitalWrite(PIN_LED_B, HIGH);
+    LedB.TernOn();
 
     if (digitalRead(StartSW) == HIGH) {  // スイッチがOFFなら何もしない。
         return;
@@ -599,12 +595,12 @@ void intHandle() {  // Lineを踏んだらlineflagをセットして止まる。
             back_Line4(power);
             lineflag = true;  // set lineflag
         } else {
-            digitalWrite(PIN_LED_R, HIGH);
+            LedR.TernOn();
         }
     }
 
-    digitalWrite(PIN_LED_B, LOW);
-    digitalWrite(PIN_LED_R, LOW);
+    LedB.TernOff();
+    LedR.TernOff();
 
     if (lineflag == false) {  // センサーの反応がない場合は何もしない
         return;
@@ -616,7 +612,9 @@ void intHandle() {  // Lineを踏んだらlineflagをセットして止まる。
 
 void back_Line1(int power) {  // Lineセンサ1が反応しなくなるまで後ろに進む
     float azimuth;
-    digitalWrite(PIN_LED_R, LOW);  // LED_R点灯
+#if DEBUG_MODE
+    LedR.TernOn();
+#endif
     while ((digitalRead(LINE1D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE3D) == HIGH)) {
         if (digitalRead(LINE4D) == HIGH) {
             azimuth = 3.14159 * 3.0 / 4.0;  // 後ろ方向(1+4)をradianに変換
@@ -627,13 +625,17 @@ void back_Line1(int power) {  // Lineセンサ1が反応しなくなるまで後
         }
         motorfunction(azimuth, power, 0);  // azimuthの方向に進ませる
     }
-    digitalWrite(PIN_LED_R, LOW);  // LED_R消灯
+#if DEBUG_MODE
+    LedR.TernOff();
+#endif
     motorStop();
 }
 
 void back_Line2(int power) {  // Lineセンサ2が反応しなくなるまで左に進む
     float azimuth;
-    digitalWrite(PIN_LED_Y, LOW);  // LED_Y点灯
+#if DEBUG_MODE
+    LedY.TernOn();
+#endif
     while ((digitalRead(LINE2D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE4D) == HIGH)) {
         if (digitalRead(LINE1D) == HIGH) {
             azimuth = 3.14159 * 5.0 / 4.0;  // 後ろ方向(2+1)を radian に変換
@@ -644,13 +646,17 @@ void back_Line2(int power) {  // Lineセンサ2が反応しなくなるまで左
         }
         motorfunction(azimuth, power, 0);  // azimuth の方向に進ませる
     }
-    digitalWrite(PIN_LED_Y, LOW);  // LED_Y 消灯
+#if DEBUG_MODE
+    LedY.TernOff();
+#endif
     motorStop();
 }
 
 void back_Line3(int power) {  // Lineセンサ3 が反応しなくなるまで前に進む
     float azimuth;
-    digitalWrite(PIN_LED_G, LOW);  // LED_G点灯
+#if DEBUG_MODE
+    LedG.TernOn();
+#endif
     while ((digitalRead(LINE3D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE1D) == HIGH)) {
         if (digitalRead(LINE4D) == HIGH) {
             azimuth = 3.14159 * 1.0 / 4.0;  // 後ろ方向(3+4)を radian に変換
@@ -661,13 +667,17 @@ void back_Line3(int power) {  // Lineセンサ3 が反応しなくなるまで�
         }
         motorfunction(azimuth, power, 0);  // azimuth の方向に進ませる
     }
-    digitalWrite(PIN_LED_G, LOW);  // LED_G 消灯
+#if DEBUG_MODE
+    LedG.TernOff();
+#endif
     motorStop();
 }
 
 void back_Line4(int power) {  // Lineセンサ4 が反応しなくなるまで右に進む
     float azimuth;
-    digitalWrite(PIN_LED_B, LOW);  // LED_B 点灯
+#if DEBUG_MODE
+    LedB.TernOn();
+#endif
     while ((digitalRead(LINE4D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE2D) == HIGH)) {
         if (digitalRead(LINE3D) == HIGH) {
             azimuth = 3.14159 * 1.0 / 4.0;  // 後ろ方向(4+3)を radian に変換
@@ -678,7 +688,9 @@ void back_Line4(int power) {  // Lineセンサ4 が反応しなくなるまで�
         }
         motorfunction(azimuth, power, 0);  // azimuth の方向に進ませる
     }
-    digitalWrite(PIN_LED_B, LOW);  // LED_B 消灯
+#if DEBUG_MODE
+    LedB.TernOff();
+#endif
     motorStop();
 }
 
@@ -702,7 +714,7 @@ float checkvoltage(float Vlow) {  // 電池電圧を監視する。
 void doOutofbound() {  // 強制的に Out of bounds させる。
 
     detachInterrupt(5);           // Out of bounds するために割込みを禁止する
-    digitalWrite(PIN_LINE_LED, LOW);  // ラインセンサの LED を消灯
+    LineLed.TernOff();  // ラインセンサの LED を消灯
 
     while (true) {  // 無限ループ
         if (digitalRead(StartSW) == LOW) {
