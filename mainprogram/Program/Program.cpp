@@ -26,7 +26,7 @@ int blob_count;
 int openMV[39];
 
 int8_t gyro_o;
-int robot_dir, power;
+int robot_dir;
 float ball_dir, pre_dir;
 float Kp, Kd, Ki;
 float data_sum, data_diff;
@@ -69,6 +69,8 @@ void back_Line3(int power);
 void back_Line4(int power);
 float checkvoltage(float Vlow);
 void doOutofbound();
+
+constexpr int Power = 70; // initial motor power
 
 const component::LedLight NativeLed(PIN_NATIVE_LED);
 const component::LedLight LineLed(PIN_LINE_LED);
@@ -131,7 +133,6 @@ void setup() {
 
     emergency = false;
     outofbounds = false;
-    power = 70;  //  set initial motor power
     //*****************************************************************************
 
     Wire.begin();
@@ -403,7 +404,7 @@ void keeper() {
 }
 
 void attacker() {
-    float Pmax = power;
+    float Pmax = Power;
     if (digitalRead(GoalSW)) {  // GoalSWは攻める方向をスイッチに入れる,
         // 相手ゴールの座標は機体中心
         goal_sig = b_sig;
@@ -433,7 +434,7 @@ void attacker() {
     }
     data_diff = ball_dir - pre_dir;                                             // 前回の方位との差分を計算
     data_sum += data_diff;                                                      // 方位誤差の累積を計算
-    float Pcontrol = power * (Kp * ball_dir + Ki * data_sum + Kd * data_diff);  // PIDの制御値を計算
+    float Pcontrol = Power * (Kp * ball_dir + Ki * data_sum + Kd * data_diff);  // PIDの制御値を計算
     pre_dir = ball_dir;                                                         // 今回の値を代入し次周期から見て前回観測値にする
 
     BuiltinLed.TernOff();

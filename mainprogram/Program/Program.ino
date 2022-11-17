@@ -5,7 +5,7 @@
 #include <VL6180X.h>
 #include <Wire.h>
 #include "NT_Robot202111.h"  // Header file for Teensy 3.5
-#include "motorDRV6.h"       // モーター制御のプログラムを読み込む
+#include "motorDRV6.h"  // モーター制御のプログラムを読み込む
 #include "components/led_light.hpp"
 
 VL6180X ToF_front;  // create front ToF object
@@ -18,7 +18,7 @@ int blob_count;
 int openMV[39];
 
 int8_t gyro_o;
-int robot_dir, power;
+int robot_dir;
 float ball_dir, pre_dir;
 float Kp, Kd, Ki;
 float data_sum, data_diff;
@@ -61,6 +61,8 @@ void back_Line3(int power);
 void back_Line4(int power);
 float checkvoltage(float Vlow);
 void doOutofbound();
+
+constexpr int Power = 70; // initial motor power
 
 const component::LedLight NativeLed(PIN_NATIVE_LED);
 const component::LedLight LineLed(PIN_LINE_LED);
@@ -123,7 +125,6 @@ void setup() {
 
     emergency = false;
     outofbounds = false;
-    power = 70;  //  set initial motor power
     //*****************************************************************************
 
     Wire.begin();
@@ -312,10 +313,10 @@ void loop() {
         }
 
         checkvoltage(Vlow);
-        if (emergency) {          // 電池の電圧が下がっていたら
+        if (emergency) {        // 電池の電圧が下がっていたら
             LineLed.TernOff();  // ラインセンサのLEDを消灯
-            motorFree();                  // モーターを停止
-            while (1) {                   // 無限ループ
+            motorFree();        // モーターを停止
+            while (1) {         // 無限ループ
                 digitalWrite(SWR, LOW);
                 digitalWrite(SWG, LOW);
                 delay(300);
@@ -324,7 +325,7 @@ void loop() {
                 delay(300);
             }
         }
-        LineLed.TernOn(); // ラインセンサのLEDを点灯
+        LineLed.TernOn();  // ラインセンサのLEDを点灯
         if (lineflag) {
             lineflag = false;
         }
@@ -395,7 +396,7 @@ void keeper() {
 }
 
 void attacker() {
-    float Pmax = power;
+    float Pmax = Power;
     if (digitalRead(GoalSW)) {  // GoalSWは攻める方向をスイッチに入れる,
         // 相手ゴールの座標は機体中心
         goal_sig = b_sig;
@@ -410,8 +411,8 @@ void attacker() {
     // 制御値＝誤差(方位)値＋誤差(方位)の時間積分値＋誤差(方位)の時間微分値
     //
     // Convert coordinates data
-    if (blob_count != 0) {  // 物体を検出したら
-        float fx = 150 - x;       // ロボットが原点に来るようjに座標を変換
+    if (blob_count != 0) {   // 物体を検出したら
+        float fx = 150 - x;  // ロボットが原点に来るようjに座標を変換
         float fy = 130 - y;
 
         if (fy > 0) {  // 正面から見たボールの方位(radian)を計算
@@ -423,10 +424,10 @@ void attacker() {
         }
         ball_dir = ball_dir + 0.150;  // +0.150は製作誤差による方位のオフセット補正値(radian)
     }
-    data_diff = ball_dir - pre_dir;                                       // 前回の方位との差分を計算
-    data_sum += data_diff;                                                // 方位誤差の累積を計算
-    float Pcontrol = power * (Kp * ball_dir + Ki * data_sum + Kd * data_diff);  // PIDの制御値を計算
-    pre_dir = ball_dir;                                                   // 今回の値を代入し次周期から見て前回観測値にする
+    data_diff = ball_dir - pre_dir;                                             // 前回の方位との差分を計算
+    data_sum += data_diff;                                                      // 方位誤差の累積を計算
+    float Pcontrol = Power * (Kp * ball_dir + Ki * data_sum + Kd * data_diff);  // PIDの制御値を計算
+    pre_dir = ball_dir;                                                         // 今回の値を代入し次周期から見て前回観測値にする
 
     BuiltinLed.TernOff();
     if (-5 <= y && y <= 30) {  // ボールが前(0 <= y <= 0)にあるとき
@@ -467,8 +468,7 @@ void attacker() {
                 }
             } else {
                 z = atan2(x, y);
-                motorfunction(z, powerLimit(Pmax, Pcontrol),
-                              -gyro);  // ココボール前 制御甘い？
+                motorfunction(z, powerLimit(Pmax, Pcontrol), -gyro);  // ココボール前 制御甘い？
             }
         } else {
             z = atan2(x, y);
@@ -540,7 +540,7 @@ int powerLimit(int max, int power) {  // powerの値がmax(ex.100)を超えな�
     return power;
 }
 
-int get_openMV_coordinate() {  // get the coordinate data of orange ball
+int get_openMV_coordinate() {           // get the coordinate data of orange ball
     while (Serial3.available() != 0) {  // buffer flush
         Serial3.read();
     }
@@ -695,7 +695,7 @@ void back_Line4(int power) {  // Lineセンサ4 が反応しなくなるまで�
 float checkvoltage(float Vlow) {  // 電池電圧を監視する。
     int limit = Vlow / 0.01811;
     int voltage = analogRead(Vbatt);  // Get Volatge
-    if (voltage < limit) {        // 電圧が Vlow 以下であれば emergency をセットする。
+    if (voltage < limit) {            // 電圧が Vlow 以下であれば emergency をセットする。
         emergency = true;
         digitalWrite(SWG, HIGH);
         digitalWrite(SWR, HIGH);
@@ -705,8 +705,8 @@ float checkvoltage(float Vlow) {  // 電池電圧を監視する。
 
 void doOutofbound() {  // 強制的に Out of bounds させる。
 
-    detachInterrupt(5);           // Out of bounds するために割込みを禁止する
-    LineLed.TernOff();  // ラインセンサの LED を消灯
+    detachInterrupt(5);  // Out of bounds するために割込みを禁止する
+    LineLed.TernOff();   // ラインセンサの LED を消灯
 
     while (true) {  // 無限ループ
         if (digitalRead(StartSW) == LOW) {
