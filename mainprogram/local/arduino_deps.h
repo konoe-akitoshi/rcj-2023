@@ -1,4 +1,4 @@
-#ifndef LOCAL_ARDUINO_DEPS_H
+#if defined(LOCAL_INCLUDE) && !defined(LOCAL_ARDUINO_DEPS_H)
 #define LOCAL_ARDUINO_DEPS_H
 
 #include <math.h>
@@ -34,12 +34,12 @@ extern void delay(uint32_t dwMs);
 // 存在しないクラス、適当に作った。
 class SerialClass
 {
-   public:
+  public:
     void begin(const uint32_t speed);
     int available(void);
     int read(void);
     size_t write(const uint8_t c);
-    size_t write(const char *str);
+    size_t write(const char* str);
     void print(const char* msg);
     void print(const int msg);
     void println(const char* msg);

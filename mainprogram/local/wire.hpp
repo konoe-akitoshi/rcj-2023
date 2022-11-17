@@ -1,5 +1,5 @@
 // Wire.h (https://github.com/arduino/ArduinoCore-arc32/blob/master/libraries/Wire/src/Wire.h)
-#ifndef LOCAL_WIRE_HPP
+#if defined(LOCAL_INCLUDE) && !defined(LOCAL_WIRE_HPP)
 #define LOCAL_WIRE_HPP
 
 #ifdef LOCAL_INCLUDE
@@ -12,7 +12,7 @@
 
 class TwoWire
 {
-   public:
+  public:
     TwoWire();
     void begin(void);
     void begin(int speed);

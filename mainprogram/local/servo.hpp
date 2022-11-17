@@ -1,4 +1,4 @@
-#ifndef LOCAL_SERVO_HPP
+#if defined(LOCAL_INCLUDE) && !defined(LOCAL_SERVO_HPP)
 #define LOCAL_SERVO_HPP
 
 #include "arduino_deps.h"
@@ -6,7 +6,7 @@
 // Servo.h (https://github.com/arduino-libraries/Servo/blob/master/src/Servo.h)
 class Servo
 {
-   public:
+  public:
     Servo();
 
     uint8_t attach(int pin);

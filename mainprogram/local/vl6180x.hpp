@@ -1,12 +1,12 @@
 // from Arduino_Lib/vl6180x-arduino-master.zip
-#ifndef LOCAL_VL6180X_HPP
+#if defined(LOCAL_INCLUDE) && !defined(LOCAL_VL6180X_HPP)
 #define LOCAL_VL6180X_HPP
 
 #include <stdint.h>
 
 class VL6180X
 {
-   public:
+  public:
     // register addresses
     enum regAddr
     {
@@ -119,7 +119,7 @@ class VL6180X
     inline uint16_t getTimeout(void) { return io_timeout; }
     bool timeoutOccurred(void);
 
-   private:
+  private:
     uint8_t address;
     uint8_t scaling;
     uint8_t ptp_offset;
