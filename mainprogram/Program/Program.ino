@@ -374,10 +374,10 @@ void keeper() {
         if (goal_sig == 0) {
             motorfunction(PI, 100, -gyro);
         } else if (goal_y > 23) {  // ゴールから遠い
-            z = atan2(goal_x, goal_y - 23) + 3.14;
+            z = atan2(goal_x, goal_y - 23) + PI;
             motorfunction(z, 100, -gyro);
         } else if (goal_y < 23 && goal_y > 15 && abs(goal_x) > 33) {  // x座標が０から遠い
-            z = atan2(goal_x, goal_y - 23) + 3.14;
+            z = atan2(goal_x, goal_y - 23) + PI;
             motorfunction(z, 100, -gyro);
         } else if (goal_y < 15) {  // ゴールエリアの横にいるとき
             if (goal_x > 0) {
@@ -609,11 +609,11 @@ void back_Line1(int power) {  // Lineセンサ1が反応しなくなるまで後
 #endif
     while ((digitalRead(LINE1D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE3D) == HIGH)) {
         if (digitalRead(LINE4D) == HIGH) {
-            azimuth = 3.14159 * 3.0 / 4.0;  // 後ろ方向(1+4)をradianに変換
+            azimuth = PI * 3.0 / 4.0;  // 後ろ方向(1+4)をradianに変換
         } else if (digitalRead(LINE2D) == HIGH) {
-            azimuth = 3.14159 * 5.0 / 4.0;  // 後ろ方向(1+2)をradianに変換
+            azimuth = PI * 5.0 / 4.0;  // 後ろ方向(1+2)をradianに変換
         } else {
-            azimuth = 3.14159 * 4.0 / 4.0;  // 後ろ方向(3)をradianに変換
+            azimuth = PI * 4.0 / 4.0;  // 後ろ方向(3)をradianに変換
         }
         motorfunction(azimuth, power, 0);  // azimuthの方向に進ませる
     }
@@ -630,11 +630,11 @@ void back_Line2(int power) {  // Lineセンサ2が反応しなくなるまで左
 #endif
     while ((digitalRead(LINE2D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE4D) == HIGH)) {
         if (digitalRead(LINE1D) == HIGH) {
-            azimuth = 3.14159 * 5.0 / 4.0;  // 後ろ方向(2+1)を radian に変換
+            azimuth = PI * 5.0 / 4.0;  // 後ろ方向(2+1)を radian に変換
         } else if (digitalRead(LINE3D) == HIGH) {
-            azimuth = 3.14159 * 7.0 / 4.0;  // 後ろ方向(2+3)を radian に変換
+            azimuth = PI * 7.0 / 4.0;  // 後ろ方向(2+3)を radian に変換
         } else {
-            azimuth = 3.14159 * 6.0 / 4.0;  // 後ろ方向(4)を radian に変換
+            azimuth = PI * 6.0 / 4.0;  // 後ろ方向(4)を radian に変換
         }
         motorfunction(azimuth, power, 0);  // azimuth の方向に進ませる
     }
@@ -651,11 +651,11 @@ void back_Line3(int power) {  // Lineセンサ3 が反応しなくなるまで�
 #endif
     while ((digitalRead(LINE3D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE1D) == HIGH)) {
         if (digitalRead(LINE4D) == HIGH) {
-            azimuth = 3.14159 * 1.0 / 4.0;  // 後ろ方向(3+4)を radian に変換
+            azimuth = PI * 1.0 / 4.0;  // 後ろ方向(3+4)を radian に変換
         } else if (digitalRead(LINE2D) == HIGH) {
-            azimuth = 3.14159 * 7.0 / 4.0;  // 後ろ方向(3+2)を radian に変換
+            azimuth = PI * 7.0 / 4.0;  // 後ろ方向(3+2)を radian に変換
         } else {
-            azimuth = 3.14159 * 0.0 / 4.0;  // 後ろ方向(1)を radian に変換
+            azimuth = PI * 0.0 / 4.0;  // 後ろ方向(1)を radian に変換
         }
         motorfunction(azimuth, power, 0);  // azimuth の方向に進ませる
     }
@@ -672,11 +672,11 @@ void back_Line4(int power) {  // Lineセンサ4 が反応しなくなるまで�
 #endif
     while ((digitalRead(LINE4D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE2D) == HIGH)) {
         if (digitalRead(LINE3D) == HIGH) {
-            azimuth = 3.14159 * 1.0 / 4.0;  // 後ろ方向(4+3)を radian に変換
+            azimuth = PI * 1.0 / 4.0;  // 後ろ方向(4+3)を radian に変換
         } else if (digitalRead(LINE1D) == HIGH) {
-            azimuth = 3.14159 * 3.0 / 4.0;  // 後ろ方向(4+1)を radian に変換
+            azimuth = PI * 3.0 / 4.0;  // 後ろ方向(4+1)を radian に変換
         } else {
-            azimuth = 3.14159 * 2.0 / 4.0;  // 後ろ方向(2)を radian に変換
+            azimuth = PI * 2.0 / 4.0;  // 後ろ方向(2)を radian に変換
         }
         motorfunction(azimuth, power, 0);  // azimuth の方向に進ませる
     }
@@ -710,9 +710,9 @@ void doOutofbound() {  // 強制的に Out of bounds させる。
 
     while (true) {  // 無限ループ
         if (digitalRead(StartSW) == LOW) {
-            motorfunction(3.14159 / 2.0, 30, 0);
+            motorfunction(PI / 2.0, 30, 0);
         } else {  // スタートスイッチが切られたら止まる
-            motorfunction(3.14159 / 2.0, 0, 0);
+            motorfunction(PI / 2.0, 0, 0);
         }
         digitalWrite(SWG, LOW);
         digitalWrite(SWR, LOW);
