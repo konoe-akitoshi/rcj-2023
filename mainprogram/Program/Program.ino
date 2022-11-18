@@ -28,7 +28,6 @@ float z, m;  // arctan
 float x, y;
 Vector2 blue_goal;
 Vector2 yellow_goal;
-Vector2 goal;
 float y_sig, b_sig, goal_sig;
 int ball_front;
 
@@ -308,6 +307,7 @@ void keeper() {
     dribbler1(0);
     wrap = 0;
 
+    Vector2 goal;
     if (digitalRead(GoalSW)) {  // 青色の場合
         goal_sig = y_sig;
         goal = {-yellow_goal.x, yellow_goal.y};
@@ -346,6 +346,8 @@ void attacker() {
     static float data_sum = 0;  // 誤差(観測値)の累積値
 
     float Pmax = Power;
+
+    Vector2 goal;
     if (digitalRead(GoalSW)) {  // GoalSWは攻める方向をスイッチに入れる,
         // 相手ゴールの座標は機体中心
         goal_sig = b_sig;
