@@ -18,8 +18,6 @@ int blob_count;
 int openMV[39];
 
 int8_t gyro_o;
-float pre_dir = 0;   // 前回観測値
-float data_sum = 0;  // 誤差(観測値)の累積値
 
 bool emergency = false;
 bool lineflag = false;
@@ -348,6 +346,9 @@ void keeper() {
 }
 
 void attacker() {
+    static float pre_dir = 0;   // 前回観測値
+    static float data_sum = 0;  // 誤差(観測値)の累積値
+
     float Pmax = Power;
     if (digitalRead(GoalSW)) {  // GoalSWは攻める方向をスイッチに入れる,
         // 相手ゴールの座標は機体中心
