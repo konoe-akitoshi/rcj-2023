@@ -18,9 +18,8 @@ int blob_count;
 int openMV[39];
 
 int8_t gyro_o;
-float pre_dir = 0;    // 前回観測値
-float data_sum = 0;   // 誤差(観測値)の累積値
-float data_diff = 0;  // 前回観測値と今回観測値の差分
+float pre_dir = 0;   // 前回観測値
+float data_sum = 0;  // 誤差(観測値)の累積値
 
 bool emergency = false;
 bool lineflag = false;
@@ -380,7 +379,7 @@ void attacker() {
         }
         ball_dir = ball_dir + 0.150;  // +0.150は製作誤差による方位のオフセット補正値(radian)
     }
-    data_diff = ball_dir - pre_dir;                                             // 前回の方位との差分を計算
+    float data_diff = ball_dir - pre_dir;                                       // 前回の方位との差分を計算
     data_sum += data_diff;                                                      // 方位誤差の累積を計算
     float Pcontrol = Power * (Kp * ball_dir + Ki * data_sum + Kd * data_diff);  // PIDの制御値を計算
     pre_dir = ball_dir;                                                         // 今回の値を代入し次周期から見て前回観測値にする
