@@ -18,7 +18,6 @@ int blob_count;
 int openMV[39];
 
 int8_t gyro_o;
-float ball_dir = 0;
 float pre_dir = 0;    // 前回観測値
 float data_sum = 0;   // 誤差(観測値)の累積値
 float data_diff = 0;  // 前回観測値と今回観測値の差分
@@ -367,6 +366,7 @@ void attacker() {
     // 制御値 = 誤差(方位)値 + 誤差(方位)の時間積分値 + 誤差(方位)の時間微分値
 
     // Convert coordinates data
+    float ball_dir = 0;
     if (blob_count != 0) {   // 物体を検出したら
         float fx = 150 - x;  // ロボットが原点に来るようjに座標を変換
         float fy = 130 - y;
