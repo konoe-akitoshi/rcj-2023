@@ -15,6 +15,7 @@
 #include "NT_Robot202111.h"
 #include "motorDRV6.h"
 #include "components/led_light.hpp"
+#include "types/vector2.hpp"
 
 VL6180X ToF_front;  // create front ToF object
 
@@ -33,13 +34,13 @@ bool lineflag = false;
 int sig;
 float z, m;  // arctan
 float x, y;
-float bg_x, bg_y;
-float yg_x, yg_y;
-float goal_x, goal_y;
+Vector2 blue_goal;
+Vector2 yellow_goal;
+Vector2 goal;
 float y_sig, b_sig, goal_sig;
 int ball_front;
 
-float xbee_x, xbee_y;
+Vector2 xbee;
 uint8_t xbee_date;
 float p_ball = 255;
 float ball_dist;
@@ -201,11 +202,9 @@ void loop() {
     x = x_data_ball;
     y = y_data_ball;
     b_sig = openMV[27];
-    bg_x = x_data_bluegoal;
-    bg_y = y_data_bluegoal;
+    blue_goal = {x_data_bluegoal, y_data_bluegoal};
     y_sig = openMV[14];
-    yg_x = x_data_yellowgoal;
-    yg_y = y_data_yellowgoal;
+    yellow_goal = {x_data_yellowgoal, y_data_yellowgoal};
 
     if (sig != 0) {  // 中心補正
         x = 156 - x;
@@ -213,32 +212,31 @@ void loop() {
     }
     if (digitalRead(GoalSW)) {  // 青色ゴールをする場合
         if (y_sig != 0) {
-            yg_x = 154 - yg_x;
-            yg_y = yg_y - 184;
+            yellow_goal.x = 154 - yellow_goal.x;
+            yellow_goal.y = yellow_goal.y - 184;
         }
         if (b_sig != 0) {
-            bg_x = 151 - bg_x;
-            bg_y = bg_y - 58;
+            blue_goal.x = 151 - blue_goal.x;
+            blue_goal.y = blue_goal.y - 58;
         }
     } else {  // 黄色ゴールをする場合
         if (y_sig != 0) {
-            yg_x = 151 - yg_x;
-            yg_y = yg_y - 63;
+            yellow_goal.x = 151 - yellow_goal.x;
+            yellow_goal.y = yellow_goal.y - 63;
         }
         if (b_sig != 0) {
-            bg_x = 156 - bg_x;
-            bg_y = bg_y - 184;
+            blue_goal.x = 156 - blue_goal.x;
+            blue_goal.y = blue_goal.y - 184;
         }
     }
 
     if (sig != 0) {  // xbeedate 生成
-        xbee_x = x;
-        xbee_y = y;
+        xbee = {x, y};
     }
     if (x == 4095) {
         xbee_date = 255;
     } else {
-        xbee_date = sqrt(xbee_x * xbee_x + xbee_y * xbee_y);
+        xbee_date = sqrt(xbee.x * xbee.x + xbee.y * xbee.y);
     }
 
     ball_dist = sqrt(x * x + y * y);
@@ -252,11 +250,11 @@ void loop() {
     Serial.print(" ,tof_front=");
     Serial.println(ball_front);
     Serial.print(" ,yellowgoal_x=");  // 青ゴールのx座標
-    Serial.print(bg_x);
+    Serial.print(blue_goal.x);
     Serial.print(" ,yellowgoal_y=");  // 青ゴールのy座標
-    Serial.print(bg_y);
+    Serial.print(blue_goal.y);
     Serial.print(" ,tan=");
-    Serial.println(atan2(bg_x, -bg_y));
+    Serial.println(atan2(blue_goal.x, -blue_goal.y));
 
     ball_front = ToF_front.readRangeSingleMillimeters();
 
@@ -320,26 +318,24 @@ void keeper() {
 
     if (digitalRead(GoalSW)) {  // 青色の場合
         goal_sig = y_sig;
-        goal_x = -yg_x;
-        goal_y = yg_y;
+        goal = {-yellow_goal.x, yellow_goal.y};
     } else {  // 黄色の場合
         goal_sig = b_sig;
-        goal_x = -bg_x;
-        goal_y = bg_y;
+        goal = {-blue_goal.x, blue_goal.y};
     }
 
     BuiltinLed.TernOff();
     if (ball_dist - p_ball < 60 || sig == 0) {  // ボールとの距離の差が近い、ボールを任せてゴール前に帰る
         if (goal_sig == 0) {
             motorfunction(PI, 100, -gyro);
-        } else if (goal_y > 23) {  // ゴールから遠い
-            z = atan2(goal_x, goal_y - 23) + PI;
+        } else if (goal.y > 23) {  // ゴールから遠い
+            z = atan2(goal.x, goal.y - 23) + PI;
             motorfunction(z, 100, -gyro);
-        } else if (goal_y < 23 && goal_y > 15 && abs(goal_x) > 33) {  // x座標が 0 から遠い
-            z = atan2(goal_x, goal_y - 23) + PI;
+        } else if (goal.y < 23 && goal.y > 15 && abs(goal.x) > 33) {  // x座標が 0 から遠い
+            z = atan2(goal.x, goal.y - 23) + PI;
             motorfunction(z, 100, -gyro);
-        } else if (goal_y < 15) {  // ゴールエリアの横にいるとき
-            if (goal_x > 0) {
+        } else if (goal.y < 15) {  // ゴールエリアの横にいるとき
+            if (goal.x > 0) {
                 motorfunction(-0.60, 60, 0);
             } else {
                 motorfunction(0.60, 60, 0);
@@ -361,12 +357,10 @@ void attacker() {
     if (digitalRead(GoalSW)) {  // GoalSWは攻める方向をスイッチに入れる,
         // 相手ゴールの座標は機体中心
         goal_sig = b_sig;
-        goal_x = bg_x;
-        goal_y = -bg_y;
+        goal = {blue_goal.x, -blue_goal.y};
     } else {
         goal_sig = y_sig;
-        goal_x = yg_x;
-        goal_y = -yg_y;
+        goal = {yellow_goal.x, -yellow_goal.y};
     }
     // PID制御をするので
     // 制御値 = 誤差(方位)値 + 誤差(方位)の時間積分値 + 誤差(方位)の時間微分値
@@ -403,7 +397,7 @@ void attacker() {
                     data_sum = 0;
                     if (goal_sig == 0) {  // ゴールなし
                         motorfunction(0, 80, -gyro);
-                    } else if (goal_y <= 33 && abs(goal_x) < 17) {  // ゴールにけれる距離
+                    } else if (goal.y <= 33 && abs(goal.x) < 17) {  // ゴールにけれる距離
                         kick = true;
                         digitalWrite(Kick_Dir, LOW);
                         dribbler1(0);
@@ -412,10 +406,10 @@ void attacker() {
                         motorfunction(0, 0, 0);
                         delay(800);
                         digitalWrite(Kicker, LOW);
-                    } else if (goal_y < 5) {            // ゴールに近づいた時
+                    } else if (goal.y < 5) {            // ゴールに近づいた時
                         motorfunction(PI, 100, -gyro);  // 後ろに下がる
                     } else {                            // ゴール見えてて近くない
-                        z = atan2(goal_x, goal_y);
+                        z = atan2(goal.x, goal.y);
                         motorfunction(z, powerLimit(Pmax, Pcontrol), -gyro);
                     }
                 } else {  // 目の前のボールを保持しに行く
@@ -441,7 +435,7 @@ void attacker() {
                 motorfunction(PI, abs(y) / 2.4, -gyro);
                 wrap = 0;
             } else if (abs(x) < 5 + abs(y) / 5) {
-                if (goal_x > 0 || wrap == 1) {
+                if (goal.x > 0 || wrap == 1) {
                     z = atan2(x + 800, y * 3);
                     motorfunction(z, sqrt(x * x + y * y) + 10, -gyro);
                     wrap = 1;
