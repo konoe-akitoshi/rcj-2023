@@ -41,8 +41,6 @@ float wrap;
 
 float gyro;
 
-bool kick;
-
 void keeper();
 void attacker();
 int powerLimit(int max, int power);
@@ -385,6 +383,8 @@ void attacker() {
     pre_dir = ball_dir;                                                         // 今回の値を代入し次周期から見て前回観測値にする
 
     BuiltinLed.TernOff();
+
+    static bool kick = false;
     if (-5 <= y && y <= 30) {  // ボールが前(0 <= y <= 0)にあるとき
         dribbler1(100);
         wrap = 0;
