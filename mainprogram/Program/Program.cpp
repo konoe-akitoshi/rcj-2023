@@ -32,7 +32,6 @@ bool emergency = false;
 bool lineflag = false;
 
 int sig;
-float z, m;  // arctan
 float x, y;
 Vector2 blue_goal;
 Vector2 yellow_goal;
@@ -329,10 +328,10 @@ void keeper() {
         if (goal_sig == 0) {
             motorfunction(PI, 100, -gyro);
         } else if (goal.y > 23) {  // ゴールから遠い
-            z = atan2(goal.x, goal.y - 23) + PI;
+            float z = atan2(goal.x, goal.y - 23) + PI;
             motorfunction(z, 100, -gyro);
         } else if (goal.y < 23 && goal.y > 15 && abs(goal.x) > 33) {  // x座標が 0 から遠い
-            z = atan2(goal.x, goal.y - 23) + PI;
+            float z = atan2(goal.x, goal.y - 23) + PI;
             motorfunction(z, 100, -gyro);
         } else if (goal.y < 15) {  // ゴールエリアの横にいるとき
             if (goal.x > 0) {
@@ -411,7 +410,7 @@ void attacker() {
                     } else if (goal.y < 5) {            // ゴールに近づいた時
                         motorfunction(PI, 100, -gyro);  // 後ろに下がる
                     } else {                            // ゴール見えてて近くない
-                        z = atan2(goal.x, goal.y);
+                        float z = atan2(goal.x, goal.y);
                         motorfunction(z, powerLimit(Pmax, Pcontrol), -gyro);
                     }
                 } else {  // 目の前のボールを保持しに行く
@@ -420,11 +419,11 @@ void attacker() {
                     motorfunction(0, 50, -gyro);
                 }
             } else {
-                z = atan2(x, y);
+                float z = atan2(x, y);
                 motorfunction(z, powerLimit(Pmax, Pcontrol), -gyro);  // ココボール前 制御甘い？
             }
         } else {
-            z = atan2(x, y);
+            float z = atan2(x, y);
             motorfunction(z, powerLimit(Pmax, Pcontrol), -gyro);
         }
     } else if (y <= 0) {  // 後ろにボールがあるとき
@@ -438,22 +437,22 @@ void attacker() {
                 wrap = 0;
             } else if (abs(x) < 5 + abs(y) / 5) {
                 if (goal.x > 0 || wrap == 1) {
-                    z = atan2(x + 800, y * 3);
+                    float z = atan2(x + 800, y * 3);
                     motorfunction(z, sqrt(x * x + y * y) + 10, -gyro);
                     wrap = 1;
                 } else {
-                    z = atan2(x - 800, y * 3);
+                    float z = atan2(x - 800, y * 3);
                     motorfunction(z, sqrt(x * x + y * y) + 10, -gyro);
                     wrap = 0;
                 }
             } else {
                 wrap = 0;
-                z = atan2(x, y * 3);
+                float z = atan2(x, y * 3);
                 motorfunction(z, sqrt(x * x + y * y) + 10, -gyro);
             }
         } else {
             wrap = 0;
-            z = atan2(x, y * 4);
+            float z = atan2(x, y * 4);
             motorfunction(z, sqrt(x * x + y * y) + 10, -gyro);
         }
     } else {  // 30 > y になるとき
@@ -466,8 +465,6 @@ void attacker() {
             motorfunction(0, 80, -gyro);  // これでたまに回り込みがおおげさになる？
         }
     }
-    Serial.print("z");
-    Serial.print(z);
     Serial.print(" dir ");
     Serial.print(ball_dir);
     Serial.print(" sum ");
