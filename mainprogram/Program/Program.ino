@@ -18,7 +18,7 @@ const int Vlow = 13.0;
 int blob_count;
 int openMV[39];
 
-int8_t gyro_o;
+int gyro_o;
 
 bool emergency = false;
 bool lineflag = false;
@@ -36,10 +36,8 @@ float p_ball = 255;
 float ball_dist;
 float wrap;
 
-float gyro;
-
-void keeper();
-void attacker();
+void keeper(const int rotation);
+void attacker(const int rotation);
 int powerLimit(int max, int power);
 int get_openMV_coordinate();
 int getOpenMV();
@@ -178,7 +176,7 @@ void loop() {
         }
     }
 
-    gyro = gyro_o;
+    int gyro = gyro_o;
 
     // Xbeeからの信号を読む
     if (Serial1.available() > 0) {
@@ -280,15 +278,15 @@ void loop() {
 
         // 役割判定
         if (digitalRead(Aux1) == LOW) {
-            attacker();
+            attacker(gyro);
         } else if (digitalRead(Aux2) == LOW) {
-            keeper();
+            keeper(gyro);
 
         } else {
             if (p_ball <= xbee_date) {  // どちらがボールに近いか
-                keeper();
+                keeper(gyro);
             } else {
-                attacker();
+                attacker(gyro);
             }
         }
     } else {  // ロボット停止
@@ -302,7 +300,10 @@ void loop() {
     }
 }
 
-void keeper() {
+/**
+ * rotation(-100:100)
+ */
+void keeper(const int rotation) {
     dribbler1(0);
     wrap = 0;
 
@@ -318,13 +319,13 @@ void keeper() {
     BuiltinLed.TernOff();
     if (ball_dist - p_ball < 60 || sig == 0) {  // ボールとの距離の差が近い、ボールを任せてゴール前に帰る
         if (goal_sig == 0) {
-            motorfunction(PI, 100, -gyro);
+            motorfunction(PI, 100, -rotation);
         } else if (goal.y > 23) {  // ゴールから遠い
             float z = atan2(goal.x, goal.y - 23) + PI;
-            motorfunction(z, 100, -gyro);
+            motorfunction(z, 100, -rotation);
         } else if (goal.y < 23 && goal.y > 15 && abs(goal.x) > 33) {  // x座標が 0 から遠い
             float z = atan2(goal.x, goal.y - 23) + PI;
-            motorfunction(z, 100, -gyro);
+            motorfunction(z, 100, -rotation);
         } else if (goal.y < 15) {  // ゴールエリアの横にいるとき
             if (goal.x > 0) {
                 motorfunction(-0.60, 60, 0);
@@ -336,11 +337,14 @@ void keeper() {
         }
     } else {  // ボールとの距離の差が遠い、自ら近づく
         float az = atan2(x, sqrt(y));
-        motorfunction(az, sqrt(x * x + y * y / 4), -gyro);
+        motorfunction(az, sqrt(x * x + y * y / 4), -rotation);
     }
 }
 
-void attacker() {
+/**
+ * rotation(-100:100)
+ */
+void attacker(const int rotation) {
     static float pre_dir = 0;   // 前回観測値
     static float data_sum = 0;  // 誤差(観測値)の累積値
 
@@ -389,7 +393,7 @@ void attacker() {
                 if (ball_front <= 30) {  // 保持
                     data_sum = 0;
                     if (goal_sig == 0) {  // ゴールなし
-                        motorfunction(0, 80, -gyro);
+                        motorfunction(0, 80, -rotation);
                     } else if (goal.y <= 33 && abs(goal.x) < 17) {  // ゴールにけれる距離
                         kick = true;
                         digitalWrite(Kick_Dir, LOW);
@@ -400,52 +404,52 @@ void attacker() {
                         delay(800);
                         digitalWrite(Kicker, LOW);
                     } else if (goal.y < 5) {            // ゴールに近づいた時
-                        motorfunction(PI, 100, -gyro);  // 後ろに下がる
+                        motorfunction(PI, 100, -rotation);  // 後ろに下がる
                     } else {                            // ゴール見えてて近くない
                         float z = atan2(goal.x, goal.y);
-                        motorfunction(z, powerLimit(Pmax, Pcontrol), -gyro);
+                        motorfunction(z, powerLimit(Pmax, Pcontrol), -rotation);
                     }
                 } else {  // 目の前のボールを保持しに行く
                     kick = false;
                     data_sum = 0;
-                    motorfunction(0, 50, -gyro);
+                    motorfunction(0, 50, -rotation);
                 }
             } else {
                 float z = atan2(x, y);
-                motorfunction(z, powerLimit(Pmax, Pcontrol), -gyro);  // ココボール前 制御甘い？
+                motorfunction(z, powerLimit(Pmax, Pcontrol), -rotation);  // ココボール前 制御甘い？
             }
         } else {
             float z = atan2(x, y);
-            motorfunction(z, powerLimit(Pmax, Pcontrol), -gyro);
+            motorfunction(z, powerLimit(Pmax, Pcontrol), -rotation);
         }
     } else if (y <= 0) {  // 後ろにボールがあるとき
         dribbler1(0);
         if (abs(x) < 30) {
             if (y >= -129) {
-                motorfunction(0, 50, -gyro);
+                motorfunction(0, 50, -rotation);
                 wrap = 0;
             } else if (y <= -150) {
-                motorfunction(PI, abs(y) / 2.4, -gyro);
+                motorfunction(PI, abs(y) / 2.4, -rotation);
                 wrap = 0;
             } else if (abs(x) < 5 + abs(y) / 5) {
                 if (goal.x > 0 || wrap == 1) {
                     float z = atan2(x + 800, y * 3);
-                    motorfunction(z, sqrt(x * x + y * y) + 10, -gyro);
+                    motorfunction(z, sqrt(x * x + y * y) + 10, -rotation);
                     wrap = 1;
                 } else {
                     float z = atan2(x - 800, y * 3);
-                    motorfunction(z, sqrt(x * x + y * y) + 10, -gyro);
+                    motorfunction(z, sqrt(x * x + y * y) + 10, -rotation);
                     wrap = 0;
                 }
             } else {
                 wrap = 0;
                 float z = atan2(x, y * 3);
-                motorfunction(z, sqrt(x * x + y * y) + 10, -gyro);
+                motorfunction(z, sqrt(x * x + y * y) + 10, -rotation);
             }
         } else {
             wrap = 0;
             float z = atan2(x, y * 4);
-            motorfunction(z, sqrt(x * x + y * y) + 10, -gyro);
+            motorfunction(z, sqrt(x * x + y * y) + 10, -rotation);
         }
     } else {  // 30 > y になるとき
         dribbler1(0);
@@ -454,7 +458,7 @@ void attacker() {
         if (sig == 0) {  // ボールがないとき(y = 4096)
             motorfunction(0, 0, 0);
         } else {                          // ボールがあるとき
-            motorfunction(0, 80, -gyro);  // これでたまに回り込みがおおげさになる？
+            motorfunction(0, 80, -rotation);  // これでたまに回り込みがおおげさになる？
         }
     }
     Serial.print(" dir ");
