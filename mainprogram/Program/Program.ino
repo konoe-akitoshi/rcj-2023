@@ -11,9 +11,6 @@
 
 VL6180X ToF_front;  // create front ToF object
 
-// Low limit voltage 1.1*12 = 13.2
-// Mi-NH なら 13.0, Li-po なら 13.5 (Li-po は過放電するので注意！)
-const int Vlow = 13.0;
 
 int blob_count;
 int openMV[39];
@@ -38,15 +35,15 @@ float wrap;
 
 void keeper(const int rotation);
 void attacker(const int rotation);
-int powerLimit(int max, int power);
+int powerLimit(const int max, const int power);
 int get_openMV_coordinate();
 int getOpenMV();
 void intHandle();
-void back_Line1(int power);
-void back_Line2(int power);
-void back_Line3(int power);
-void back_Line4(int power);
-float checkvoltage(float Vlow);
+void back_Line1(const int power);
+void back_Line2(const int power);
+void back_Line3(const int power);
+void back_Line4(const int power);
+float checkvoltage(const float Vlow);
 void doOutofbound();
 
 // 制御パラメータの設定
@@ -55,6 +52,10 @@ constexpr float Ki = 0.1;    //  積分要素の感度
 constexpr float Kd = 0.025;  //  微分要素の感度
 
 constexpr int Power = 70;  // initial motor power
+
+// Low limit voltage 1.1*12 = 13.2
+// Mi-NH なら 13.0, Li-po なら 13.5 (Li-po は過放電するので注意！)
+constexpr int Vlow = 13.0;
 
 const component::LedLight NativeLed(PIN_NATIVE_LED);
 const component::LedLight LineLed(PIN_LINE_LED);
@@ -150,21 +151,22 @@ void setup() {
 void loop() {
     LedB.TernOff();
     blob_count = get_openMV_coordinate();
-    int x_data_ball = (openMV[5] & 0b0000000000111111) + ((openMV[6] & 0b0000000000111111) << 6);
-    int y_data_ball = (openMV[7] & 0b0000000000111111) + ((openMV[8] & 0b0000000000111111) << 6);
-    // int w_data_ball = (openMV[9] & 0b0000000000111111) + ((openMV[10] & 0b0000000000111111) << 6);
-    // int h_data_ball = (openMV[11] & 0b0000000000111111) + ((openMV[12] & 0b0000000000111111) << 6);
+    const int x_data_ball = (openMV[5] & 0b0000000000111111) + ((openMV[6] & 0b0000000000111111) << 6);
+    const int y_data_ball = (openMV[7] & 0b0000000000111111) + ((openMV[8] & 0b0000000000111111) << 6);
+    // const int w_data_ball = (openMV[9] & 0b0000000000111111) + ((openMV[10] & 0b0000000000111111) << 6);
+    // const int h_data_ball = (openMV[11] & 0b0000000000111111) + ((openMV[12] & 0b0000000000111111) << 6);
 
-    int x_data_yellowgoal = (openMV[18] & 0b0000000000111111) + ((openMV[19] & 0b0000000000111111) << 6);
-    int y_data_yellowgoal = (openMV[20] & 0b0000000000111111) + ((openMV[21] & 0b0000000000111111) << 6);
-    // int w_data_yellowgoal = (openMV[22] & 0b0000000000111111) + ((openMV[23] & 0b0000000000111111) << 6);
-    // int h_data_yellowgoal = (openMV[24] & 0b0000000000111111) + ((openMV[25] & 0b0000000000111111) << 6);
+    const int x_data_yellowgoal = (openMV[18] & 0b0000000000111111) + ((openMV[19] & 0b0000000000111111) << 6);
+    const int y_data_yellowgoal = (openMV[20] & 0b0000000000111111) + ((openMV[21] & 0b0000000000111111) << 6);
+    // const int w_data_yellowgoal = (openMV[22] & 0b0000000000111111) + ((openMV[23] & 0b0000000000111111) << 6);
+    // const int h_data_yellowgoal = (openMV[24] & 0b0000000000111111) + ((openMV[25] & 0b0000000000111111) << 6);
 
-    int x_data_bluegoal = (openMV[31] & 0b0000000000111111) + ((openMV[32] & 0b0000000000111111) << 6);
-    int y_data_bluegoal = (openMV[33] & 0b0000000000111111) + ((openMV[34] & 0b0000000000111111) << 6);
-    // int w_data_bluegoal = (openMV[35] & 0b0000000000111111) + ((openMV[36] & 0b0000000000111111) << 6);
-    // int h_data_bluegoal = (openMV[37] & 0b0000000000111111) + ((openMV[38] & 0b0000000000111111) << 6);
+    const int x_data_bluegoal = (openMV[31] & 0b0000000000111111) + ((openMV[32] & 0b0000000000111111) << 6);
+    const int y_data_bluegoal = (openMV[33] & 0b0000000000111111) + ((openMV[34] & 0b0000000000111111) << 6);
+    // const int w_data_bluegoal = (openMV[35] & 0b0000000000111111) + ((openMV[36] & 0b0000000000111111) << 6);
+    // const int h_data_bluegoal = (openMV[37] & 0b0000000000111111) + ((openMV[38] & 0b0000000000111111) << 6);
 
+    lineflag = false;
     if (lineflag) {
         lineflag = false;
     }
@@ -176,7 +178,7 @@ void loop() {
         }
     }
 
-    int gyro = gyro_o;
+    const int gyro = gyro_o;
 
     // Xbeeからの信号を読む
     if (Serial1.available() > 0) {
@@ -348,7 +350,7 @@ void attacker(const int rotation) {
     static float pre_dir = 0;   // 前回観測値
     static float data_sum = 0;  // 誤差(観測値)の累積値
 
-    float Pmax = Power;
+    const float Pmax = Power;
 
     Vector2 goal;
     if (digitalRead(GoalSW)) {  // GoalSWは攻める方向をスイッチに入れる,
@@ -365,8 +367,8 @@ void attacker(const int rotation) {
     // Convert coordinates data
     float ball_dir = 0;
     if (blob_count != 0) {   // 物体を検出したら
-        float fx = 150 - x;  // ロボットが原点に来るようjに座標を変換
-        float fy = 130 - y;
+        const float fx = 150 - x;  // ロボットが原点に来るようjに座標を変換
+        const float fy = 130 - y;
 
         if (fy > 0) {  // 正面から見たボールの方位(radian)を計算
             ball_dir = atan(fx / fy);
@@ -377,9 +379,9 @@ void attacker(const int rotation) {
         }
         ball_dir = ball_dir + 0.150;  // +0.150は製作誤差による方位のオフセット補正値(radian)
     }
-    float data_diff = ball_dir - pre_dir;                                       // 前回の方位との差分を計算
+    const float data_diff = ball_dir - pre_dir;                                       // 前回の方位との差分を計算
     data_sum += data_diff;                                                      // 方位誤差の累積を計算
-    float Pcontrol = Power * (Kp * ball_dir + Ki * data_sum + Kd * data_diff);  // PIDの制御値を計算
+    const float Pcontrol = Power * (Kp * ball_dir + Ki * data_sum + Kd * data_diff);  // PIDの制御値を計算
     pre_dir = ball_dir;                                                         // 今回の値を代入し次周期から見て前回観測値にする
 
     BuiltinLed.TernOff();
@@ -406,7 +408,7 @@ void attacker(const int rotation) {
                     } else if (goal.y < 5) {            // ゴールに近づいた時
                         motorfunction(PI, 100, -rotation);  // 後ろに下がる
                     } else {                            // ゴール見えてて近くない
-                        float z = atan2(goal.x, goal.y);
+                        const float z = atan2(goal.x, goal.y);
                         motorfunction(z, powerLimit(Pmax, Pcontrol), -rotation);
                     }
                 } else {  // 目の前のボールを保持しに行く
@@ -415,11 +417,11 @@ void attacker(const int rotation) {
                     motorfunction(0, 50, -rotation);
                 }
             } else {
-                float z = atan2(x, y);
+                const float z = atan2(x, y);
                 motorfunction(z, powerLimit(Pmax, Pcontrol), -rotation);  // ココボール前 制御甘い？
             }
         } else {
-            float z = atan2(x, y);
+            const float z = atan2(x, y);
             motorfunction(z, powerLimit(Pmax, Pcontrol), -rotation);
         }
     } else if (y <= 0) {  // 後ろにボールがあるとき
@@ -433,22 +435,22 @@ void attacker(const int rotation) {
                 wrap = 0;
             } else if (abs(x) < 5 + abs(y) / 5) {
                 if (goal.x > 0 || wrap == 1) {
-                    float z = atan2(x + 800, y * 3);
+                    const float z = atan2(x + 800, y * 3);
                     motorfunction(z, sqrt(x * x + y * y) + 10, -rotation);
                     wrap = 1;
                 } else {
-                    float z = atan2(x - 800, y * 3);
+                    const float z = atan2(x - 800, y * 3);
                     motorfunction(z, sqrt(x * x + y * y) + 10, -rotation);
                     wrap = 0;
                 }
             } else {
                 wrap = 0;
-                float z = atan2(x, y * 3);
+                const float z = atan2(x, y * 3);
                 motorfunction(z, sqrt(x * x + y * y) + 10, -rotation);
             }
         } else {
             wrap = 0;
-            float z = atan2(x, y * 4);
+            const float z = atan2(x, y * 4);
             motorfunction(z, sqrt(x * x + y * y) + 10, -rotation);
         }
     } else {  // 30 > y になるとき
@@ -478,7 +480,7 @@ void attacker(const int rotation) {
  *
  * Note: C++17 からは std::clamp() が使える
  */
-int powerLimit(int max, int power) {
+int powerLimit(const int max, const int power) {
     if (power > max) {
         return max;
     } else if (power < -max) {
@@ -518,7 +520,8 @@ void intHandle() {  // Lineを踏んだらlineflagをセットして止まる。
     if (digitalRead(StartSW) == HIGH) {  // スイッチがOFFなら何もしない。
         return;
     }
-    int power = 30;
+
+    constexpr int power = 30;
 
     while (digitalRead(INT_29) == HIGH) {   // Lineセンサが反応している間は繰り返す
         if (digitalRead(LINE1D) == HIGH) {  // lineを踏んだセンサーを調べる
@@ -549,7 +552,7 @@ void intHandle() {  // Lineを踏んだらlineflagをセットして止まる。
     return;
 }
 
-void back_Line1(int power) {  // Lineセンサ1が反応しなくなるまで後ろに進む
+void back_Line1(const int power) {  // Lineセンサ1が反応しなくなるまで後ろに進む
     float azimuth;
 #if DEBUG_MODE
     LedR.TernOn();
@@ -570,7 +573,7 @@ void back_Line1(int power) {  // Lineセンサ1が反応しなくなるまで後
     motorStop();
 }
 
-void back_Line2(int power) {  // Lineセンサ2が反応しなくなるまで左に進む
+void back_Line2(const int power) {  // Lineセンサ2が反応しなくなるまで左に進む
     float azimuth;
 #if DEBUG_MODE
     LedY.TernOn();
@@ -591,7 +594,7 @@ void back_Line2(int power) {  // Lineセンサ2が反応しなくなるまで左
     motorStop();
 }
 
-void back_Line3(int power) {  // Lineセンサ3 が反応しなくなるまで前に進む
+void back_Line3(const int power) {  // Lineセンサ3 が反応しなくなるまで前に進む
     float azimuth;
 #if DEBUG_MODE
     LedG.TernOn();
@@ -612,7 +615,7 @@ void back_Line3(int power) {  // Lineセンサ3 が反応しなくなるまで�
     motorStop();
 }
 
-void back_Line4(int power) {  // Lineセンサ4 が反応しなくなるまで右に進む
+void back_Line4(const int power) {  // Lineセンサ4 が反応しなくなるまで右に進む
     float azimuth;
 #if DEBUG_MODE
     LedB.TernOn();
@@ -639,7 +642,7 @@ void back_Line4(int power) {  // Lineセンサ4 が反応しなくなるまで�
 //*****************************************************************************
 // 電池電圧を監視して電圧が下がったらOutOfBounceさせる処理
 
-float checkvoltage(float Vlow) {  // 電池電圧を監視する。
+float checkvoltage(const float Vlow) {  // 電池電圧を監視する。
     int limit = Vlow / 0.01811;
     int voltage = analogRead(Vbatt);  // Get Volatge
     if (voltage < limit) {            // 電圧が Vlow 以下であれば emergency をセットする。
