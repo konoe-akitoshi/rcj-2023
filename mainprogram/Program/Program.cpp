@@ -32,7 +32,8 @@ int sig;
 float x, y;
 Vector2 blue_goal;
 Vector2 yellow_goal;
-float y_sig, b_sig, goal_sig;
+bool exist_yellow_goal;
+bool exist_blue_goal;
 int ball_front;
 
 Vector2 xbee;
@@ -199,9 +200,9 @@ void loop() {
     sig = openMV[1];  //  openMVのデータを sig, x, y に取り込む
     x = x_data_ball;
     y = y_data_ball;
-    b_sig = openMV[27];
+    exist_blue_goal = openMV[27] != 0;
     blue_goal = {x_data_bluegoal, y_data_bluegoal};
-    y_sig = openMV[14];
+    exist_yellow_goal = openMV[14] != 0;
     yellow_goal = {x_data_yellowgoal, y_data_yellowgoal};
 
     if (sig != 0) {  // 中心補正
@@ -209,20 +210,20 @@ void loop() {
         y = 67 - y;
     }
     if (digitalRead(GoalSW)) {  // 青色ゴールをする場合
-        if (y_sig != 0) {
+        if (exist_yellow_goal) {
             yellow_goal.x = 154 - yellow_goal.x;
             yellow_goal.y = yellow_goal.y - 184;
         }
-        if (b_sig != 0) {
+        if (exist_blue_goal) {
             blue_goal.x = 151 - blue_goal.x;
             blue_goal.y = blue_goal.y - 58;
         }
     } else {  // 黄色ゴールをする場合
-        if (y_sig != 0) {
+        if (exist_yellow_goal) {
             yellow_goal.x = 151 - yellow_goal.x;
             yellow_goal.y = yellow_goal.y - 63;
         }
-        if (b_sig != 0) {
+        if (exist_blue_goal) {
             blue_goal.x = 156 - blue_goal.x;
             blue_goal.y = blue_goal.y - 184;
         }
@@ -318,17 +319,18 @@ void keeper(const int rotation) {
     wrap = 0;
 
     Vector2 goal;
+    bool exist_goal;
     if (digitalRead(GoalSW)) {  // 青色の場合
-        goal_sig = y_sig;
+        exist_goal = exist_yellow_goal;
         goal = {-yellow_goal.x, yellow_goal.y};
     } else {  // 黄色の場合
-        goal_sig = b_sig;
+        exist_goal = exist_blue_goal;
         goal = {-blue_goal.x, blue_goal.y};
     }
 
     BuiltinLed.TernOff();
     if (ball_dist - p_ball < 60 || sig == 0) {  // ボールとの距離の差が近い、ボールを任せてゴール前に帰る
-        if (goal_sig == 0) {
+        if (exist_goal == false) {
             motorfunction(PI, 100, -rotation);
         } else if (goal.y > 23) {  // ゴールから遠い
             float z = atan2(goal.x, goal.y - 23) + PI;
@@ -361,12 +363,13 @@ void attacker(const int rotation) {
     const float Pmax = Power;
 
     Vector2 goal;
+    bool exist_goal;
     if (digitalRead(GoalSW)) {  // GoalSWは攻める方向をスイッチに入れる,
         // 相手ゴールの座標は機体中心
-        goal_sig = b_sig;
+        exist_goal = exist_blue_goal;
         goal = {blue_goal.x, -blue_goal.y};
     } else {
-        goal_sig = y_sig;
+        exist_goal = exist_yellow_goal;
         goal = {yellow_goal.x, -yellow_goal.y};
     }
     // PID制御をするので
@@ -402,7 +405,7 @@ void attacker(const int rotation) {
             if (ball_front <= 60) {      // y の距離近い
                 if (ball_front <= 30) {  // 保持
                     data_sum = 0;
-                    if (goal_sig == 0) {  // ゴールなし
+                    if (exist_goal == false) {  // ゴールなし
                         motorfunction(0, 80, -rotation);
                     } else if (goal.y <= 33 && abs(goal.x) < 17) {  // ゴールにけれる距離
                         kick = true;
