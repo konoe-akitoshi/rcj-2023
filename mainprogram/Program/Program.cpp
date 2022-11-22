@@ -29,7 +29,7 @@ bool emergency = false;
 bool lineflag = false;
 
 int sig;
-float x, y;
+Vector2 ball_pos;
 Vector2 blue_goal;
 Vector2 yellow_goal;
 bool exist_yellow_goal;
@@ -196,16 +196,14 @@ void loop() {
     // openMVのデーターを変換
 
     sig = openMV[1];  //  openMVのデータを sig, x, y に取り込む
-    x = x_data_ball;
-    y = y_data_ball;
+    ball_pos = {x_data_ball, y_data_ball};
     exist_blue_goal = openMV[27] != 0;
     blue_goal = {x_data_bluegoal, y_data_bluegoal};
     exist_yellow_goal = openMV[14] != 0;
     yellow_goal = {x_data_yellowgoal, y_data_yellowgoal};
 
     if (sig != 0) {  // 中心補正
-        x = 156 - x;
-        y = 67 - y;
+        ball_pos = Vector2(156, 67) - ball_pos;
     }
     if (digitalRead(GoalSW)) {  // 青色ゴールをする場合
         if (exist_yellow_goal) {
@@ -228,17 +226,17 @@ void loop() {
     }
 
     if(sig != 0) {
-        int fixed_x = x > 4095 ? 4095 : x;
-        uint8_t send_data = sqrt(fixed_x * fixed_x + y * y);
+        int fixed_x = ball_pos.x > 4095 ? 4095 : ball_pos.x;
+        uint8_t send_data = sqrt(fixed_x * fixed_x + ball_pos.y * ball_pos.y);
         Serial1.write(send_data);  // xbee へ出力
     }
 
-    ball_dist = sqrt(x * x + y * y);
+    ball_dist = Vector2::norm(ball_pos);
 
-    Serial.print("ball_x:");
-    Serial.print(x);
-    Serial.print(" ,ball_y:");
-    Serial.print(y);
+    Serial.print("ball_pos.x:");
+    Serial.print(ball_pos.x);
+    Serial.print(" ,ball_pos.y:");
+    Serial.print(ball_pos.y);
     Serial.print(" ,tof_front=");
     Serial.println(ball_front);
     Serial.print(" ,yellowgoal_x=");  // 青ゴールのx座標
@@ -341,8 +339,8 @@ void keeper(const int rotation) {
             motorfunction(0, 0, 0);
         }
     } else {  // ボールとの距離の差が遠い、自ら近づく
-        float az = atan2(x, sqrt(y));
-        motorfunction(az, sqrt(x * x + y * y / 4), -rotation);
+        float az = atan2(ball_pos.x, sqrt(ball_pos.y));
+        motorfunction(az, sqrt(ball_pos.x * ball_pos.x + ball_pos.y * ball_pos.y / 4), -rotation);
     }
 }
 
@@ -371,8 +369,8 @@ void attacker(const int rotation) {
     // Convert coordinates data
     float ball_dir = 0;
     if (blob_count != 0) {   // 物体を検出したら
-        const float fx = 150 - x;  // ロボットが原点に来るようjに座標を変換
-        const float fy = 130 - y;
+        const float fx = 150 - ball_pos.x;  // ロボットが原点に来るようjに座標を変換
+        const float fy = 130 - ball_pos.y;
 
         if (fy > 0) {  // 正面から見たボールの方位(radian)を計算
             ball_dir = atan(fx / fy);
@@ -391,10 +389,10 @@ void attacker(const int rotation) {
     BuiltinLed.TernOff();
 
     static bool kick = false;
-    if (-5 <= y && y <= 30) {  // ボールが前(0 <= y <= 0)にあるとき
+    if (-5 <= ball_pos.y && ball_pos.y <= 30) {  // ボールが前(0 <= y <= 0)にあるとき
         dribbler1(100);
         wrap = 0;
-        if (abs(x) < 5) {                // 目の前
+        if (abs(ball_pos.x) < 5) {                // 目の前
             if (ball_front <= 60) {      // y の距離近い
                 if (ball_front <= 30) {  // 保持
                     data_sum = 0;
@@ -421,41 +419,41 @@ void attacker(const int rotation) {
                     motorfunction(0, 50, -rotation);
                 }
             } else {
-                const float z = atan2(x, y);
+                const float z = atan2(ball_pos.x, ball_pos.y);
                 motorfunction(z, powerLimit(Pmax, Pcontrol), -rotation);  // ココボール前 制御甘い？
             }
         } else {
-            const float z = atan2(x, y);
+            const float z = atan2(ball_pos.x, ball_pos.y);
             motorfunction(z, powerLimit(Pmax, Pcontrol), -rotation);
         }
-    } else if (y <= 0) {  // 後ろにボールがあるとき
+    } else if (ball_pos.y <= 0) {  // 後ろにボールがあるとき
         dribbler1(0);
-        if (abs(x) < 30) {
-            if (y >= -129) {
+        if (abs(ball_pos.x) < 30) {
+            if (ball_pos.y >= -129) {
                 motorfunction(0, 50, -rotation);
                 wrap = 0;
-            } else if (y <= -150) {
-                motorfunction(PI, abs(y) / 2.4, -rotation);
+            } else if (ball_pos.y <= -150) {
+                motorfunction(PI, abs(ball_pos.y) / 2.4, -rotation);
                 wrap = 0;
-            } else if (abs(x) < 5 + abs(y) / 5) {
+            } else if (abs(ball_pos.x) < 5 + abs(ball_pos.y) / 5) {
                 if (goal.x > 0 || wrap == 1) {
-                    const float z = atan2(x + 800, y * 3);
-                    motorfunction(z, sqrt(x * x + y * y) + 10, -rotation);
+                    const float z = atan2(ball_pos.x + 800, ball_pos.y * 3);
+                    motorfunction(z, Vector2::norm(ball_pos) + 10, -rotation);
                     wrap = 1;
                 } else {
-                    const float z = atan2(x - 800, y * 3);
-                    motorfunction(z, sqrt(x * x + y * y) + 10, -rotation);
+                    const float z = atan2(ball_pos.x - 800, ball_pos.y * 3);
+                    motorfunction(z, Vector2::norm(ball_pos) + 10, -rotation);
                     wrap = 0;
                 }
             } else {
                 wrap = 0;
-                const float z = atan2(x, y * 3);
-                motorfunction(z, sqrt(x * x + y * y) + 10, -rotation);
+                const float z = atan2(ball_pos.x, ball_pos.y * 3);
+                motorfunction(z, Vector2::norm(ball_pos) + 10, -rotation);
             }
         } else {
             wrap = 0;
-            const float z = atan2(x, y * 4);
-            motorfunction(z, sqrt(x * x + y * y) + 10, -rotation);
+            const float z = atan2(ball_pos.x, ball_pos.y * 4);
+            motorfunction(z, Vector2::norm(ball_pos) + 10, -rotation);
         }
     } else {  // 30 > y になるとき
         dribbler1(0);
