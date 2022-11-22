@@ -28,8 +28,6 @@ bool exist_yellow_goal;
 bool exist_blue_goal;
 int ball_front;
 
-Vector2 xbee;
-uint8_t xbee_date;
 float p_ball = 255;
 float ball_dist;
 float wrap;
@@ -221,18 +219,13 @@ void loop() {
         }
     }
 
-    if (sig != 0) {  // xbeedate 生成
-        xbee = {x, y};
-    }
-    if (x == 4095) {
-        xbee_date = 255;
-    } else {
-        xbee_date = sqrt(xbee.x * xbee.x + xbee.y * xbee.y);
+    if(sig != 0) {
+        int fixed_x = x > 4095 ? 4095 : x;
+        uint8_t send_data = sqrt(fixed_x * fixed_x + y * y);
+        Serial1.write(send_data);  // xbee へ出力
     }
 
     ball_dist = sqrt(x * x + y * y);
-
-    Serial1.write(xbee_date);  // xbee へ出力
 
     Serial.print("ball_x:");
     Serial.print(x);
@@ -286,7 +279,7 @@ void loop() {
             keeper(gyro);
 
         } else {
-            if (p_ball <= xbee_date) {  // どちらがボールに近いか
+            if (p_ball <= ball_dist) {  // どちらがボールに近いか
                 keeper(gyro);
             } else {
                 attacker(gyro);
