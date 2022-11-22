@@ -19,7 +19,6 @@
 
 VL6180X ToF_front;  // create front ToF object
 
-
 int blob_count;
 int openMV[39];
 
@@ -28,10 +27,10 @@ int gyro_o;
 bool emergency = false;
 bool lineflag = false;
 
-int sig;
 Vector2 ball_pos;
 Vector2 blue_goal;
 Vector2 yellow_goal;
+bool exist_ball;
 bool exist_yellow_goal;
 bool exist_blue_goal;
 int ball_front;
@@ -195,14 +194,14 @@ void loop() {
     }
     // openMVのデーターを変換
 
-    sig = openMV[1];  //  openMVのデータを sig, x, y に取り込む
+    exist_ball = openMV[1] != 0;  //  openMVのデータを sig, x, y に取り込む
     ball_pos = {x_data_ball, y_data_ball};
     exist_blue_goal = openMV[27] != 0;
     blue_goal = {x_data_bluegoal, y_data_bluegoal};
     exist_yellow_goal = openMV[14] != 0;
     yellow_goal = {x_data_yellowgoal, y_data_yellowgoal};
 
-    if (sig != 0) {  // 中心補正
+    if (exist_ball) {  // 中心補正
         ball_pos = Vector2(156, 67) - ball_pos;
     }
     if (digitalRead(GoalSW)) {  // 青色ゴールをする場合
@@ -225,7 +224,7 @@ void loop() {
         }
     }
 
-    if(sig != 0) {
+    if(exist_ball) {
         int fixed_x = ball_pos.x > 4095 ? 4095 : ball_pos.x;
         uint8_t send_data = sqrt(fixed_x * fixed_x + ball_pos.y * ball_pos.y);
         Serial1.write(send_data);  // xbee へ出力
@@ -320,7 +319,7 @@ void keeper(const int rotation) {
     }
 
     BuiltinLed.TernOff();
-    if (ball_dist - p_ball < 60 || sig == 0) {  // ボールとの距離の差が近い、ボールを任せてゴール前に帰る
+    if (ball_dist - p_ball < 60 || exist_ball == false) {  // ボールとの距離の差が近い、ボールを任せてゴール前に帰る
         if (exist_goal == false) {
             motorfunction(PI, 100, -rotation);
         } else if (goal.y > 23) {  // ゴールから遠い
@@ -459,7 +458,7 @@ void attacker(const int rotation) {
         dribbler1(0);
         dribbler2(0);
         wrap = 0;
-        if (sig == 0) {  // ボールがないとき(y = 4096)
+        if (exist_ball == false) {  // ボールがないとき(y = 4096)
             motorfunction(0, 0, 0);
         } else {                          // ボールがあるとき
             motorfunction(0, 80, -rotation);  // これでたまに回り込みがおおげさになる？
