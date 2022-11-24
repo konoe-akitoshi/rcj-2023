@@ -1,4 +1,5 @@
 // なぜか、inoファイルでset filetype=cppするとclangdが正常に機能しなくなるので、cppファイルで作業してinoにコピーする。
+#ifdef PREVENT_SORCING_FROM_ARDUINO
 
 // デバッグ: 1
 // リリース: 0
@@ -672,3 +673,5 @@ void doOutofbound() {    // 強制的に Out of bounds させる。
         delay(25);
     }
 }
+
+#endif

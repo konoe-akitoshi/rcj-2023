@@ -1,7 +1,9 @@
 #ifndef COMPONENT_LED_HPP
 #define COMPONENT_LED_HPP
 
+#ifdef LOCAL_INCLUDE
 #include "../../local/arduino_deps.h"
+#endif
 
 namespace component
 {
