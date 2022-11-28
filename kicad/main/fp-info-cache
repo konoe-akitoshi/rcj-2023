@@ -1,1 +1,484 @@
+113460841781726
+0.main.robot
+AMASS_XT30PW-M_1x02_P5.0mm
+Connector XT30 Vertical Cable Male, https://www.tme.eu/en/Document/3cbfa5cfa544d79584972dd5234a409e/XT30U%20SPEC.pdf
+RC Connector XT30
+0
+4
+2
+0.main.robot
+AMASS_XT30U-F_1x02_P5.0mm_Vertical
+Connector XT30 Vertical Cable Female, https://www.tme.eu/en/Document/3cbfa5cfa544d79584972dd5234a409e/XT30U%20SPEC.pdf
+RC Connector XT30
+0
+2
+2
+0.main.robot
+AMASS_XT30U-M_1x02_P5.0mm_Vertical
+Connector XT30 Vertical Cable Male, https://www.tme.eu/en/Document/3cbfa5cfa544d79584972dd5234a409e/XT30U%20SPEC.pdf
+RC Connector XT30
+0
+2
+2
+0.main.robot
+AMASS_XT30UPB-F_1x02_P5.0mm_Vertical
+Connector XT30 Vertical PCB Female, https://www.tme.eu/en/Document/4acc913878197f8c2e30d4b8cdc47230/XT30UPB%20SPEC.pdf
+RC Connector XT30
+0
+2
+2
+0.main.robot
+AMASS_XT30UPB-M_1x02_P5.0mm_Vertical
+Connector XT30 Vertical PCB Male, https://www.tme.eu/en/Document/4acc913878197f8c2e30d4b8cdc47230/XT30UPB%20SPEC.pdf
+RC Connector XT30
+0
+2
+2
+0.main.robot
+AMASS_XT60-F_1x02_P7.20mm_Vertical
+AMASS female XT60, through hole, vertical, https://www.tme.eu/Document/2d152ced3b7a446066e6c419d84bb460/XT60%20SPEC.pdf
+XT60 female vertical
+0
+2
+2
+0.main.robot
+AMASS_XT60-M_1x02_P7.20mm_Vertical
+AMASS female XT60, through hole, vertical, https://www.tme.eu/Document/2d152ced3b7a446066e6c419d84bb460/XT60%20SPEC.pdf
+XT60 female vertical
+0
+2
+2
+0.main.robot
+CSTLS16M0X55-3Pin_W6.0mm_H3.0mm
+Ceramic Resomator/Filter 6.0x3.0mm^2, length*width=6.0x3.0mm^2 package, package length=6.0mm, package width=3.0mm, 3 pins
+THT ceramic resonator filter
+0
+3
+3
+0.main.robot
+DF61-2P-2.2V
+DF61-2P-2.2V
+Connector
+0
+4
+2
+0.main.robot
+DRV8432DKD
+DKD (R-PDSO-G36)
+Integrated Circuit
+0
+36
+36
+0.main.robot
+FUSE_20mm
+
+
+0
+4
+2
+0.main.robot
+IDC-Header_2x04_P2.54mm_Vertical
+Through hole straight IDC box header, 2x04, 2.54mm pitch, double rows
+Through hole IDC box header THT 2x04 2.54mm double row
+0
+8
+8
+0.main.robot
+IDC-Header_2x08_P2.54mm_Vertical
+Through hole straight IDC box header, 2x08, 2.54mm pitch, double rows
+Through hole IDC box header THT 2x08 2.54mm double row
+0
+16
+16
+0.main.robot
+IDC-Header_2x08_P2.54mm_Vertical_Lock
+Connector IDC Locked, 10 contacts, compatible header: PANCON HE10 (Series 50, (https://www.reboul.fr/storage/00003af6.pdf)
+connector idc locked
+0
+18
+16
+0.main.robot
+JSTB4B-ZR
+B4B-ZR
+Connector
+0
+4
+4
+0.main.robot
+JSTB6B-ZR
+B6B-ZR
+Connector
+0
+6
+6
+0.main.robot
+JSTB8B-ZR
+B8B-ZR (LF)(SN)
+Connector
+0
+8
+8
+0.main.robot
+JSTS4B-ZRLFSN
+S4B-ZR  (LF)(SN)-1
+Connector
+0
+4
+4
+0.main.robot
+JSTS04BXASK1LFSN
+S04B-XASK-1(LF)(SN)
+Connector
+0
+5
+5
+0.main.robot
+JSTS6B-ZRLFSN
+S6B-ZR(LF)(SN)-1
+Connector
+0
+6
+6
+0.main.robot
+JSTS8B-ZRLFSN
+S8B-ZR  (LF)(SN)
+Connector
+0
+8
+8
+0.main.robot
+JST_VH_B2P-VH_1x02_P3.96mm_Vertical
+JST VH series connector, B2P-VH (http://www.jst-mfg.com/product/pdf/eng/eVH.pdf), generated with kicad-footprint-generator
+connector JST VH vertical
+0
+2
+2
+0.main.robot
+JST_VH_S2P-VH_1x02_P3.96mm_Horizontal
+JST VH series connector, S2P-VH (http://www.jst-mfg.com/product/pdf/eng/eVH.pdf), generated with kicad-footprint-generator
+connector JST VH top entry
+0
+2
+2
+0.main.robot
+JY-901
+Through hole straight pin header, 1x06, 2.54mm pitch, single row
+Through hole pin header THT 1x06 2.54mm single row
+0
+12
+12
+0.main.robot
+LED_SMLE13WBC8W1
+LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator
+LED handsolder
+0
+2
+2
+0.main.robot
+MDBT40
+
+
+0
+42
+42
+0.main.robot
+MFS101D-14-Z
+Through hole straight pin header, 1x03, 2.54mm pitch, single row
+Through hole pin header THT 1x03 2.54mm single row
+0
+3
+3
+0.main.robot
+NJL7502L
+LED, diameter 3.0mm, 2 pins
+LED diameter 3.0mm 2 pins
+0
+2
+2
+0.main.robot
+NT_logo
+
+
+0
+0
+0
+0.main.robot
+NTlogo
+
+
+0
+0
+0
+0.main.robot
+NTlogo_s
+
+
+0
+0
+0
+0.main.robot
+NTlogo_ss
+
+
+0
+0
+0
+0.main.robot
+OKL-T3-W12N-C
+OKL-T/3-W5
+Undefined or Miscellaneous
+0
+12
+12
+0.main.robot
+OKL-T_3-W5
+OKL-T/3-W5
+Undefined or Miscellaneous
+0
+12
+12
+0.main.robot
+OLED
+Through hole straight pin header, 1x04, 2.54mm pitch, single row
+Through hole pin header THT 1x04 2.54mm single row
+0
+4
+4
+0.main.robot
+OSC_CSTLS4M00G56-B0
+
+
+0
+3
+3
+0.main.robot
+OSW54K3131A
+LED, diameter 3.0mm, 2 pins
+LED diameter 3.0mm 2 pins
+0
+2
+2
+0.main.robot
+PinHeader_1x03_P1.27mm_Vertical
+Through hole straight pin header, 1x03, 1.27mm pitch, single row
+Through hole pin header THT 1x03 1.27mm single row
+0
+3
+3
+0.main.robot
+Pin_1x07_P1.27mm_SMD
+surface-mounted straight pin header, 1x07, 1.27mm pitch, single row, style 2 (pin 1 right)
+Surface mounted pin header SMD 1x07 1.27mm single row style2 pin1 right
+0
+7
+7
+0.main.robot
+SOIC14
+14-Lead Plastic Small Outline (SL) - Narrow, 3.90 mm Body [SOIC] (see Microchip Packaging Specification 00000049BS.pdf)
+SOIC 1.27
+0
+14
+14
+0.main.robot
+SOP14
+
+
+0
+14
+14
+0.main.robot
+SOP14W
+
+
+0
+14
+14
+0.main.robot
+SW_NKK_B-12CCPRM
+Switch NKK G1xJP http://www.nkkswitches.com/pdf/gwillum.pdf
+SWITCH TOGGLE ILLUM SPDT NKK
+0
+6
+6
+0.main.robot
+SW_SPST_POWER
+
+
+0
+3
+2
+0.main.robot
+SW_SPST_POWER_Linkman3010
+
+
+0
+3
+2
+0.main.robot
+TB6643KQ
+
+
+0
+7
+7
+0.main.robot
+TB6643KQ_L
+
+
+0
+7
+7
+0.main.robot
+THAU13-AB-R
+http://industrial.panasonic.com/cdbs/www-data/pdf/ATV0000/ATV0000CE5.pdf
+SMD SMT SPST EVQPUL EVQPUC
+0
+4
+2
+0.main.robot
+TLP152
+
+
+0
+5
+5
+0.main.robot
+TLP157
+
+
+0
+5
+5
+0.main.robot
+TLP2361
+
+
+0
+5
+5
+0.main.robot
+TVAF06-A020B-R
+タクトスイッチAシリーズ/ MINIタイプ
+SMD SMT SPST EVQPUL EVQPUC
+0
+2
+2
+0.main.robot
+Teensy1.0
+11
+
+0
+27
+27
+0.main.robot
+Teensy1.0++
+20
+
+0
+51
+51
+0.main.robot
+Teensy2.0
+11
+
+0
+31
+31
+0.main.robot
+Teensy2.0++
+20
+
+0
+52
+52
+0.main.robot
+Teensy30_31_32_LC
+
+
+0
+39
+38
+0.main.robot
+Teensy35_36
+
+
+0
+62
+62
+0.main.robot
+Teensy35_36_x
+
+
+0
+86
+86
+0.main.robot
+Teensy35_36_xy
+
+
+0
+86
+86
+0.main.robot
+Teensy40
+
+
+0
+44
+44
+0.main.robot
+Teensy40_SMT
+
+
+0
+54
+54
+0.main.robot
+Teensy41
+
+
+0
+67
+67
+0.main.robot
+Trim-GF063P
+GF063P1KB103
+Resistor
+0
+3
+3
+0.main.robot
+Trim-GF063X
+GF063P1KB103
+Resistor
+0
+3
+3
+0.main.robot
+XBEE-S2C
+
+
+0
+20
+20
+0.main.robot
+XL6009_HW432
+
+
+0
+4
+4
+0.main.robot
+arduino_MEGA2560PRO-EMBED
+<H1>Robotdyn</H1>{return}Robotdyn Mega 2560 PRO (Embed)<BR>{return}<BR>{return}<A HREF="https://robotdyn.com/mega-2560-pro-embed-ch340g-atmega2560-16au.html">https://robotdyn.com/mega-2560-pro-embed-ch340g-atmega2560-16au.html</A>
+
+0
+86
+86
+0.main.robot
+scramble-logo
+
+
+0
+0
 0
