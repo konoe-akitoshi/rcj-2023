@@ -1,0 +1,8 @@
+(sym_lib_table
+  (lib (name "0.main.mega")(type "KiCad")(uri "C:/Users/hidekazu/Dropbox/RoboCup/kicad_lib/0.main.robot.library/0.main.mega.kicad_sym")(options "")(descr ""))
+  (lib (name "rp2040-dev-board")(type "KiCad")(uri "${KIPRJMOD}/rp2040-dev-board.kicad_sym")(options "")(descr ""))
+  (lib (name "1.Robot.prtty")(type "Legacy")(uri "C:/Users/hidekazu/Dropbox/RoboCup/Robot2020/PCB/Kikker20210202/1.Robot.prtty.lib")(options "")(descr "")(disabled))
+  (lib (name "Kikker20200725-rescue")(type "Legacy")(uri "C:/Users/hidekazu/Dropbox/RoboCup/Robot2020/PCB/Kikker20210202/Kikker20200725-rescue.lib")(options "")(descr "")(disabled))
+  (lib (name "2022-11-07_14-13-02")(type "Legacy")(uri "C:/Users/hidekazu/Dropbox/RoboCup/kicad_lib/0.main.robot.library/2022-11-07_14-13-02.lib")(options "")(descr "")(disabled))
+  (lib (name "main20221030-rescue")(type "Legacy")(uri "${KIPRJMOD}/main20221030-rescue.lib")(options "")(descr "")(disabled))
+)

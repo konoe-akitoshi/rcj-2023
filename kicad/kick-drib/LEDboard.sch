@@ -1,0 +1,441 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title "Power Board"
+Date "2021-01-30"
+Rev "Ver. 4.1"
+Comp "N.T."
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Connector_Generic:Conn_01x02 J1
+U 1 1 5E3E8E6A
+P 2500 2300
+F 0 "J1" H 2418 2517 50  0000 C CNN
+F 1 "Power IN1" H 2418 2426 50  0000 C CNN
+F 2 "0.main.robot:AMASS_XT60-M_1x02_P7.20mm_Vertical" H 2500 2300 50  0001 C CNN
+F 3 "~" H 2500 2300 50  0001 C CNN
+	1    2500 2300
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:Fuse F1
+U 1 1 5E3EA04A
+P 3850 2200
+F 0 "F1" V 3653 2200 50  0000 C CNN
+F 1 "Fuse 15A" V 3744 2200 50  0000 C CNN
+F 2 "0.main.robot:FUSE_20mm" V 3780 2200 50  0001 C CNN
+F 3 "~" H 3850 2200 50  0001 C CNN
+	1    3850 2200
+	0    1    1    0   
+$EndComp
+$Comp
+L Switch:SW_SPST SW1
+U 1 1 5E3EAF2B
+P 3300 2200
+F 0 "SW1" H 3300 2435 50  0000 C CNN
+F 1 "SW_SPST" H 3300 2344 50  0000 C CNN
+F 2 "0.main.robot:SW_SPST_POWER" H 3300 2200 50  0001 C CNN
+F 3 "~" H 3300 2200 50  0001 C CNN
+	1    3300 2200
+	-1   0    0    -1  
+$EndComp
+$Comp
+L Connector_Generic:Conn_01x02 J2
+U 1 1 5E3EB180
+P 6050 2300
+F 0 "J2" H 6130 2292 50  0000 L CNN
+F 1 "MD1" H 6130 2201 50  0000 L CNN
+F 2 "Connector_JST:JST_VH_S2P-VH_1x02_P3.96mm_Horizontal" H 6050 2300 50  0001 C CNN
+F 3 "~" H 6050 2300 50  0001 C CNN
+	1    6050 2300
+	1    0    0    1   
+$EndComp
+$Comp
+L Device:LED D1
+U 1 1 5E3F7D13
+P 4100 2800
+F 0 "D1" V 4139 2683 50  0000 R CNN
+F 1 "LED" V 4048 2683 50  0000 R CNN
+F 2 "0.main.robot:LED_SMLE13WBC8W1" H 4100 2800 50  0001 C CNN
+F 3 "~" H 4100 2800 50  0001 C CNN
+	1    4100 2800
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:R R1
+U 1 1 5E3F8FD5
+P 4100 2450
+F 0 "R1" H 4170 2496 50  0000 L CNN
+F 1 "3k" H 4170 2405 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 4030 2450 50  0001 C CNN
+F 3 "~" H 4100 2450 50  0001 C CNN
+	1    4100 2450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2700 2200 3100 2200
+Wire Wire Line
+	4100 2200 4100 2300
+Wire Wire Line
+	4100 2600 4100 2650
+Wire Wire Line
+	2800 3200 4100 3200
+Wire Wire Line
+	5550 2200 5550 2500
+Wire Wire Line
+	5550 3100 5850 3100
+Connection ~ 5550 2200
+Wire Wire Line
+	5550 2200 5850 2200
+Wire Wire Line
+	5550 2500 5850 2500
+Wire Wire Line
+	5550 2800 5850 2800
+Wire Wire Line
+	5550 2800 5550 3100
+Wire Wire Line
+	5850 2300 5750 2300
+Wire Wire Line
+	5750 2300 5750 2600
+Connection ~ 5750 3200
+Wire Wire Line
+	5750 3200 5850 3200
+Wire Wire Line
+	5750 2600 5850 2600
+Connection ~ 5750 2600
+Wire Wire Line
+	5750 2600 5750 2900
+Wire Wire Line
+	5750 2900 5850 2900
+Connection ~ 5750 2900
+Wire Wire Line
+	5750 2900 5750 3200
+$Comp
+L Connector_Generic:Conn_01x02 J3
+U 1 1 5E3FC9C3
+P 6050 2600
+F 0 "J3" H 6130 2592 50  0000 L CNN
+F 1 "MD2" H 6130 2501 50  0000 L CNN
+F 2 "Connector_JST:JST_VH_S2P-VH_1x02_P3.96mm_Horizontal" H 6050 2600 50  0001 C CNN
+F 3 "~" H 6050 2600 50  0001 C CNN
+	1    6050 2600
+	1    0    0    1   
+$EndComp
+$Comp
+L Connector_Generic:Conn_01x02 J5
+U 1 1 5E3FCF3F
+P 6050 2900
+F 0 "J5" H 6130 2892 50  0000 L CNN
+F 1 "Drib" H 6130 2801 50  0000 L CNN
+F 2 "Connector_JST:JST_VH_B2P-VH-FB-B_1x02_P3.96mm_Vertical" H 6050 2900 50  0001 C CNN
+F 3 "~" H 6050 2900 50  0001 C CNN
+	1    6050 2900
+	1    0    0    1   
+$EndComp
+$Comp
+L Connector_Generic:Conn_01x02 J6
+U 1 1 5E3FD530
+P 6050 3200
+F 0 "J6" H 6130 3192 50  0000 L CNN
+F 1 "Drib" H 6130 3101 50  0000 L CNN
+F 2 "Connector_JST:JST_VH_B2P-VH-FB-B_1x02_P3.96mm_Vertical" H 6050 3200 50  0001 C CNN
+F 3 "~" H 6050 3200 50  0001 C CNN
+	1    6050 3200
+	1    0    0    1   
+$EndComp
+Wire Wire Line
+	4100 2950 4100 3200
+$Comp
+L Connector_Generic:Conn_01x06 J10
+U 1 1 5E4012BF
+P 2450 5300
+F 0 "J10" H 2368 5717 50  0000 C CNN
+F 1 "SW1" H 2368 5626 50  0000 C CNN
+F 2 "0.main.robot:JSTB6B-ZR" H 2450 5300 50  0001 C CNN
+F 3 "~" H 2450 5300 50  0001 C CNN
+	1    2450 5300
+	-1   0    0    -1  
+$EndComp
+$Comp
+L Device:LED D2
+U 1 1 5E401C36
+P 3850 5650
+F 0 "D2" V 3889 5533 50  0000 R CNN
+F 1 "LED1_R" V 3798 5533 50  0000 R CNN
+F 2 "0.main.robot:LED_SMLE13WBC8W1" H 3850 5650 50  0001 C CNN
+F 3 "~" H 3850 5650 50  0001 C CNN
+	1    3850 5650
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:LED D3
+U 1 1 5E402476
+P 4250 5650
+F 0 "D3" V 4289 5533 50  0000 R CNN
+F 1 "LED2_G" V 4198 5533 50  0000 R CNN
+F 2 "0.main.robot:LED_SMLE13WBC8W1" H 4250 5650 50  0001 C CNN
+F 3 "~" H 4250 5650 50  0001 C CNN
+	1    4250 5650
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:LED D4
+U 1 1 5E4028DC
+P 4600 5650
+F 0 "D4" V 4639 5533 50  0000 R CNN
+F 1 "LED3_Y" V 4548 5533 50  0000 R CNN
+F 2 "0.main.robot:LED_SMLE13WBC8W1" H 4600 5650 50  0001 C CNN
+F 3 "~" H 4600 5650 50  0001 C CNN
+	1    4600 5650
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:LED D5
+U 1 1 5E402DA3
+P 4900 5650
+F 0 "D5" V 4939 5533 50  0000 R CNN
+F 1 "LED4_B" V 4848 5533 50  0000 R CNN
+F 2 "0.main.robot:LED_SMLE13WBC8W1" H 4900 5650 50  0001 C CNN
+F 3 "~" H 4900 5650 50  0001 C CNN
+	1    4900 5650
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:R R2
+U 1 1 5E4030FA
+P 3850 5250
+F 0 "R2" H 3920 5296 50  0000 L CNN
+F 1 "120" H 3920 5205 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 3780 5250 50  0001 C CNN
+F 3 "~" H 3850 5250 50  0001 C CNN
+	1    3850 5250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R3
+U 1 1 5E4035A9
+P 4250 5250
+F 0 "R3" H 4320 5296 50  0000 L CNN
+F 1 "120" H 4320 5205 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 4180 5250 50  0001 C CNN
+F 3 "~" H 4250 5250 50  0001 C CNN
+	1    4250 5250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R4
+U 1 1 5E40391A
+P 4600 5250
+F 0 "R4" H 4670 5296 50  0000 L CNN
+F 1 "120" H 4670 5205 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 4530 5250 50  0001 C CNN
+F 3 "~" H 4600 5250 50  0001 C CNN
+	1    4600 5250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R5
+U 1 1 5E403BC6
+P 4900 5250
+F 0 "R5" H 4970 5296 50  0000 L CNN
+F 1 "120" H 4970 5205 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 4830 5250 50  0001 C CNN
+F 3 "~" H 4900 5250 50  0001 C CNN
+	1    4900 5250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3850 5400 3850 5500
+Wire Wire Line
+	4250 5400 4250 5500
+Wire Wire Line
+	4600 5400 4600 5500
+Wire Wire Line
+	4900 5400 4900 5500
+Wire Wire Line
+	2950 5600 2950 5950
+Wire Wire Line
+	4900 5950 4900 5800
+Wire Wire Line
+	4600 5800 4600 5950
+Connection ~ 4600 5950
+Wire Wire Line
+	4600 5950 4900 5950
+Wire Wire Line
+	4250 5800 4250 5950
+Connection ~ 4250 5950
+Wire Wire Line
+	4250 5950 4600 5950
+Wire Wire Line
+	3850 5800 3850 5950
+Wire Wire Line
+	3850 5950 4250 5950
+Wire Wire Line
+	2650 5100 2950 5100
+Wire Wire Line
+	2950 5100 2950 4850
+Wire Wire Line
+	2950 4850 4900 4850
+Wire Wire Line
+	4900 4850 4900 5100
+Wire Wire Line
+	2650 5200 3050 5200
+Wire Wire Line
+	3050 5200 3050 4900
+Wire Wire Line
+	3050 4900 4600 4900
+Wire Wire Line
+	4600 4900 4600 5100
+Wire Wire Line
+	2650 5400 3150 5400
+Wire Wire Line
+	3150 5400 3150 4950
+Wire Wire Line
+	3150 4950 4250 4950
+Wire Wire Line
+	4250 4950 4250 5100
+Wire Wire Line
+	2650 5500 3250 5500
+Wire Wire Line
+	3250 5500 3250 5000
+Wire Wire Line
+	3250 5000 3850 5000
+Wire Wire Line
+	3850 5000 3850 5100
+Wire Wire Line
+	2650 5600 2950 5600
+NoConn ~ 2650 5300
+$Comp
+L Connector_Generic:Conn_01x02 J7
+U 1 1 5E404299
+P 5250 3800
+F 0 "J7" H 5330 3792 50  0000 L CNN
+F 1 "MAIN" H 5330 3701 50  0000 L CNN
+F 2 "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical" H 5250 3800 50  0001 C CNN
+F 3 "~" H 5250 3800 50  0001 C CNN
+	1    5250 3800
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector_Generic:Conn_01x02 J8
+U 1 1 5E404675
+P 5750 3800
+F 0 "J8" H 5830 3792 50  0000 L CNN
+F 1 "Kicker" H 5830 3701 50  0000 L CNN
+F 2 "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical" H 5750 3800 50  0001 C CNN
+F 3 "~" H 5750 3800 50  0001 C CNN
+	1    5750 3800
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector_Generic:Conn_01x02 J9
+U 1 1 5E404BA3
+P 6200 3800
+F 0 "J9" H 6280 3792 50  0000 L CNN
+F 1 "AUX" H 6280 3701 50  0000 L CNN
+F 2 "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical" H 6200 3800 50  0001 C CNN
+F 3 "~" H 6200 3800 50  0001 C CNN
+	1    6200 3800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4100 2200 4900 2200
+Wire Wire Line
+	4100 3200 4650 3200
+Connection ~ 4100 3200
+Wire Wire Line
+	6000 3800 6000 3600
+Wire Wire Line
+	4900 3600 4900 2200
+Connection ~ 4900 2200
+Wire Wire Line
+	4900 2200 5200 2200
+Wire Wire Line
+	6000 3900 6000 4100
+Wire Wire Line
+	6000 4100 5550 4100
+Wire Wire Line
+	4650 4100 4650 3200
+Connection ~ 4650 3200
+Wire Wire Line
+	4650 3200 5750 3200
+Wire Wire Line
+	5050 3800 5050 3600
+Wire Wire Line
+	4900 3600 5050 3600
+Connection ~ 5050 3600
+Wire Wire Line
+	5050 3600 5550 3600
+Connection ~ 5550 3600
+Wire Wire Line
+	5550 3600 6000 3600
+Wire Wire Line
+	5550 3600 5550 3800
+Wire Wire Line
+	5550 3900 5550 4100
+Connection ~ 5550 4100
+Wire Wire Line
+	5550 4100 5050 4100
+Wire Wire Line
+	5050 3900 5050 4100
+Connection ~ 5050 4100
+Wire Wire Line
+	5050 4100 4650 4100
+Connection ~ 5200 2200
+Wire Wire Line
+	5200 2200 5550 2200
+Wire Wire Line
+	5200 2800 5550 2800
+Connection ~ 5550 2800
+Wire Wire Line
+	5200 2200 5200 2800
+$Comp
+L Connector_Generic:Conn_01x02 J4
+U 1 1 60001360
+P 2500 2850
+F 0 "J4" H 2418 3067 50  0000 C CNN
+F 1 "Power IN2" H 2418 2976 50  0000 C CNN
+F 2 "0.main.robot:AMASS_XT60-M_1x02_P7.20mm_Vertical" H 2500 2850 50  0001 C CNN
+F 3 "~" H 2500 2850 50  0001 C CNN
+	1    2500 2850
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	2700 2850 2800 2850
+Wire Wire Line
+	2800 2850 2800 3200
+Wire Wire Line
+	2700 2300 2800 2300
+Wire Wire Line
+	2800 2300 2800 2750
+Wire Wire Line
+	2800 2750 2700 2750
+Wire Wire Line
+	3500 2200 3700 2200
+Wire Wire Line
+	4000 2200 4100 2200
+Connection ~ 4100 2200
+$Comp
+L Jumper:Jumper_2_Bridged JP1
+U 1 1 6002089C
+P 3400 5950
+F 0 "JP1" H 3400 6145 50  0000 C CNN
+F 1 "Jumper_2_Bridged" H 3400 6054 50  0000 C CNN
+F 2 "Connector_PinHeader_1.27mm:PinHeader_1x02_P1.27mm_Vertical" H 3400 5950 50  0001 C CNN
+F 3 "~" H 3400 5950 50  0001 C CNN
+	1    3400 5950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2950 5950 3200 5950
+Wire Wire Line
+	3600 5950 3850 5950
+Connection ~ 3850 5950
+$EndSCHEMATC
