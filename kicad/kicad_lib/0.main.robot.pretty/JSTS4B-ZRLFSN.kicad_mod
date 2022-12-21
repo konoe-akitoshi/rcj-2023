@@ -1,6 +1,6 @@
 (footprint "JSTS4B-ZRLFSN" (version 20211014) (generator pcbnew)
   (layer "F.Cu")
-  (tedit 6200C9AA)
+  (tedit 639D433C)
   (descr "S4B-ZR  (LF)(SN)-1")
   (tags "Connector")
   (attr through_hole)
@@ -38,6 +38,11 @@
   (pad "4" thru_hole circle (at 2.25 0) (size 1.251 1.251) (drill 0.73) (layers *.Cu *.Mask) (tstamp a8735a9b-11e9-42e2-a13e-a8313d3ecb04))
   (model "C:/Users/hidekazu/Dropbox/RoboCup/kicad_lib/0.main.robot.pretty/Step/S4B-ZR.STEP"
     (offset (xyz -5.2 2.5 3.7))
+    (scale (xyz 1 1 1))
+    (rotate (xyz -90 0 0))
+  )
+  (model "C:/Users/first/Documents/rcj-2023/kicad/kicad_lib/0.main.robot.pretty/Step/S4B-ZR.STEP"
+    (offset (xyz -7.5 2.4 3.7))
     (scale (xyz 1 1 1))
     (rotate (xyz -90 0 0))
   )

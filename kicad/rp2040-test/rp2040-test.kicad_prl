@@ -62,11 +62,11 @@
       35,
       36
     ],
-    "visible_layers": "fffffff_ffffffff",
+    "visible_layers": "0001000_ffffffff",
     "zone_display_mode": 0
   },
   "meta": {
-    "filename": "rp2040-large.kicad_prl",
+    "filename": "rp2040-test.kicad_prl",
     "version": 3
   },
   "project": {

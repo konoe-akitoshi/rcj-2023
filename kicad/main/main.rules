@@ -1,0 +1,149 @@
+
+(rules PCB main
+  (snap_angle 
+    fortyfive_degree
+  )
+  (autoroute_settings
+    (fanout off)
+    (autoroute on)
+    (postroute on)
+    (vias on)
+    (via_costs 50)
+    (plane_via_costs 5)
+    (start_ripup_costs 100)
+    (start_pass_no 144)
+    (layer_rule F.Cu
+      (active on)
+      (preferred_direction horizontal)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 2.6)
+    )
+    (layer_rule B.Cu
+      (active on)
+      (preferred_direction vertical)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 1.6)
+    )
+  )
+  (rule
+    (width 250.0)
+    (clear 200.0)
+    (clear 125.0 (type smd_to_turn_gap))
+  )
+  (padstack "Via[0-1]_800:400_um"
+    (shape
+      (circle F.Cu 800.0 0.0 0.0)
+    )
+    (shape
+      (circle B.Cu 800.0 0.0 0.0)
+    )
+    (attach off)
+  )
+  (padstack "Via[0-1]_1500:1000_um"
+    (shape
+      (circle F.Cu 1500.0 0.0 0.0)
+    )
+    (shape
+      (circle B.Cu 1500.0 0.0 0.0)
+    )
+    (attach off)
+  )
+  (via 
+    "Via[0-1]_800:400_um-2mm" "Via[0-1]_800:400_um" 2mm
+  )
+  (via 
+    "Via[0-1]_1500:1000_um-2mm" "Via[0-1]_1500:1000_um" 2mm
+  )
+  (via 
+    "Via[0-1]_800:400_um" "Via[0-1]_800:400_um" default
+  )
+  (via 
+    "Via[0-1]_1500:1000_um" "Via[0-1]_1500:1000_um" default
+  )
+  (via 
+    "Via[0-1]_800:400_um-kicad_default" "Via[0-1]_800:400_um" "kicad_default"
+  )
+  (via 
+    "Via[0-1]_1500:1000_um-kicad_default" "Via[0-1]_1500:1000_um" "kicad_default"
+  )
+  (via_rule
+    2mm "Via[0-1]_800:400_um-2mm"
+  )
+  (via_rule
+    default "Via[0-1]_800:400_um"
+  )
+  (via_rule
+    "kicad_default" "Via[0-1]_800:400_um-kicad_default"
+  )
+  (class default
+    (clearance_class default)
+    (via_rule default)
+    (rule
+      (width 250.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class "kicad_default"
+    (clearance_class "kicad_default")
+    (via_rule "kicad_default")
+    (rule
+      (width 250.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class 2mm
+    (clearance_class 2mm)
+    (via_rule 2mm)
+    (rule
+      (width 2000.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class class1
+    "Net-(C1-Pad1)" "SW1_6" +5V "SW1_3" RESET +15V +3.3VA Vbatt
+    "Net-(J16-Pad1)" "Net-(C8-Pad1)" +1V1 "SCL_IMU" "Net-(D1-Pad2)" "Net-(C11-Pad1)" "Net-(D4-Pad2)" "Net-(C19-Pad1)"
+    "Net-(D7-Pad2)" "Net-(C25-Pad1)" "Net-(D9-Pad2)" "Net-(D12-Pad2)" /rp2040/GPIO14{slash}19 /rp2040/GPIO15{slash}20 "/Sheet63625160/SCL_1" "/Sheet63625160/SDA_1"
+    /rp2040/GPIO08{slash}11 "Net-(D13-Pad1)" /rp2040/GPIO26{slash}31 "Net-(D13-Pad2)" "Net-(D6-Pad2)" /rp2040/GPIO22{slash}29 "SDA_IMU" "Net-(J17-Pad1)"
+    "Net-(J17-Pad3)" "Net-(J17-Pad4)" "Net-(D14-Pad1)" "Net-(D17-Pad2)" "Net-(D15-Pad1)" "Net-(D18-Pad2)" "Net-(D16-Pad1)" "Net-(J4-Pad3)"
+    "Net-(J6-Pad3)" "Net-(J1-Pad5)" "Net-(J1-Pad6)" Vcc1 "Net-(J16-Pad2)" "Net-(J20-Pad1)" "Net-(J16-Pad3)" /rp2040/GPIO13{slash}17
+    /rp2040/GPIO21{slash}27 "Net-(Q1-Pad3)" /rp2040/GPIO12{slash}16 "Net-(J16-Pad4)" "Net-(J16-Pad5)" "Net-(J20-Pad2)" "Net-(J20-Pad4)" "Net-(J21-Pad1)"
+    /rp2040/GPIO00{slash}01 /rp2040/GPIO01{slash}02 /rp2040/GPIO09{slash}12 "Net-(J21-Pad2)" "Net-(J19-Pad1)" "Net-(J21-Pad4)" "Net-(J23-Pad3)" "SW1_5"
+    "SW1_2" "SW1_1" "Net-(J23-Pad1)" "SW1_4" "Net-(J16-Pad6)" "ADC_VREF" "USB_DP" "USB_DM"
+    "QSPI_SS" "Net-(J24-Pad1)" /rp2040/GPIO20{slash}26 /rp2040/GPIO28{slash}34 /rp2040/GPIO16{slash}21 /rp2040/GPIO18{slash}24 "Net-(J23-Pad4)" /rp2040/GPIO17{slash}22
+    /rp2040/GPIO19{slash}25 /LineTrimmer/SCL /LineTrimmer/SDA "Net-(J24-Pad2)" Line5 "Net-(J24-Pad3)" "Net-(J24-Pad4)" "Net-(R9-Pad2)"
+    "QSPI_SD3" "QSPI_CLK" "QSPI_SD0" "QSPI_SD2" "QSPI_SD1" "Net-(R13-Pad1)" "Net-(R8-Pad1)" "Net-(R14-Pad1)"
+    "Net-(R10-Pad1)" "Net-(R19-Pad1)" "Net-(R23-Pad1)" "Net-(R11-Pad2)" "Net-(R12-Pad1)" "Net-(R28-Pad1)" "Net-(R30-Pad1)" "Net-(R30-Pad2)"
+    "Net-(R33-Pad1)" "Net-(R34-Pad1)" "Net-(R36-Pad1)" "Net-(R25-Pad1)" "Net-(R38-Pad2)" "Net-(R39-Pad2)" "Net-(R37-Pad1)" "Net-(R40-Pad1)"
+    "Net-(U5-Pad7)" "Net-(R43-Pad1)" "Net-(U5-Pad8)" "unconnected-(U5-Pad9)" "unconnected-(U5-Pad20)" "Net-(U2-Pad11)" "Net-(U2-Pad12)" "Net-(U2-Pad13)"
+    "Net-(U2-Pad14)" "unconnected-(U3-Pad12)" "unconnected-(U4-Pad8)" "unconnected-(U4-Pad9)" "unconnected-(U4-Pad10)" "unconnected-(U4-Pad11)" "unconnected-(U4-Pad12)" "unconnected-(U5-Pad25)"
+    "unconnected-(U5-Pad26)" "unconnected-(U5-Pad30)" "unconnected-(U5-Pad31)" "unconnected-(U6-Pad1)" "unconnected-(U6-Pad2)" "Net-(U6-Pad7)" "Net-(U6-Pad8)" "unconnected-(U6-Pad9)"
+    "unconnected-(U6-Pad11)" "unconnected-(U6-Pad12)" "unconnected-(U7-Pad25)" "unconnected-(U6-Pad13)" "unconnected-(U6-Pad14)" "unconnected-(U6-Pad20)" "unconnected-(U6-Pad30)" "unconnected-(U6-Pad31)"
+    "unconnected-(U6-Pad32)" "Net-(U7-Pad20)" "unconnected-(U7-Pad24)" "unconnected-(U7-Pad35)" "unconnected-(U7-Pad36)" "unconnected-(U7-Pad37)" "unconnected-(U7-Pad41)" "unconnected-(U10-Pad1)"
+    "unconnected-(U10-Pad3)" "Net-(R41-Pad2)" "Net-(J19-Pad2)" "Net-(J19-Pad4)" "unconnected-(U10-Pad8)" "Net-(R37-Pad2)" "unconnected-(U10-Pad13)" "Net-(R40-Pad2)"
+    "Net-(R45-Pad1)" "Net-(R44-Pad1)" "unconnected-(U10-Pad18)" "Net-(R42-Pad1)" "unconnected-(U11-Pad6)" "unconnected-(U11-Pad8)"
+    (clearance_class default)
+    (via_rule default)
+    (rule
+      (width 150.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class class2
+    (clearance_class default)
+    (via_rule default)
+    (rule
+      (width 150.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+)

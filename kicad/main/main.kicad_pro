@@ -48,8 +48,20 @@
           "min_clearance": 0.508
         }
       },
-      "diff_pair_dimensions": [],
-      "drc_exclusions": [],
+      "diff_pair_dimensions": [
+        {
+          "gap": 0.0,
+          "via_gap": 0.0,
+          "width": 0.0
+        }
+      ],
+      "drc_exclusions": [
+        "silk_over_copper|186452380|62023809|097b5a2b-c991-42cb-a40c-62b088306876|8e2ddcb6-1f14-4d35-8094-b930281f1fe9",
+        "silk_over_copper|186452380|64214285|097b5a2b-c991-42cb-a40c-62b088306876|73508cb7-13ab-4dfa-ac5e-90bdce6b7e6d",
+        "silk_over_copper|189452380|64214285|11dd791e-8633-4833-82ac-a67fc234ff2e|99e519af-519c-47cd-8813-a83abe1d281e",
+        "silk_over_copper|189498690|63976190|11dd791e-8633-4833-82ac-a67fc234ff2e|99e519af-519c-47cd-8813-a83abe1d281e",
+        "silk_over_copper|189500000|62261904|11dd791e-8633-4833-82ac-a67fc234ff2e|618bb503-6772-4ed5-82ef-53a2c8edb7b4"
+      ],
       "meta": {
         "version": 2
       },
@@ -112,8 +124,27 @@
         "solder_mask_min_width": 0.0,
         "use_height_for_length_calcs": true
       },
-      "track_widths": [],
-      "via_dimensions": [],
+      "track_widths": [
+        0.0,
+        0.2,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "via_dimensions": [
+        {
+          "diameter": 0.0,
+          "drill": 0.0
+        },
+        {
+          "diameter": 1.5,
+          "drill": 1.0
+        },
+        {
+          "diameter": 2.5,
+          "drill": 2.0
+        }
+      ],
       "zones_allow_external_fillets": false,
       "zones_use_no_outline": true
     },
@@ -354,6 +385,24 @@
         "via_diameter": 0.8,
         "via_drill": 0.4,
         "wire_width": 6.0
+      },
+      {
+        "bus_width": 12.0,
+        "clearance": 0.0,
+        "diff_pair_gap": 0.25,
+        "diff_pair_via_gap": 0.25,
+        "diff_pair_width": 0.2,
+        "line_style": 0,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "name": "2mm",
+        "nets": [],
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 2.0,
+        "via_diameter": 0.8,
+        "via_drill": 0.4,
+        "wire_width": 6.0
       }
     ],
     "meta": {
@@ -365,8 +414,8 @@
     "last_paths": {
       "gencad": "",
       "idf": "",
-      "netlist": "",
-      "specctra_dsn": "",
+      "netlist": "../../../../../Program Files/KiCad/6.0/",
+      "specctra_dsn": "main.dsn",
       "step": "",
       "vrml": ""
     },
@@ -426,6 +475,10 @@
     [
       "cdf4e69f-14bf-424d-8e1d-1110bc7998e1",
       "rp2040"
+    ],
+    [
+      "70fde810-700d-485a-8c97-2da167292bf1",
+      "switch_section"
     ]
   ],
   "text_variables": {}

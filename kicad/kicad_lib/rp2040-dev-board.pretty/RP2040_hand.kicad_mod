@@ -1,6 +1,6 @@
 (footprint "RP2040_hand" (version 20211014) (generator pcbnew)
   (layer "F.Cu")
-  (tedit 622DA7B0)
+  (tedit 639D4431)
   (descr "RP 2040")
   (tags "Integrated Circuit")
   (attr smd)
@@ -93,6 +93,11 @@
   (pad "57" thru_hole rect (at 0 0) (size 3.2 3.2) (drill 2.8) (layers *.Cu *.Mask)
     (zone_connect 2) (tstamp acaace67-bd95-4b8d-8e85-f7b9d22b1332))
   (model "RP2040.stp"
+    (offset (xyz 0 0 0))
+    (scale (xyz 1 1 1))
+    (rotate (xyz 0 0 0))
+  )
+  (model "C:/Users/first/Documents/rcj-2023/kicad/kicad_lib/0.main.robot.pretty/Step/RP2040_QFN_PACKAGE.STEP"
     (offset (xyz 0 0 0))
     (scale (xyz 1 1 1))
     (rotate (xyz 0 0 0))
