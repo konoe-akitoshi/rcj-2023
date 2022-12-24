@@ -16,6 +16,7 @@
 #include "NT_Robot202111.h"
 #include "motorDRV6.h"
 #include "components/led_light.hpp"
+#include "components/xbee.hpp"
 #include "components/open_mv.hpp"
 #include "types/vector2.hpp"
 
@@ -70,6 +71,7 @@ const component::LedLight LedG(PIN_LED_G);
 const component::LedLight LedB(PIN_LED_B);
 const component::LedLight BuiltinLed(LED_BUILTIN);
 
+const component::XBee XBee(9600);
 component::OpenMV OpenMV(19200);
 
 void setup() {
@@ -143,7 +145,6 @@ void setup() {
     Serial.println("Initialize 3 ...");
 
     Serial2.begin(115200);  // WT901 IMU Sener
-    Serial1.begin(9600);    // xbee
 
     // Caution D29 -> Interrupt5
 
@@ -173,10 +174,8 @@ void loop() {
     const int gyro = gyro_o;
 
     // Xbeeからの信号を読む
-    if (Serial1.available() > 0) {
-        while (Serial1.available() > 0) {
-            p_ball = Serial1.read();
-        }
+    if (XBee.has_data()) {
+        p_ball = XBee.read_data();
     }
     // openMVのデーターを変換
 
@@ -212,8 +211,8 @@ void loop() {
 
     if(exist_ball) {
         int fixed_x = ball_pos.x > 4095 ? 4095 : ball_pos.x;
-        uint8_t send_data = sqrt(fixed_x * fixed_x + ball_pos.y * ball_pos.y);
-        Serial1.write(send_data);  // xbee へ出力
+        int send_data = sqrt(fixed_x * fixed_x + ball_pos.y * ball_pos.y);
+        XBee.send_data(send_data);
     }
 
     ball_dist = Vector2::norm(ball_pos);
