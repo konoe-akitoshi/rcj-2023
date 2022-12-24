@@ -151,9 +151,6 @@ void loop() {
     blob_count = OpenMV.blob_count();
 
     lineflag = false;
-    if (lineflag) {
-        lineflag = false;
-    }
 
     // get gyrodata
     if (Serial2.available() > 0) {
