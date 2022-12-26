@@ -18,6 +18,7 @@
 #include "components/led_light.hpp"
 #include "components/xbee.hpp"
 #include "components/open_mv.hpp"
+#include "components/battery.hpp"
 #include "types/vector2.hpp"
 
 VL6180X ToF_front;  // create front ToF object
@@ -26,7 +27,6 @@ int blob_count;
 
 int gyro_o;
 
-bool emergency = false;
 bool lineflag = false;
 
 Vector2 ball_pos;
@@ -61,7 +61,7 @@ constexpr int Power = 70;  // initial motor power
 
 // Low limit voltage 1.1*12 = 13.2
 // Mi-NH なら 13.0, Li-po なら 13.5 (Li-po は過放電するので注意！)
-constexpr int Vlow = 13.0;
+const component::Battery Battery(Vbatt, 13.0);
 
 const component::LedLight NativeLed(PIN_NATIVE_LED);
 const component::LedLight LineLed(PIN_LINE_LED);
@@ -73,6 +73,7 @@ const component::LedLight BuiltinLed(LED_BUILTIN);
 
 const component::XBee XBee(9600);
 component::OpenMV OpenMV(19200);
+
 
 void setup() {
     pinMode(StartSW, INPUT_PULLUP);
@@ -236,26 +237,23 @@ void loop() {
         digitalWrite(SWR, HIGH);
         digitalWrite(SWG, HIGH);
 
-        // checkvoltage(Vlow);  //  電池の電圧をチェック
-        if (emergency) {
+        if(Battery.is_emergency()) {
             Serial.println("");
-            Serial.println("  Battery Low!");
-            doOutofbound();  //  故障なのでコートの外へ
-        }
-
-        checkvoltage(Vlow);
-        if (emergency) {        // 電池の電圧が下がっていたら
-            LineLed.TernOff();  // ラインセンサのLEDを消灯
-            motorFree();        // モーターを停止
+            Serial.print("  Battery Low!: ");
+            Serial.println(Battery.voltage());
+            doOutofbound();
+            LineLed.TernOff();
+            motorFree();
             while (true) {
-                digitalWrite(SWR, LOW);
-                digitalWrite(SWG, LOW);
-                delay(300);
                 digitalWrite(SWR, HIGH);
                 digitalWrite(SWG, HIGH);
                 delay(300);
+                digitalWrite(SWR, LOW);
+                digitalWrite(SWG, LOW);
+                delay(300);
             }
         }
+
         LineLed.TernOn();  // ラインセンサのLEDを点灯
         if (lineflag) {
             lineflag = false;
@@ -607,17 +605,6 @@ void back_Line4(const int power) {  // Lineセンサ4 が反応しなくなる�
 
 //*****************************************************************************
 // 電池電圧を監視して電圧が下がったらOutOfBounceさせる処理
-
-float checkvoltage(const float Vlow) {  // 電池電圧を監視する。
-    int limit = Vlow / 0.01811;
-    int voltage = analogRead(Vbatt);  // Get Volatge
-    if (voltage < limit) {            // 電圧が Vlow 以下であれば emergency をセットする。
-        emergency = true;
-        digitalWrite(SWG, HIGH);
-        digitalWrite(SWR, HIGH);
-    }
-    return voltage * 0.01811;
-}
 
 void doOutofbound() {    // 強制的に Out of bounds させる。
     detachInterrupt(5);  // Out of bounds するために割込みを禁止する
