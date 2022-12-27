@@ -25,8 +25,6 @@ VL6180X ToF_front;  // create front ToF object
 
 int blob_count;
 
-int gyro_o;
-
 bool lineflag = false;
 
 Vector2 ball_pos;
@@ -154,6 +152,8 @@ void setup() {
 }
 
 void loop() {
+    static int gyro_o;
+
     LedB.TernOff();
     OpenMV.wait_data();
     blob_count = OpenMV.blob_count();
