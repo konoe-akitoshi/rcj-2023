@@ -34,8 +34,8 @@ constexpr int LINE4A = A26;
 constexpr int LINE5D = 28;
 constexpr int LINE5A = 39;
 
-constexpr int StartSW = 16;
-constexpr int GoalSW = 14;
+constexpr int PIN_START_SWITCH = 16;
+constexpr int PIN_GOAL_SWITCH = 14;
 constexpr int goal_setup = 14;
 constexpr int SWG = 17;  // Switch LED Green
 constexpr int SWR = 15;  // Switch LED Red
@@ -50,7 +50,7 @@ constexpr int Kick_Dir = 12;
 
 constexpr int INT_29 = 29;
 
-constexpr int Vbatt = 33;  // Battery Voltage
+constexpr int PIN_BATTERY_VOLYAGE = 33;  // Battery Voltage
                            // 0.01811V/count
 
 constexpr int PIN_LED_B = 20;

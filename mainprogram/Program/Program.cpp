@@ -61,7 +61,7 @@ constexpr int Power = 70;  // initial motor power
 
 // Low limit voltage 1.1*12 = 13.2
 // Mi-NH なら 13.0, Li-po なら 13.5 (Li-po は過放電するので注意！)
-const component::Battery Battery(Vbatt, 13.0);
+const component::Battery Battery(PIN_BATTERY_VOLYAGE, 13.0);
 
 const component::LedLight NativeLed(PIN_NATIVE_LED);
 const component::LedLight LineLed(PIN_LINE_LED);
@@ -75,7 +75,7 @@ const component::XBee XBee(9600);
 component::OpenMV OpenMV(19200);
 
 void setup() {
-    pinMode(StartSW, INPUT_PULLUP);
+    pinMode(PIN_START_SWITCH, INPUT_PULLUP);
 
     pinMode(LINE1D, INPUT_PULLUP);
     pinMode(LINE2D, INPUT_PULLUP);
@@ -97,7 +97,7 @@ void setup() {
     pinMode(Aux1, INPUT);
     pinMode(Aux2, INPUT);
 
-    pinMode(GoalSW, INPUT_PULLUP);
+    pinMode(PIN_GOAL_SWITCH, INPUT_PULLUP);
 
     digitalWrite(Kick1, LOW);
     digitalWrite(Kick_Dir, LOW);
@@ -158,7 +158,6 @@ void loop() {
     LedB.TernOff();
     OpenMV.wait_data();
     blob_count = OpenMV.blob_count();
-
     lineflag = false;
 
     // get gyrodata
@@ -189,7 +188,7 @@ void loop() {
         ball_pos = Vector2(156, 67) - ball_pos;
     }
 
-    if (digitalRead(GoalSW)) {  // 青色ゴールをする場合
+    if (digitalRead(PIN_GOAL_SWITCH)) {  // 青色ゴールをする場合
         if (exist_yellow_goal) {
             yellow_goal.x = 154 - yellow_goal.x;
             yellow_goal.y = yellow_goal.y - 184;
@@ -232,7 +231,7 @@ void loop() {
 
     ball_front = ToF_front.readRangeSingleMillimeters();
 
-    if (digitalRead(StartSW) == LOW) {  // STartSW == Low でスタート
+    if (digitalRead(PIN_START_SWITCH) == LOW) {  // PIN_START_SWITCH == Low でスタート
         digitalWrite(SWR, HIGH);
         digitalWrite(SWG, HIGH);
 
@@ -292,7 +291,7 @@ void keeper(const int rotation) {
 
     Vector2 goal;
     bool exist_goal;
-    if (digitalRead(GoalSW)) {  // 青色の場合
+    if (digitalRead(PIN_GOAL_SWITCH)) {  // 青色の場合
         exist_goal = exist_yellow_goal;
         goal = {-yellow_goal.x, yellow_goal.y};
     } else {  // 黄色の場合
@@ -336,7 +335,7 @@ void attacker(const int rotation) {
 
     Vector2 goal;
     bool exist_goal;
-    if (digitalRead(GoalSW)) {  // GoalSWは攻める方向をスイッチに入れる,
+    if (digitalRead(PIN_GOAL_SWITCH)) {  // PIN_GOAL_SWITCHは攻める方向をスイッチに入れる,
         // 相手ゴールの座標は機体中心
         exist_goal = exist_blue_goal;
         goal = {blue_goal.x, -blue_goal.y};
@@ -480,7 +479,7 @@ int powerLimit(const int max, const int power) {
 void intHandle() {  // Lineを踏んだらlineflagをセットして止まる。
     LedB.TernOn();
 
-    if (digitalRead(StartSW) == HIGH) {  // スイッチがOFFなら何もしない。
+    if (digitalRead(PIN_START_SWITCH) == HIGH) {  // スイッチがOFFなら何もしない。
         return;
     }
 
@@ -610,7 +609,7 @@ void doOutofbound() {
     LineLed.TernOff();
 
     while (true) {
-        if (digitalRead(StartSW) == LOW) {
+        if (digitalRead(PIN_START_SWITCH) == LOW) {
             motorfunction(PI / 2.0, 30, 0);
         } else {  // スタートスイッチが切られたら止まる
             motorfunction(PI / 2.0, 0, 0);
