@@ -172,7 +172,9 @@ void loop() {
     // get gyrodata
     if (Serial2.available() > 0) {
         while (Serial2.available() != 0) {  //  Gyro の方位データを gyro に取り込む
-            gyro_o = Serial2.read();
+            // Serial2の送信側がint8_tで送ってるので、intで受け取ると負の数が期待通り受け取れない。
+            // そのため、int8_tにキャストする必要がある。
+            gyro_o = (int8_t)Serial2.read();
         }
     }
 
