@@ -40,7 +40,6 @@ void back_Line1(const int power);
 void back_Line2(const int power);
 void back_Line3(const int power);
 void back_Line4(const int power);
-float checkvoltage(const float Vlow);
 void doOutofbound();
 
 // 制御パラメータの設定
@@ -255,10 +254,7 @@ void loop() {
     }
 
     LineLed.TernOn();  // ラインセンサのLEDを点灯
-    if (lineflag) {
-        lineflag = false;
-    }
-    // PID
+    lineflag = false;
 
     // 役割判定
     if (digitalRead(Aux1) == LOW) {
