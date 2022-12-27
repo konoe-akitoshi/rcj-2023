@@ -14,22 +14,22 @@
 
 //  IOピンを設定する
 
-const int CH1DIR1 = 43;
-const int CH1DIR2 = 44;
-const int CH2DIR1 = 45;
-const int CH2DIR2 = 46;
-const int CH3DIR1 = 47;
-const int CH3DIR2 = 48;
-const int CH4DIR1 = 49;
-const int CH4DIR2 = 50;
+constexpr int CH1DIR1 = 43;
+constexpr int CH1DIR2 = 44;
+constexpr int CH2DIR1 = 45;
+constexpr int CH2DIR2 = 46;
+constexpr int CH3DIR1 = 47;
+constexpr int CH3DIR2 = 48;
+constexpr int CH4DIR1 = 49;
+constexpr int CH4DIR2 = 50;
 
-const int CH1PWM = 35;
-const int CH2PWM = 36;
-const int CH3PWM = 37;
-const int CH4PWM = 38;
+constexpr int CH1PWM = 35;
+constexpr int CH2PWM = 36;
+constexpr int CH3PWM = 37;
+constexpr int CH4PWM = 38;
 
-const int DR1PWM = 6;
-const int DR2PWM = 6;
+constexpr int DR1PWM = 6;
+constexpr int DR2PWM = 6;
 
 // Servo myservo1, myservo2; // create servo object to control a servo
 
