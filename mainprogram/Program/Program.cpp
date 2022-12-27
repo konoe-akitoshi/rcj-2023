@@ -16,12 +16,12 @@
 #include "NT_Robot202111.h"
 #include "motorDRV6.h"
 #include "components/led_light.hpp"
+#include "components/open_mv.hpp"
 #include "types/vector2.hpp"
 
 VL6180X ToF_front;  // create front ToF object
 
 int blob_count;
-int openMV[39];
 
 int gyro_o;
 
@@ -43,8 +43,6 @@ float wrap;
 void keeper(const int rotation);
 void attacker(const int rotation);
 int powerLimit(const int max, const int power);
-int get_openMV_coordinate();
-int getOpenMV();
 void intHandle();
 void back_Line1(const int power);
 void back_Line2(const int power);
@@ -71,6 +69,8 @@ const component::LedLight LedY(PIN_LED_Y);
 const component::LedLight LedG(PIN_LED_G);
 const component::LedLight LedB(PIN_LED_B);
 const component::LedLight BuiltinLed(LED_BUILTIN);
+
+component::OpenMV OpenMV(19200);
 
 void setup() {
     pinMode(StartSW, INPUT_PULLUP);
@@ -142,7 +142,6 @@ void setup() {
 
     Serial.println("Initialize 3 ...");
 
-    Serial3.begin(19200);   // initialize serialport for openMV
     Serial2.begin(115200);  // WT901 IMU Sener
     Serial1.begin(9600);    // xbee
 
@@ -157,21 +156,8 @@ void setup() {
 
 void loop() {
     LedB.TernOff();
-    blob_count = get_openMV_coordinate();
-    const int x_data_ball = (openMV[5] & 0b0000000000111111) + ((openMV[6] & 0b0000000000111111) << 6);
-    const int y_data_ball = (openMV[7] & 0b0000000000111111) + ((openMV[8] & 0b0000000000111111) << 6);
-    // const int w_data_ball = (openMV[9] & 0b0000000000111111) + ((openMV[10] & 0b0000000000111111) << 6);
-    // const int h_data_ball = (openMV[11] & 0b0000000000111111) + ((openMV[12] & 0b0000000000111111) << 6);
-
-    const int x_data_yellowgoal = (openMV[18] & 0b0000000000111111) + ((openMV[19] & 0b0000000000111111) << 6);
-    const int y_data_yellowgoal = (openMV[20] & 0b0000000000111111) + ((openMV[21] & 0b0000000000111111) << 6);
-    // const int w_data_yellowgoal = (openMV[22] & 0b0000000000111111) + ((openMV[23] & 0b0000000000111111) << 6);
-    // const int h_data_yellowgoal = (openMV[24] & 0b0000000000111111) + ((openMV[25] & 0b0000000000111111) << 6);
-
-    const int x_data_bluegoal = (openMV[31] & 0b0000000000111111) + ((openMV[32] & 0b0000000000111111) << 6);
-    const int y_data_bluegoal = (openMV[33] & 0b0000000000111111) + ((openMV[34] & 0b0000000000111111) << 6);
-    // const int w_data_bluegoal = (openMV[35] & 0b0000000000111111) + ((openMV[36] & 0b0000000000111111) << 6);
-    // const int h_data_bluegoal = (openMV[37] & 0b0000000000111111) + ((openMV[38] & 0b0000000000111111) << 6);
+    OpenMV.wait_data();
+    blob_count = OpenMV.blob_count();
 
     lineflag = false;
     if (lineflag) {
@@ -197,12 +183,12 @@ void loop() {
     }
     // openMVのデーターを変換
 
-    exist_ball = openMV[1] != 0;  //  openMVのデータを sig, x, y に取り込む
-    ball_pos = {x_data_ball, y_data_ball};
-    exist_blue_goal = openMV[27] != 0;
-    blue_goal = {x_data_bluegoal, y_data_bluegoal};
-    exist_yellow_goal = openMV[14] != 0;
-    yellow_goal = {x_data_yellowgoal, y_data_yellowgoal};
+    exist_ball = OpenMV.get_ball_count() != 0;  //  openMVのデータを sig, x, y に取り込む
+    ball_pos = OpenMV.get_ball_position();
+    exist_blue_goal = OpenMV.get_blue_goal_count() != 0;
+    blue_goal = OpenMV.get_blue_goal_position();
+    exist_yellow_goal = OpenMV.get_yellow_goal_count() != 0;
+    yellow_goal = OpenMV.get_yellow_goal_position();
 
     if (exist_ball) {  // 中心補正
         ball_pos = Vector2(156, 67) - ball_pos;
@@ -491,26 +477,6 @@ int powerLimit(const int max, const int power) {
         return -max;
     }
     return power;
-}
-
-int get_openMV_coordinate() {           // get the coordinate data of orange ball
-    while (Serial3.available() != 0) {  // buffer flush
-        Serial3.read();
-    }
-    while ((openMV[0] = getOpenMV()) != 254) {
-        ;  // wait for "254"
-    }
-    for (int i = 1; i < 39; ++i) {
-        openMV[i] = getOpenMV();
-    }
-    return openMV[0];
-}
-
-int getOpenMV() {  // get serial data from openMV
-    while (Serial3.available() == 0) {
-        ;  // wait for serial data
-    }
-    return Serial3.read();
 }
 
 //*****************************************************************************
