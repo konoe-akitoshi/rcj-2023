@@ -222,47 +222,8 @@ void loop() {
 
     ball_front = ToF_front.readRangeSingleMillimeters();
 
-    if (digitalRead(PIN_START_SWITCH) == LOW) {  // PIN_START_SWITCH == Low でスタート
-        digitalWrite(SWR, HIGH);
-        digitalWrite(SWG, HIGH);
-
-        if (Battery.is_emergency()) {
-            Serial.println("");
-            Serial.print("  Battery Low!: ");
-            Serial.println(Battery.voltage());
-            doOutofbound();
-            LineLed.TernOff();
-            motorFree();
-            while (true) {
-                digitalWrite(SWR, HIGH);
-                digitalWrite(SWG, HIGH);
-                delay(300);
-                digitalWrite(SWR, LOW);
-                digitalWrite(SWG, LOW);
-                delay(300);
-            }
-        }
-
-        LineLed.TernOn();  // ラインセンサのLEDを点灯
-        if (lineflag) {
-            lineflag = false;
-        }
-        // PID
-
-        // 役割判定
-        if (digitalRead(Aux1) == LOW) {
-            attacker(gyro);
-        } else if (digitalRead(Aux2) == LOW) {
-            keeper(gyro);
-
-        } else {
-            if (p_ball <= ball_dist) {  // どちらがボールに近いか
-                keeper(gyro);
-            } else {
-                attacker(gyro);
-            }
-        }
-    } else {  // ロボット停止
+    // PIN_START_SWITCH == Low でスタート、それ以外はロボット停止
+    if (digitalRead(PIN_START_SWITCH) != LOW) {
         motorFree();
         dribbler1(0);
         dribbler2(0);
@@ -270,6 +231,47 @@ void loop() {
         digitalWrite(SWR, HIGH);
         digitalWrite(SWG, HIGH);
         wrap = 0;
+        return;
+    }
+
+    digitalWrite(SWR, HIGH);
+    digitalWrite(SWG, HIGH);
+
+    if (Battery.is_emergency()) {
+        Serial.println("");
+        Serial.print("  Battery Low!: ");
+        Serial.println(Battery.voltage());
+        doOutofbound();
+        LineLed.TernOff();
+        motorFree();
+        while (true) {
+            digitalWrite(SWR, HIGH);
+            digitalWrite(SWG, HIGH);
+            delay(300);
+            digitalWrite(SWR, LOW);
+            digitalWrite(SWG, LOW);
+            delay(300);
+        }
+    }
+
+    LineLed.TernOn();  // ラインセンサのLEDを点灯
+    if (lineflag) {
+        lineflag = false;
+    }
+    // PID
+
+    // 役割判定
+    if (digitalRead(Aux1) == LOW) {
+        attacker(gyro);
+    } else if (digitalRead(Aux2) == LOW) {
+        keeper(gyro);
+
+    } else {
+        if (p_ball <= ball_dist) {  // どちらがボールに近いか
+            keeper(gyro);
+        } else {
+            attacker(gyro);
+        }
     }
 }
 
