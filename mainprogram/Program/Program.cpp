@@ -14,11 +14,11 @@
 #include <Wire.h>
 #endif
 #include "NT_Robot202111.h"
-#include "motorDRV6.h"
-#include "components/led_light.hpp"
-#include "components/xbee.hpp"
-#include "components/open_mv.hpp"
 #include "components/battery.hpp"
+#include "components/led_light.hpp"
+#include "components/open_mv.hpp"
+#include "components/xbee.hpp"
+#include "motorDRV6.h"
 #include "types/vector2.hpp"
 
 VL6180X ToF_front;  // create front ToF object
@@ -74,11 +74,9 @@ const component::LedLight BuiltinLed(LED_BUILTIN);
 const component::XBee XBee(9600);
 component::OpenMV OpenMV(19200);
 
-
 void setup() {
     pinMode(StartSW, INPUT_PULLUP);
 
-    // IOピンのモード設定
     pinMode(LINE1D, INPUT_PULLUP);
     pinMode(LINE2D, INPUT_PULLUP);
     pinMode(LINE3D, INPUT_PULLUP);
@@ -108,7 +106,7 @@ void setup() {
 
     pinMode(INT_29, INPUT_PULLUP);  // interrupt port set
 
-    Serial.begin(9600);  //  シリアル出力を初期化
+    Serial.begin(9600);
     Serial.println("Starting...");
 
     Wire.begin();
@@ -165,7 +163,8 @@ void loop() {
 
     // get gyrodata
     if (Serial2.available() > 0) {
-        while (Serial2.available() != 0) {  //  Gyro の方位データを gyro に取り込む
+        while (Serial2.available() != 0) {
+            // Gyro の方位データを gyro に取り込む
             // Serial2の送信側がint8_tで送ってるので、intで受け取ると負の数が期待通り受け取れない。
             // そのため、int8_tにキャストする必要がある。
             gyro_o = (int8_t)Serial2.read();
@@ -174,22 +173,22 @@ void loop() {
 
     const int gyro = gyro_o;
 
-    // Xbeeからの信号を読む
     if (XBee.has_data()) {
         p_ball = XBee.read_data();
     }
-    // openMVのデーターを変換
 
-    exist_ball = OpenMV.get_ball_count() != 0;  //  openMVのデータを sig, x, y に取り込む
+    exist_ball = OpenMV.get_ball_count() != 0;
     ball_pos = OpenMV.get_ball_position();
     exist_blue_goal = OpenMV.get_blue_goal_count() != 0;
     blue_goal = OpenMV.get_blue_goal_position();
     exist_yellow_goal = OpenMV.get_yellow_goal_count() != 0;
     yellow_goal = OpenMV.get_yellow_goal_position();
 
-    if (exist_ball) {  // 中心補正
+    // 中心補正
+    if (exist_ball) {
         ball_pos = Vector2(156, 67) - ball_pos;
     }
+
     if (digitalRead(GoalSW)) {  // 青色ゴールをする場合
         if (exist_yellow_goal) {
             yellow_goal.x = 154 - yellow_goal.x;
@@ -210,7 +209,7 @@ void loop() {
         }
     }
 
-    if(exist_ball) {
+    if (exist_ball) {
         int fixed_x = ball_pos.x > 4095 ? 4095 : ball_pos.x;
         int send_data = sqrt(fixed_x * fixed_x + ball_pos.y * ball_pos.y);
         XBee.send_data(send_data);
@@ -237,7 +236,7 @@ void loop() {
         digitalWrite(SWR, HIGH);
         digitalWrite(SWG, HIGH);
 
-        if(Battery.is_emergency()) {
+        if (Battery.is_emergency()) {
             Serial.println("");
             Serial.print("  Battery Low!: ");
             Serial.println(Battery.voltage());
@@ -350,7 +349,7 @@ void attacker(const int rotation) {
 
     // Convert coordinates data
     float ball_dir = 0;
-    if (blob_count != 0) {   // 物体を検出したら
+    if (blob_count != 0) {                  // 物体を検出したら
         const float fx = 150 - ball_pos.x;  // ロボットが原点に来るようjに座標を変換
         const float fy = 130 - ball_pos.y;
 
@@ -364,9 +363,9 @@ void attacker(const int rotation) {
         ball_dir = ball_dir + 0.150;  // +0.150は製作誤差による方位のオフセット補正値(radian)
     }
     const float data_diff = ball_dir - pre_dir;                                       // 前回の方位との差分を計算
-    data_sum += data_diff;                                                      // 方位誤差の累積を計算
+    data_sum += data_diff;                                                            // 方位誤差の累積を計算
     const float Pcontrol = Power * (Kp * ball_dir + Ki * data_sum + Kd * data_diff);  // PIDの制御値を計算
-    pre_dir = ball_dir;                                                         // 今回の値を代入し次周期から見て前回観測値にする
+    pre_dir = ball_dir;                                                               // 今回の値を代入し次周期から見て前回観測値にする
 
     BuiltinLed.TernOff();
 
@@ -374,7 +373,7 @@ void attacker(const int rotation) {
     if (-5 <= ball_pos.y && ball_pos.y <= 30) {  // ボールが前(0 <= y <= 0)にあるとき
         dribbler1(100);
         wrap = 0;
-        if (abs(ball_pos.x) < 5) {                // 目の前
+        if (abs(ball_pos.x) < 5) {       // 目の前
             if (ball_front <= 60) {      // y の距離近い
                 if (ball_front <= 30) {  // 保持
                     data_sum = 0;
@@ -389,9 +388,9 @@ void attacker(const int rotation) {
                         motorfunction(0, 0, 0);
                         delay(800);
                         digitalWrite(Kicker, LOW);
-                    } else if (goal.y < 5) {            // ゴールに近づいた時
+                    } else if (goal.y < 5) {                // ゴールに近づいた時
                         motorfunction(PI, 100, -rotation);  // 後ろに下がる
-                    } else {                            // ゴール見えてて近くない
+                    } else {                                // ゴール見えてて近くない
                         const float z = atan2(goal.x, goal.y);
                         motorfunction(z, powerLimit(Pmax, Pcontrol), -rotation);
                     }
@@ -443,7 +442,7 @@ void attacker(const int rotation) {
         wrap = 0;
         if (exist_ball == false) {  // ボールがないとき(y = 4096)
             motorfunction(0, 0, 0);
-        } else {                          // ボールがあるとき
+        } else {                              // ボールがあるとき
             motorfunction(0, 80, -rotation);  // これでたまに回り込みがおおげさになる？
         }
     }
@@ -603,12 +602,12 @@ void back_Line4(const int power) {  // Lineセンサ4 が反応しなくなる�
 // 割り込みの処理プログラム終わり
 //*****************************************************************************
 
-//*****************************************************************************
-// 電池電圧を監視して電圧が下がったらOutOfBounceさせる処理
+// 強制的に Out of bounds させる。
+void doOutofbound() {
+    // Out of bounds するために割込みを禁止する
+    detachInterrupt(5);
 
-void doOutofbound() {    // 強制的に Out of bounds させる。
-    detachInterrupt(5);  // Out of bounds するために割込みを禁止する
-    LineLed.TernOff();   // ラインセンサの LED を消灯
+    LineLed.TernOff();
 
     while (true) {
         if (digitalRead(StartSW) == LOW) {
