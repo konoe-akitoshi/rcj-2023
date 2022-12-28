@@ -8,6 +8,7 @@
 #include "components/led_light.hpp"
 #include "components/open_mv.hpp"
 #include "components/xbee.hpp"
+#include "components/motor.hpp"
 #include "motorDRV6.h"
 #include "types/vector2.hpp"
 #include "pin.hpp"
@@ -59,6 +60,13 @@ const component::LedLight LedG(PIN_LED_G);
 const component::LedLight LedB(PIN_LED_B);
 const component::LedLight BuiltinLed(LED_BUILTIN);
 
+// PWM = 37KHz
+const component::Motor MotorCh1(PIN_MOTOR1_FORWARD_BRAKE, PIN_MOTOR1_REVERSE_BRAKE, PIN_MOTOR1_PWM, 37000);
+const component::Motor MotorCh2(PIN_MOTOR2_FORWARD_BRAKE, PIN_MOTOR2_REVERSE_BRAKE, PIN_MOTOR2_PWM, 37000);
+const component::Motor MotorCh3(PIN_MOTOR3_FORWARD_BRAKE, PIN_MOTOR3_REVERSE_BRAKE, PIN_MOTOR3_PWM, 37000);
+const component::Motor MotorCh4(PIN_MOTOR4_FORWARD_BRAKE, PIN_MOTOR4_REVERSE_BRAKE, PIN_MOTOR4_PWM, 37000);
+const component::MotorContoroler MotorContoroler(MotorCh1, MotorCh2, MotorCh3, MotorCh4);
+
 const component::XBee XBee(9600);
 component::OpenMV OpenMV(19200);
 
@@ -106,7 +114,6 @@ void setup() {
 
     Serial.println("Initialize 1 ...");
 
-    motorInit();  //  モーター制御の初期化
     dribInit();   //  ドリブラモーターの初期化
 
     Serial.println("Initialize 2 ...");
@@ -218,7 +225,7 @@ void loop() {
 
     // PIN_START_SWITCH == Low でスタート、それ以外はロボット停止
     if (digitalRead(PIN_START_SWITCH) != LOW) {
-        motorFree();
+        MotorContoroler.FreeAll();
         dribbler1(0);
         dribbler2(0);
         LineLed.TernOff();  // ラインセンサのLEDを消灯
@@ -237,7 +244,7 @@ void loop() {
         Serial.println(Battery.voltage());
         doOutofbound();
         LineLed.TernOff();
-        motorFree();
+        MotorContoroler.FreeAll();
         while (true) {
             digitalWrite(PIN_SWITCH_LED_R, HIGH);
             digitalWrite(PIN_SWITCH_LED_G, HIGH);
@@ -286,25 +293,25 @@ void keeper(const int rotation) {
     BuiltinLed.TernOff();
     if (ball_dist - p_ball < 60 || exist_ball == false) {  // ボールとの距離の差が近い、ボールを任せてゴール前に帰る
         if (exist_goal == false) {
-            motorfunction(PI, 100, -rotation);
+            MotorContoroler.Drive(PI, 100, -rotation);
         } else if (goal.y > 23) {  // ゴールから遠い
             float z = atan2(goal.x, goal.y - 23) + PI;
-            motorfunction(z, 100, -rotation);
+            MotorContoroler.Drive(z, 100, -rotation);
         } else if (goal.y < 23 && goal.y > 15 && abs(goal.x) > 33) {  // x座標が 0 から遠い
             float z = atan2(goal.x, goal.y - 23) + PI;
-            motorfunction(z, 100, -rotation);
+            MotorContoroler.Drive(z, 100, -rotation);
         } else if (goal.y < 15) {  // ゴールエリアの横にいるとき
             if (goal.x > 0) {
-                motorfunction(-0.60, 60, 0);
+                MotorContoroler.Drive(-0.60, 60, 0);
             } else {
-                motorfunction(0.60, 60, 0);
+                MotorContoroler.Drive(0.60, 60, 0);
             }
         } else {  // ゴール前にいるとき
-            motorfunction(0, 0, 0);
+            MotorContoroler.Drive(0, 0, 0);
         }
     } else {  // ボールとの距離の差が遠い、自ら近づく
         float az = atan2(ball_pos.x, sqrt(ball_pos.y));
-        motorfunction(az, sqrt(ball_pos.x * ball_pos.x + ball_pos.y * ball_pos.y / 4), -rotation);
+        MotorContoroler.Drive(az, sqrt(ball_pos.x * ball_pos.x + ball_pos.y * ball_pos.y / 4), -rotation);
     }
 }
 
@@ -361,72 +368,72 @@ void attacker(const int rotation) {
                 if (ball_front <= 30) {  // 保持
                     data_sum = 0;
                     if (exist_goal == false) {  // ゴールなし
-                        motorfunction(0, 80, -rotation);
+                        MotorContoroler.Drive(0, 80, -rotation);
                     } else if (goal.y <= 33 && abs(goal.x) < 17) {  // ゴールにけれる距離
                         kick = true;
                         digitalWrite(PIN_KICK_DIR, LOW);
                         dribbler1(0);
                         digitalWrite(PIN_KICKER, HIGH);
                         delay(200);
-                        motorfunction(0, 0, 0);
+                        MotorContoroler.Drive(0, 0, 0);
                         delay(800);
                         digitalWrite(PIN_KICKER, LOW);
                     } else if (goal.y < 5) {                // ゴールに近づいた時
-                        motorfunction(PI, 100, -rotation);  // 後ろに下がる
+                        MotorContoroler.Drive(PI, 100, -rotation);  // 後ろに下がる
                     } else {                                // ゴール見えてて近くない
                         const float z = atan2(goal.x, goal.y);
-                        motorfunction(z, powerLimit(Pmax, Pcontrol), -rotation);
+                        MotorContoroler.Drive(z, powerLimit(Pmax, Pcontrol), -rotation);
                     }
                 } else {  // 目の前のボールを保持しに行く
                     kick = false;
                     data_sum = 0;
-                    motorfunction(0, 50, -rotation);
+                    MotorContoroler.Drive(0, 50, -rotation);
                 }
             } else {
                 const float z = atan2(ball_pos.x, ball_pos.y);
-                motorfunction(z, powerLimit(Pmax, Pcontrol), -rotation);  // ココボール前 制御甘い？
+                MotorContoroler.Drive(z, powerLimit(Pmax, Pcontrol), -rotation);  // ココボール前 制御甘い？
             }
         } else {
             const float z = atan2(ball_pos.x, ball_pos.y);
-            motorfunction(z, powerLimit(Pmax, Pcontrol), -rotation);
+            MotorContoroler.Drive(z, powerLimit(Pmax, Pcontrol), -rotation);
         }
     } else if (ball_pos.y <= 0) {  // 後ろにボールがあるとき
         dribbler1(0);
         if (abs(ball_pos.x) < 30) {
             if (ball_pos.y >= -129) {
-                motorfunction(0, 50, -rotation);
+                MotorContoroler.Drive(0, 50, -rotation);
                 wrap = 0;
             } else if (ball_pos.y <= -150) {
-                motorfunction(PI, abs(ball_pos.y) / 2.4, -rotation);
+                MotorContoroler.Drive(PI, abs(ball_pos.y) / 2.4, -rotation);
                 wrap = 0;
             } else if (abs(ball_pos.x) < 5 + abs(ball_pos.y) / 5) {
                 if (goal.x > 0 || wrap == 1) {
                     const float z = atan2(ball_pos.x + 800, ball_pos.y * 3);
-                    motorfunction(z, Vector2::norm(ball_pos) + 10, -rotation);
+                    MotorContoroler.Drive(z, Vector2::norm(ball_pos) + 10, -rotation);
                     wrap = 1;
                 } else {
                     const float z = atan2(ball_pos.x - 800, ball_pos.y * 3);
-                    motorfunction(z, Vector2::norm(ball_pos) + 10, -rotation);
+                    MotorContoroler.Drive(z, Vector2::norm(ball_pos) + 10, -rotation);
                     wrap = 0;
                 }
             } else {
                 wrap = 0;
                 const float z = atan2(ball_pos.x, ball_pos.y * 3);
-                motorfunction(z, Vector2::norm(ball_pos) + 10, -rotation);
+                MotorContoroler.Drive(z, Vector2::norm(ball_pos) + 10, -rotation);
             }
         } else {
             wrap = 0;
             const float z = atan2(ball_pos.x, ball_pos.y * 4);
-            motorfunction(z, Vector2::norm(ball_pos) + 10, -rotation);
+            MotorContoroler.Drive(z, Vector2::norm(ball_pos) + 10, -rotation);
         }
     } else {  // 30 > y になるとき
         dribbler1(0);
         dribbler2(0);
         wrap = 0;
         if (exist_ball == false) {  // ボールがないとき(y = 4096)
-            motorfunction(0, 0, 0);
+            MotorContoroler.Drive(0, 0, 0);
         } else {                              // ボールがあるとき
-            motorfunction(0, 80, -rotation);  // これでたまに回り込みがおおげさになる？
+            MotorContoroler.Drive(0, 80, -rotation);  // これでたまに回り込みがおおげさになる？
         }
     }
     Serial.print(" dir ");
@@ -494,7 +501,7 @@ void intHandle() {  // Lineを踏んだらlineflagをセットして止まる。
         return;
     }
     lineflag = true;  // set lineflag
-    motorStop();      // ラインから外れたらモーターstop
+    MotorContoroler.StopAll();      // ラインから外れたらモーターstop
     return;
 }
 
@@ -511,12 +518,12 @@ void back_Line1(const int power) {  // Lineセンサ1が反応しなくなるま
         } else {
             azimuth = PI * 4.0 / 4.0;  // 後ろ方向(3)をradianに変換
         }
-        motorfunction(azimuth, power, 0);  // azimuthの方向に進ませる
+        MotorContoroler.Drive(azimuth, power, 0);  // azimuthの方向に進ませる
     }
 #if DEBUG_MODE
     LedR.TernOff();
 #endif
-    motorStop();
+    MotorContoroler.StopAll();
 }
 
 void back_Line2(const int power) {  // Lineセンサ2が反応しなくなるまで左に進む
@@ -532,12 +539,12 @@ void back_Line2(const int power) {  // Lineセンサ2が反応しなくなるま
         } else {
             azimuth = PI * 6.0 / 4.0;  // 後ろ方向(4)を radian に変換
         }
-        motorfunction(azimuth, power, 0);  // azimuth の方向に進ませる
+        MotorContoroler.Drive(azimuth, power, 0);  // azimuth の方向に進ませる
     }
 #if DEBUG_MODE
     LedY.TernOff();
 #endif
-    motorStop();
+    MotorContoroler.StopAll();
 }
 
 void back_Line3(const int power) {  // Lineセンサ3 が反応しなくなるまで前に進む
@@ -553,12 +560,12 @@ void back_Line3(const int power) {  // Lineセンサ3 が反応しなくなる�
         } else {
             azimuth = PI * 0.0 / 4.0;  // 後ろ方向(1)を radian に変換
         }
-        motorfunction(azimuth, power, 0);  // azimuth の方向に進ませる
+        MotorContoroler.Drive(azimuth, power, 0);  // azimuth の方向に進ませる
     }
 #if DEBUG_MODE
     LedG.TernOff();
 #endif
-    motorStop();
+    MotorContoroler.StopAll();
 }
 
 void back_Line4(const int power) {  // Lineセンサ4 が反応しなくなるまで右に進む
@@ -574,12 +581,12 @@ void back_Line4(const int power) {  // Lineセンサ4 が反応しなくなる�
         } else {
             azimuth = PI * 2.0 / 4.0;  // 後ろ方向(2)を radian に変換
         }
-        motorfunction(azimuth, power, 0);  // azimuth の方向に進ませる
+        MotorContoroler.Drive(azimuth, power, 0);  // azimuth の方向に進ませる
     }
 #if DEBUG_MODE
     LedB.TernOff();
 #endif
-    motorStop();
+    MotorContoroler.StopAll();
 }
 
 // 割り込みの処理プログラム終わり
@@ -594,9 +601,9 @@ void doOutofbound() {
 
     while (true) {
         if (digitalRead(PIN_START_SWITCH) == LOW) {
-            motorfunction(PI / 2.0, 30, 0);
+            MotorContoroler.Drive(PI / 2.0, 30, 0);
         } else {  // スタートスイッチが切られたら止まる
-            motorfunction(PI / 2.0, 0, 0);
+            MotorContoroler.Drive(PI / 2.0, 0, 0);
         }
         digitalWrite(PIN_SWITCH_LED_G, LOW);
         digitalWrite(PIN_SWITCH_LED_R, LOW);
