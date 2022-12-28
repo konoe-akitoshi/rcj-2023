@@ -145,72 +145,45 @@ void dribInit() {  // ドリブラモーターの PW Mピンを初期化する
 }
 
 // motor control function
-// z:azimuth(radian)
-// p:power(-100:100)
-// rotation :rotation(-100:100)
-//
+// azimuth(radian)
+// power(-100:100)
+// rotation(-100:100)
+void motorfunction(float azimuth, int power, int rotation) {
+    // clamp(power|rotation, -100, 100)
+    power = power > 100 ? 100 : power < -100 ? -100 : power;
+    rotation = rotation > 100 ? 100 : rotation < -100 ? -100 : rotation;
 
-void motorfunction(float z, int power, int rotation) {
-    float x[4], x_max, w;
-    int i;
+    float x[4];
+    x[0] = -sin(azimuth - (1 * PI / 4));
+    x[1] = -sin(azimuth - (3 * PI / 4));
+    x[2] = -sin(azimuth - (5 * PI / 4));
+    x[3] = -sin(azimuth - (7 * PI / 4));
 
-    if (power > 100) {  // powerを ±100 以下にする
-        power = 100;
-    } else if (power < -100) {
-        power = -100;
-    }
-    if (rotation > 100) {  // rotation を ±100 以下にする
-        rotation = 100;
-    } else if (rotation < -100) {
-        rotation = -100;
-    }
-
-    x[0] = -(sin(z - 3.14159 / 4.0));
-    x[1] = -(sin(z - 3 * 3.14159 / 4.0));
-    x[2] = -(sin(z - 5 * 3.14159 / 4.0));
-    x[3] = -(sin(z - 7 * 3.14159 / 4.0));
-
-    x_max = 0.0;
-    for (i = 0; i < 4; i++) {
+    float x_max = 0;
+    for (int i = 0; i < 4; ++i) {
         if (x_max < abs(x[i])) {
             x_max = abs(x[i]);
         }
-    };
-    for (i = 0; i < 4; i++) {
-        x[i] = x[i] / x_max;
     }
-    w = -(rotation / 100.0);
-    for (i = 0; i < 4; i++) {
-        x[i] = x[i] + w;
+    const float w = -(rotation / 100.0);
+    for(int i = 0; i < 4; ++i) {
+        x[i] = (x[i] / x_max) + w;
     }
-    x_max = 0.0;
-    for (i = 0; i < 4; i++) {
+
+    x_max = 0;
+    for (int i = 0; i < 4; ++i) {
         if (x_max < abs(x[i])) {
             x_max = abs(x[i]);
         }
-    };
-    for (i = 0; i < 4; i++) {
-        x[i] = x[i] / x_max;
     }
-    for (i = 0; i < 4; i++) {
-        x[i] = x[i] * power;
+    for (int i = 0; i < 4; ++i) {
+        x[i] /= x_max;
     }
-    /*
-      Serial.print(" Z=");
-      Serial.print(z);
-      Serial.print(" x[0]=");
-      Serial.print(int(x[0]));
-      Serial.print(" x[1]=");
-      Serial.print(int(x[1]));
-      Serial.print(" x[2]=");
-      Serial.print(int(x[2]));
-      Serial.print(" x[3]=");
-      Serial.print(int(x[3]));
-    */
-    motorCh1(x[0]);
-    motorCh2(x[1]);
-    motorCh3(x[2]);
-    motorCh4(x[3]);
+
+    motorCh1(x[0] * power);
+    motorCh2(x[1] * power);
+    motorCh3(x[2] * power);
+    motorCh4(x[3] * power);
 }
 
 //  時計回りに回転する
