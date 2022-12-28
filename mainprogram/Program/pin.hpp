@@ -10,6 +10,9 @@ constexpr int PIN_LINE_SENSOR_D3 = 26;
 constexpr int PIN_LINE_SENSOR_D4 = 27;
 constexpr int PIN_LINE_SENSOR_D5 = 28;
 
+constexpr int PIN_KICKER = 11;
+constexpr int PIN_KICK_DIR = 12;
+
 constexpr int PIN_LINE_LED = 30;
 
 constexpr int PIN_SWITCH_LED_G = 17;
@@ -24,5 +27,8 @@ constexpr int PIN_LED_R = 23;
 
 constexpr int PIN_INTERRUPT_29 = 29;
 constexpr int PIN_BATTERY_VOLYAGE = 33;
+
+constexpr int PIN_AUX1 = 40;
+constexpr int PIN_AUX2 = 41;
 
 #endif

@@ -13,7 +13,6 @@
 #include <VL6180X.h>
 #include <Wire.h>
 #endif
-#include "NT_Robot202111.h"
 #include "components/battery.hpp"
 #include "components/led_light.hpp"
 #include "components/open_mv.hpp"
@@ -81,19 +80,19 @@ void setup() {
     pinMode(PIN_LINE_SENSOR_D4, INPUT_PULLUP);
     pinMode(PIN_LINE_SENSOR_D5, INPUT_PULLUP);
 
-    pinMode(Kick1, OUTPUT);
-    pinMode(Kick_Dir, OUTPUT);
+    pinMode(PIN_KICKER, OUTPUT);
+    pinMode(PIN_KICK_DIR, OUTPUT);
 
     pinMode(PIN_SWITCH_LED_R, OUTPUT);
     pinMode(PIN_SWITCH_LED_G, OUTPUT);
 
-    pinMode(Aux1, INPUT);
-    pinMode(Aux2, INPUT);
+    pinMode(PIN_AUX1, INPUT);
+    pinMode(PIN_AUX2, INPUT);
 
     pinMode(PIN_GOAL_SWITCH, INPUT_PULLUP);
 
-    digitalWrite(Kick1, LOW);
-    digitalWrite(Kick_Dir, LOW);
+    digitalWrite(PIN_KICKER, LOW);
+    digitalWrite(PIN_KICK_DIR, LOW);
     digitalWrite(PIN_SWITCH_LED_R, HIGH);
     digitalWrite(PIN_SWITCH_LED_G, HIGH);
 
@@ -110,7 +109,7 @@ void setup() {
     delay(10);
     ToF_front.init();
     ToF_front.configureDefault();
-    ToF_front.setAddress(TOF_1);  // 好きなアドレスに設定
+    ToF_front.setAddress(0x52);  // 好きなアドレスに設定
     ToF_front.setTimeout(100);
     delay(10);
 
@@ -127,11 +126,11 @@ void setup() {
     dribbler1(0);
     dribbler2(0);
     delay(100);
-    digitalWrite(Kick_Dir, LOW);
+    digitalWrite(PIN_KICK_DIR, LOW);
     delay(100);
-    digitalWrite(Kicker, HIGH);
+    digitalWrite(PIN_KICKER, HIGH);
     delay(100);
-    digitalWrite(Kicker, LOW);
+    digitalWrite(PIN_KICKER, LOW);
     delay(1000);
 
     Serial.println("Initialize 3 ...");
@@ -262,9 +261,9 @@ void loop() {
     lineflag = false;
 
     // 役割判定
-    if (digitalRead(Aux1) == LOW) {
+    if (digitalRead(PIN_AUX1) == LOW) {
         attacker(gyro);
-    } else if (digitalRead(Aux2) == LOW) {
+    } else if (digitalRead(PIN_AUX2) == LOW) {
         keeper(gyro);
 
     } else {
@@ -374,13 +373,13 @@ void attacker(const int rotation) {
                         motorfunction(0, 80, -rotation);
                     } else if (goal.y <= 33 && abs(goal.x) < 17) {  // ゴールにけれる距離
                         kick = true;
-                        digitalWrite(Kick_Dir, LOW);
+                        digitalWrite(PIN_KICK_DIR, LOW);
                         dribbler1(0);
-                        digitalWrite(Kicker, HIGH);
+                        digitalWrite(PIN_KICKER, HIGH);
                         delay(200);
                         motorfunction(0, 0, 0);
                         delay(800);
-                        digitalWrite(Kicker, LOW);
+                        digitalWrite(PIN_KICKER, LOW);
                     } else if (goal.y < 5) {                // ゴールに近づいた時
                         motorfunction(PI, 100, -rotation);  // 後ろに下がる
                     } else {                                // ゴール見えてて近くない
