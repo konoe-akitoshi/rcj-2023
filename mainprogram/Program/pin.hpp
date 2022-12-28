@@ -4,6 +4,19 @@
 constexpr int PIN_START_SWITCH = 16;
 constexpr int PIN_GOAL_SWITCH = 14;
 
+constexpr int PIN_MOTOR1_REVERSE_BRAKE = 43;
+constexpr int PIN_MOTOR1_FORWARD_BRAKE = 44;
+constexpr int PIN_MOTOR2_REVERSE_BRAKE = 45;
+constexpr int PIN_MOTOR2_FORWARD_BRAKE = 46;
+constexpr int PIN_MOTOR3_REVERSE_BRAKE = 47;
+constexpr int PIN_MOTOR3_FORWARD_BRAKE = 48;
+constexpr int PIN_MOTOR4_REVERSE_BRAKE = 49;
+constexpr int PIN_MOTOR4_FORWARD_BRAKE = 50;
+constexpr int PIN_MOTOR1_PWM = 35;
+constexpr int PIN_MOTOR2_PWM = 36;
+constexpr int PIN_MOTOR3_PWM = 37;
+constexpr int PIN_MOTOR4_PWM = 38;
+
 constexpr int PIN_LINE_SENSOR_D1 = 24;
 constexpr int PIN_LINE_SENSOR_D2 = 25;
 constexpr int PIN_LINE_SENSOR_D3 = 26;

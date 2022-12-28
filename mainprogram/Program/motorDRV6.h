@@ -12,138 +12,122 @@
 #include "Servo.h"
 #endif
 
-//  IOピンを設定する
+#include "pin.hpp"
 
-constexpr int CH1DIR1 = 43;
-constexpr int CH1DIR2 = 44;
-constexpr int CH2DIR1 = 45;
-constexpr int CH2DIR2 = 46;
-constexpr int CH3DIR1 = 47;
-constexpr int CH3DIR2 = 48;
-constexpr int CH4DIR1 = 49;
-constexpr int CH4DIR2 = 50;
-
-constexpr int CH1PWM = 35;
-constexpr int CH2PWM = 36;
-constexpr int CH3PWM = 37;
-constexpr int CH4PWM = 38;
-
-constexpr int DR1PWM = 6;
-constexpr int DR2PWM = 6;
-
-// Servo myservo1, myservo2; // create servo object to control a servo
+constexpr int PIN_DR1_PWM = 6;
+constexpr int PIN_DR2_PWM = 6;
 
 void motorCh1(int data) {  // CH1のモーターを動かすプログラム
     int power;
     if (data == 0) {                  // data == 0 なら停止
-        analogWrite(CH1PWM, 0);       // power = 0
-        digitalWrite(CH1DIR1, HIGH);  // Brake
-        digitalWrite(CH1DIR2, HIGH);
+        analogWrite(PIN_MOTOR1_PWM, 0);       // power = 0
+        digitalWrite(PIN_MOTOR1_REVERSE_BRAKE, HIGH);  // Brake
+        digitalWrite(PIN_MOTOR1_FORWARD_BRAKE, HIGH);
         return;
     }
     if (data > 0) {                   //  data > 0 なら正転、data < 0 なら逆転
-        digitalWrite(CH1DIR1, HIGH);  // Forward
-        digitalWrite(CH1DIR2, LOW);
+        digitalWrite(PIN_MOTOR1_REVERSE_BRAKE, HIGH);  // Forward
+        digitalWrite(PIN_MOTOR1_FORWARD_BRAKE, LOW);
     } else {
-        digitalWrite(CH1DIR1, LOW);  // Reverse
-        digitalWrite(CH1DIR2, HIGH);
+        digitalWrite(PIN_MOTOR1_REVERSE_BRAKE, LOW);  // Reverse
+        digitalWrite(PIN_MOTOR1_FORWARD_BRAKE, HIGH);
     }
     power = abs(data);  //  -100 ~ +100 のデータを 0～250 に変換する
     if (power > 100) {  //  data > 100 の場合は 100 にする
         power = 100;
     }
     power = (power << 1) + (power >> 1);  // power *= 2.5
-    analogWrite(CH1PWM, power);           // 0 < power < 250
+    analogWrite(PIN_MOTOR1_PWM, power);           // 0 < power < 250
 }
 
 void motorCh2(int data) {  // CH2のモーターを動かすプログラム
     int power;
     if (data == 0) {                  // if Brake
-        analogWrite(CH2PWM, 0);       // power = 0
-        digitalWrite(CH2DIR1, HIGH);  // Brake
-        digitalWrite(CH2DIR2, HIGH);
+        analogWrite(PIN_MOTOR2_PWM, 0);       // power = 0
+        digitalWrite(PIN_MOTOR2_REVERSE_BRAKE, HIGH);  // Brake
+        digitalWrite(PIN_MOTOR2_FORWARD_BRAKE, HIGH);
         return;
     }
     if (data > 0) {
-        digitalWrite(CH2DIR1, HIGH);  // Forward
-        digitalWrite(CH2DIR2, LOW);
+        digitalWrite(PIN_MOTOR2_REVERSE_BRAKE, HIGH);  // Forward
+        digitalWrite(PIN_MOTOR2_FORWARD_BRAKE, LOW);
     } else {
-        digitalWrite(CH2DIR1, LOW);  // Reverse
-        digitalWrite(CH2DIR2, HIGH);
+        digitalWrite(PIN_MOTOR2_REVERSE_BRAKE, LOW);  // Reverse
+        digitalWrite(PIN_MOTOR2_FORWARD_BRAKE, HIGH);
     }
     power = abs(data);
     if (power > 100) {
         power = 100;
     }
     power = (power << 1) + (power >> 1);  // power *= 2.5
-    analogWrite(CH2PWM, power);           // 0 < power < 250
+    analogWrite(PIN_MOTOR2_PWM, power);           // 0 < power < 250
 }
 
 void motorCh3(int data) {  // CH3のモーターを動かすプログラム
     int power;
     if (data == 0) {                  // if Brake
-        analogWrite(CH3PWM, 0);       // power = 0
-        digitalWrite(CH3DIR1, HIGH);  // Brake
-        digitalWrite(CH3DIR2, HIGH);
+        analogWrite(PIN_MOTOR3_PWM, 0);       // power = 0
+        digitalWrite(PIN_MOTOR3_REVERSE_BRAKE, HIGH);  // Brake
+        digitalWrite(PIN_MOTOR3_FORWARD_BRAKE, HIGH);
         return;
     }
     if (data > 0) {
-        digitalWrite(CH3DIR1, HIGH);  // Forward
-        digitalWrite(CH3DIR2, LOW);
+        digitalWrite(PIN_MOTOR3_REVERSE_BRAKE, HIGH);  // Forward
+        digitalWrite(PIN_MOTOR3_FORWARD_BRAKE, LOW);
     } else {
-        digitalWrite(CH3DIR1, LOW);  // Reverse
-        digitalWrite(CH3DIR2, HIGH);
+        digitalWrite(PIN_MOTOR3_REVERSE_BRAKE, LOW);  // Reverse
+        digitalWrite(PIN_MOTOR3_FORWARD_BRAKE, HIGH);
     }
     power = abs(data);
     if (power > 100) {
         power = 100;
     }
     power = (power << 1) + (power >> 1);  // power *= 2.5
-    analogWrite(CH3PWM, power);           // 0 < power < 250
+    analogWrite(PIN_MOTOR3_PWM, power);           // 0 < power < 250
 }
 
 void motorCh4(int data) {  // CH4のモーターを動かすプログラム
     int power;
     if (data == 0) {                  // if Brake
-        analogWrite(CH4PWM, 0);       // power = 0
-        digitalWrite(CH4DIR1, HIGH);  // Brake
-        digitalWrite(CH4DIR2, HIGH);
+        analogWrite(PIN_MOTOR4_PWM, 0);       // power = 0
+        digitalWrite(PIN_MOTOR4_REVERSE_BRAKE, HIGH);  // Brake
+        digitalWrite(PIN_MOTOR4_FORWARD_BRAKE, HIGH);
         return;
     }
     if (data > 0) {
-        digitalWrite(CH4DIR1, HIGH);  // Forward
-        digitalWrite(CH4DIR2, LOW);
+        digitalWrite(PIN_MOTOR4_REVERSE_BRAKE, HIGH);  // Forward
+        digitalWrite(PIN_MOTOR4_FORWARD_BRAKE, LOW);
     } else {
-        digitalWrite(CH4DIR1, LOW);  // Reverse
-        digitalWrite(CH4DIR2, HIGH);
+        digitalWrite(PIN_MOTOR4_REVERSE_BRAKE, LOW);  // Reverse
+        digitalWrite(PIN_MOTOR4_FORWARD_BRAKE, HIGH);
     }
     power = abs(data);
     if (power > 100) {
         power = 100;
     }
     power = (power << 1) + (power >> 1);  // power *= 2.5
-    analogWrite(CH4PWM, power);           // 0 < power < 250
+    analogWrite(PIN_MOTOR4_PWM, power);           // 0 < power < 250
 }
 
 void motorInit() {  // Arduinoのモーター制御を初期化する
-    pinMode(CH1DIR1, OUTPUT);
-    pinMode(CH1DIR2, OUTPUT);
-    pinMode(CH2DIR1, OUTPUT);
-    pinMode(CH2DIR2, OUTPUT);
-    pinMode(CH3DIR1, OUTPUT);
-    pinMode(CH3DIR2, OUTPUT);
-    pinMode(CH4DIR1, OUTPUT);
-    pinMode(CH4DIR2, OUTPUT);
+    pinMode(PIN_MOTOR1_REVERSE_BRAKE, OUTPUT);
+    pinMode(PIN_MOTOR1_FORWARD_BRAKE, OUTPUT);
+    pinMode(PIN_MOTOR2_REVERSE_BRAKE, OUTPUT);
+    pinMode(PIN_MOTOR2_FORWARD_BRAKE, OUTPUT);
+    pinMode(PIN_MOTOR3_REVERSE_BRAKE, OUTPUT);
+    pinMode(PIN_MOTOR3_FORWARD_BRAKE, OUTPUT);
+    pinMode(PIN_MOTOR4_REVERSE_BRAKE, OUTPUT);
+    pinMode(PIN_MOTOR4_FORWARD_BRAKE, OUTPUT);
 
-    pinMode(CH1PWM, OUTPUT);
-    pinMode(CH2PWM, OUTPUT);
-    pinMode(CH3PWM, OUTPUT);
-    pinMode(CH4PWM, OUTPUT);
+    pinMode(PIN_MOTOR1_PWM, OUTPUT);
+    pinMode(PIN_MOTOR2_PWM, OUTPUT);
+    pinMode(PIN_MOTOR3_PWM, OUTPUT);
+    pinMode(PIN_MOTOR4_PWM, OUTPUT);
 
-    analogWriteFrequency(CH1PWM, 37000);  // set PWM = 37KHz
-    analogWriteFrequency(CH2PWM, 37000);
-    analogWriteFrequency(CH3PWM, 37000);
-    analogWriteFrequency(CH4PWM, 37000);
+    analogWriteFrequency(PIN_MOTOR1_PWM, 37000);  // set PWM = 37KHz
+    analogWriteFrequency(PIN_MOTOR2_PWM, 37000);
+    analogWriteFrequency(PIN_MOTOR3_PWM, 37000);
+    analogWriteFrequency(PIN_MOTOR4_PWM, 37000);
 
     motorCh1(0);  // Set All motors STOP
     motorCh2(0);
@@ -153,8 +137,8 @@ void motorInit() {  // Arduinoのモーター制御を初期化する
 
 void dribInit() {  // ドリブラモーターの PW Mピンを初期化する
 
-    pinMode(DR1PWM, OUTPUT);
-    pinMode(DR2PWM, OUTPUT);
+    pinMode(PIN_DR1_PWM, OUTPUT);
+    pinMode(PIN_DR2_PWM, OUTPUT);
     // analogWriteFrequency(DR1PWM, 37000);
     // analogWriteFrequency(DR2PWM, 37000);
     delay(500);
@@ -259,21 +243,21 @@ void motorStop() {
 //  モーターを止める(Free)
 
 void motorFree() {
-    digitalWrite(CH1PWM, HIGH);  // power = 0
-    digitalWrite(CH1DIR1, LOW);  // Off
-    digitalWrite(CH1DIR2, LOW);
+    digitalWrite(PIN_MOTOR1_PWM, HIGH);  // power = 0
+    digitalWrite(PIN_MOTOR1_REVERSE_BRAKE, LOW);  // Off
+    digitalWrite(PIN_MOTOR1_FORWARD_BRAKE, LOW);
 
-    digitalWrite(CH2PWM, HIGH);  // power = 0
-    digitalWrite(CH2DIR1, LOW);  // Off
-    digitalWrite(CH2DIR2, LOW);
+    digitalWrite(PIN_MOTOR2_PWM, HIGH);  // power = 0
+    digitalWrite(PIN_MOTOR2_REVERSE_BRAKE, LOW);  // Off
+    digitalWrite(PIN_MOTOR2_FORWARD_BRAKE, LOW);
 
-    digitalWrite(CH3PWM, HIGH);  // power = 0
-    digitalWrite(CH3DIR1, LOW);  // Off
-    digitalWrite(CH3DIR2, LOW);
+    digitalWrite(PIN_MOTOR3_PWM, HIGH);  // power = 0
+    digitalWrite(PIN_MOTOR3_REVERSE_BRAKE, LOW);  // Off
+    digitalWrite(PIN_MOTOR3_FORWARD_BRAKE, LOW);
 
-    digitalWrite(CH4PWM, HIGH);  // power = 0
-    digitalWrite(CH4DIR1, LOW);  // Off
-    digitalWrite(CH4DIR2, LOW);
+    digitalWrite(PIN_MOTOR4_PWM, HIGH);  // power = 0
+    digitalWrite(PIN_MOTOR4_REVERSE_BRAKE, LOW);  // Off
+    digitalWrite(PIN_MOTOR4_FORWARD_BRAKE, LOW);
 }
 
 void dribbler1(int power) {  // ドリブラ１を回す. 0 < power <100
@@ -281,9 +265,9 @@ void dribbler1(int power) {  // ドリブラ１を回す. 0 < power <100
         return;
     }
     if (power == 0) {
-        analogWrite(DR1PWM, 0);
+        analogWrite(PIN_DR1_PWM, 0);
     } else {
-        analogWrite(DR1PWM, power * 2.5);
+        analogWrite(PIN_DR1_PWM, power * 2.5);
     }
     return;
 }
@@ -293,9 +277,9 @@ void dribbler2(int power) {  // ドリブラ１を回す. 0 < power <100
         return;
     }
     if (power == 0) {
-        analogWrite(DR2PWM, 0);
+        analogWrite(PIN_DR2_PWM, 0);
     } else {
-        analogWrite(DR2PWM, power * 2.5);
+        analogWrite(PIN_DR2_PWM, power * 2.5);
     }
     return;
 }
