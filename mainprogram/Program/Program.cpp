@@ -20,6 +20,7 @@
 #include "components/xbee.hpp"
 #include "motorDRV6.h"
 #include "types/vector2.hpp"
+#include "pin.hpp"
 
 VL6180X ToF_front;  // create front ToF object
 
@@ -74,22 +75,17 @@ component::OpenMV OpenMV(19200);
 void setup() {
     pinMode(PIN_START_SWITCH, INPUT_PULLUP);
 
-    pinMode(LINE1D, INPUT_PULLUP);
-    pinMode(LINE2D, INPUT_PULLUP);
-    pinMode(LINE3D, INPUT_PULLUP);
-    pinMode(LINE4D, INPUT_PULLUP);
-    pinMode(LINE5D, INPUT_PULLUP);
-    pinMode(LINE1A, INPUT);
-    pinMode(LINE2A, INPUT);
-    pinMode(LINE3A, INPUT);
-    pinMode(LINE4A, INPUT);
-    pinMode(LINE5A, INPUT);
+    pinMode(PIN_LINE_SENSOR_D1, INPUT_PULLUP);
+    pinMode(PIN_LINE_SENSOR_D2, INPUT_PULLUP);
+    pinMode(PIN_LINE_SENSOR_D3, INPUT_PULLUP);
+    pinMode(PIN_LINE_SENSOR_D4, INPUT_PULLUP);
+    pinMode(PIN_LINE_SENSOR_D5, INPUT_PULLUP);
 
     pinMode(Kick1, OUTPUT);
     pinMode(Kick_Dir, OUTPUT);
 
-    pinMode(SWR, OUTPUT);
-    pinMode(SWG, OUTPUT);
+    pinMode(PIN_SWITCH_LED_R, OUTPUT);
+    pinMode(PIN_SWITCH_LED_G, OUTPUT);
 
     pinMode(Aux1, INPUT);
     pinMode(Aux2, INPUT);
@@ -98,10 +94,10 @@ void setup() {
 
     digitalWrite(Kick1, LOW);
     digitalWrite(Kick_Dir, LOW);
-    digitalWrite(SWR, HIGH);
-    digitalWrite(SWG, HIGH);
+    digitalWrite(PIN_SWITCH_LED_R, HIGH);
+    digitalWrite(PIN_SWITCH_LED_G, HIGH);
 
-    pinMode(INT_29, INPUT_PULLUP);  // interrupt port set
+    pinMode(PIN_INTERRUPT_29, INPUT_PULLUP);
 
     Serial.begin(9600);
     Serial.println("Starting...");
@@ -144,10 +140,10 @@ void setup() {
 
     // Caution D29 -> Interrupt5
 
-    attachInterrupt(INT_29, intHandle, RISING);
+    attachInterrupt(PIN_INTERRUPT_29, intHandle, RISING);
 
-    digitalWrite(SWR, HIGH);
-    digitalWrite(SWG, HIGH);
+    digitalWrite(PIN_SWITCH_LED_R, HIGH);
+    digitalWrite(PIN_SWITCH_LED_G, HIGH);
     Serial.println("Initialize end");
 }
 
@@ -236,14 +232,14 @@ void loop() {
         dribbler1(0);
         dribbler2(0);
         LineLed.TernOff();  // ラインセンサのLEDを消灯
-        digitalWrite(SWR, HIGH);
-        digitalWrite(SWG, HIGH);
+        digitalWrite(PIN_SWITCH_LED_R, HIGH);
+        digitalWrite(PIN_SWITCH_LED_G, HIGH);
         wrap = 0;
         return;
     }
 
-    digitalWrite(SWR, HIGH);
-    digitalWrite(SWG, HIGH);
+    digitalWrite(PIN_SWITCH_LED_R, HIGH);
+    digitalWrite(PIN_SWITCH_LED_G, HIGH);
 
     if (Battery.is_emergency()) {
         Serial.println("");
@@ -253,11 +249,11 @@ void loop() {
         LineLed.TernOff();
         motorFree();
         while (true) {
-            digitalWrite(SWR, HIGH);
-            digitalWrite(SWG, HIGH);
+            digitalWrite(PIN_SWITCH_LED_R, HIGH);
+            digitalWrite(PIN_SWITCH_LED_G, HIGH);
             delay(300);
-            digitalWrite(SWR, LOW);
-            digitalWrite(SWG, LOW);
+            digitalWrite(PIN_SWITCH_LED_R, LOW);
+            digitalWrite(PIN_SWITCH_LED_G, LOW);
             delay(300);
         }
     }
@@ -483,17 +479,17 @@ void intHandle() {  // Lineを踏んだらlineflagをセットして止まる。
 
     constexpr int power = 30;
 
-    while (digitalRead(INT_29) == HIGH) {   // Lineセンサが反応している間は繰り返す
-        if (digitalRead(LINE1D) == HIGH) {  // lineを踏んだセンサーを調べる
+    while (digitalRead(PIN_INTERRUPT_29) == HIGH) {   // Lineセンサが反応している間は繰り返す
+        if (digitalRead(PIN_LINE_SENSOR_D1) == HIGH) {  // lineを踏んだセンサーを調べる
             back_Line1(power);              // Lineセンサと反対方向へ移動する
             lineflag = true;                // set lineflag
-        } else if (digitalRead(LINE2D) == HIGH) {
+        } else if (digitalRead(PIN_LINE_SENSOR_D2) == HIGH) {
             back_Line2(power);
             lineflag = true;  // set lineflag
-        } else if (digitalRead(LINE3D) == HIGH) {
+        } else if (digitalRead(PIN_LINE_SENSOR_D3) == HIGH) {
             back_Line3(power);
             lineflag = true;  // set lineflag
-        } else if (digitalRead(LINE4D) == HIGH) {
+        } else if (digitalRead(PIN_LINE_SENSOR_D4) == HIGH) {
             back_Line4(power);
             lineflag = true;  // set lineflag
         } else {
@@ -517,10 +513,10 @@ void back_Line1(const int power) {  // Lineセンサ1が反応しなくなるま
 #if DEBUG_MODE
     LedR.TernOn();
 #endif
-    while ((digitalRead(LINE1D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE3D) == HIGH)) {
-        if (digitalRead(LINE4D) == HIGH) {
+    while ((digitalRead(PIN_LINE_SENSOR_D1) == HIGH) || (digitalRead(PIN_LINE_SENSOR_D5) == HIGH) || (digitalRead(PIN_LINE_SENSOR_D3) == HIGH)) {
+        if (digitalRead(PIN_LINE_SENSOR_D4) == HIGH) {
             azimuth = PI * 3.0 / 4.0;  // 後ろ方向(1+4)をradianに変換
-        } else if (digitalRead(LINE2D) == HIGH) {
+        } else if (digitalRead(PIN_LINE_SENSOR_D2) == HIGH) {
             azimuth = PI * 5.0 / 4.0;  // 後ろ方向(1+2)をradianに変換
         } else {
             azimuth = PI * 4.0 / 4.0;  // 後ろ方向(3)をradianに変換
@@ -538,10 +534,10 @@ void back_Line2(const int power) {  // Lineセンサ2が反応しなくなるま
 #if DEBUG_MODE
     LedY.TernOn();
 #endif
-    while ((digitalRead(LINE2D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE4D) == HIGH)) {
-        if (digitalRead(LINE1D) == HIGH) {
+    while ((digitalRead(PIN_LINE_SENSOR_D2) == HIGH) || (digitalRead(PIN_LINE_SENSOR_D5) == HIGH) || (digitalRead(PIN_LINE_SENSOR_D4) == HIGH)) {
+        if (digitalRead(PIN_LINE_SENSOR_D1) == HIGH) {
             azimuth = PI * 5.0 / 4.0;  // 後ろ方向(2+1)を radian に変換
-        } else if (digitalRead(LINE3D) == HIGH) {
+        } else if (digitalRead(PIN_LINE_SENSOR_D3) == HIGH) {
             azimuth = PI * 7.0 / 4.0;  // 後ろ方向(2+3)を radian に変換
         } else {
             azimuth = PI * 6.0 / 4.0;  // 後ろ方向(4)を radian に変換
@@ -559,10 +555,10 @@ void back_Line3(const int power) {  // Lineセンサ3 が反応しなくなる�
 #if DEBUG_MODE
     LedG.TernOn();
 #endif
-    while ((digitalRead(LINE3D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE1D) == HIGH)) {
-        if (digitalRead(LINE4D) == HIGH) {
+    while ((digitalRead(PIN_LINE_SENSOR_D3) == HIGH) || (digitalRead(PIN_LINE_SENSOR_D5) == HIGH) || (digitalRead(PIN_LINE_SENSOR_D1) == HIGH)) {
+        if (digitalRead(PIN_LINE_SENSOR_D4) == HIGH) {
             azimuth = PI * 1.0 / 4.0;  // 後ろ方向(3+4)を radian に変換
-        } else if (digitalRead(LINE2D) == HIGH) {
+        } else if (digitalRead(PIN_LINE_SENSOR_D2) == HIGH) {
             azimuth = PI * 7.0 / 4.0;  // 後ろ方向(3+2)を radian に変換
         } else {
             azimuth = PI * 0.0 / 4.0;  // 後ろ方向(1)を radian に変換
@@ -580,10 +576,10 @@ void back_Line4(const int power) {  // Lineセンサ4 が反応しなくなる�
 #if DEBUG_MODE
     LedB.TernOn();
 #endif
-    while ((digitalRead(LINE4D) == HIGH) || (digitalRead(LINE5D) == HIGH) || (digitalRead(LINE2D) == HIGH)) {
-        if (digitalRead(LINE3D) == HIGH) {
+    while ((digitalRead(PIN_LINE_SENSOR_D4) == HIGH) || (digitalRead(PIN_LINE_SENSOR_D5) == HIGH) || (digitalRead(PIN_LINE_SENSOR_D2) == HIGH)) {
+        if (digitalRead(PIN_LINE_SENSOR_D3) == HIGH) {
             azimuth = PI * 1.0 / 4.0;  // 後ろ方向(4+3)を radian に変換
-        } else if (digitalRead(LINE1D) == HIGH) {
+        } else if (digitalRead(PIN_LINE_SENSOR_D1) == HIGH) {
             azimuth = PI * 3.0 / 4.0;  // 後ろ方向(4+1)を radian に変換
         } else {
             azimuth = PI * 2.0 / 4.0;  // 後ろ方向(2)を radian に変換
@@ -612,11 +608,11 @@ void doOutofbound() {
         } else {  // スタートスイッチが切られたら止まる
             motorfunction(PI / 2.0, 0, 0);
         }
-        digitalWrite(SWG, LOW);
-        digitalWrite(SWR, LOW);
+        digitalWrite(PIN_SWITCH_LED_G, LOW);
+        digitalWrite(PIN_SWITCH_LED_R, LOW);
         delay(25);
-        digitalWrite(SWG, HIGH);
-        digitalWrite(SWR, HIGH);
+        digitalWrite(PIN_SWITCH_LED_G, HIGH);
+        digitalWrite(PIN_SWITCH_LED_R, HIGH);
         delay(25);
     }
 }

@@ -16,7 +16,7 @@ class Battery
   private:
     const int PIN;
     const float LIMIT;
-    static constexpr float K = 0.01811;
+    static constexpr float K = 0.01811; // 0.01811V/count
 };
 
 inline Battery::Battery(const int pin, const float limit): PIN(pin), LIMIT(limit) {
