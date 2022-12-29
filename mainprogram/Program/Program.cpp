@@ -127,11 +127,9 @@ void setup() {
 
     Serial.println("Initialize 2 ...");
     delay(1000);  //  ドリブラ・キッカーの動作チェック
-    dribbler1(100);
-    dribbler2(100);
+    dribbler(100);
     delay(1000);
-    dribbler1(0);
-    dribbler2(0);
+    dribbler(0);
     delay(100);
     digitalWrite(PIN_KICK_DIR, LOW);
     delay(100);
@@ -235,8 +233,7 @@ void loop() {
     // PIN_START_SWITCH == Low でスタート、それ以外はロボット停止
     if (digitalRead(PIN_START_SWITCH) != LOW) {
         MotorContoroler.FreeAll();
-        dribbler1(0);
-        dribbler2(0);
+        dribbler(0);
         LineLed.TernOff();  // ラインセンサのLEDを消灯
         digitalWrite(PIN_SWITCH_LED_R, HIGH);
         digitalWrite(PIN_SWITCH_LED_G, HIGH);
@@ -286,7 +283,7 @@ void loop() {
  * rotation(-100:100)
  */
 void keeper(const int rotation) {
-    dribbler1(0);
+    dribbler(0);
     wrap = 0;
 
     Vector2 goal;
@@ -370,7 +367,7 @@ void attacker(const int rotation) {
 
     static bool kick = false;
     if (-5 <= ball_pos.y && ball_pos.y <= 30) {  // ボールが前(0 <= y <= 0)にあるとき
-        dribbler1(100);
+        dribbler(100);
         wrap = 0;
         if (abs(ball_pos.x) < 5) {       // 目の前
             if (ball_front <= 60) {      // y の距離近い
@@ -381,7 +378,7 @@ void attacker(const int rotation) {
                     } else if (goal.y <= 33 && abs(goal.x) < 17) {  // ゴールにけれる距離
                         kick = true;
                         digitalWrite(PIN_KICK_DIR, LOW);
-                        dribbler1(0);
+                        dribbler(0);
                         digitalWrite(PIN_KICKER, HIGH);
                         delay(200);
                         MotorContoroler.Drive(0, 0, 0);
@@ -407,7 +404,7 @@ void attacker(const int rotation) {
             MotorContoroler.Drive(z, powerLimit(Pmax, Pcontrol), -rotation);
         }
     } else if (ball_pos.y <= 0) {  // 後ろにボールがあるとき
-        dribbler1(0);
+        dribbler(0);
         if (abs(ball_pos.x) < 30) {
             if (ball_pos.y >= -129) {
                 MotorContoroler.Drive(0, 50, -rotation);
@@ -436,8 +433,7 @@ void attacker(const int rotation) {
             MotorContoroler.Drive(z, Vector2::Norm(ball_pos) + 10, -rotation);
         }
     } else {  // 30 > y になるとき
-        dribbler1(0);
-        dribbler2(0);
+        dribbler(0);
         wrap = 0;
         if (exist_ball == false) {  // ボールがないとき(y = 4096)
             MotorContoroler.Drive(0, 0, 0);
