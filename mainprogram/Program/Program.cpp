@@ -20,6 +20,7 @@
 #include "components/motor.hpp"
 #include "components/dribbler.hpp"
 #include "components/kicker.hpp"
+#include "components/digital_reader.hpp"
 #include "types/vector2.hpp"
 #include "pin.hpp"
 
@@ -73,6 +74,18 @@ const component::LedLight BuiltinLed(LED_BUILTIN);
 const component::LedLight SwitchLedG(PIN_SWITCH_LED_G);
 const component::LedLight SwitchLedR(PIN_SWITCH_LED_R);
 
+const component::DigitalReader StartSwitch(PIN_START_SWITCH, INPUT_PULLUP);
+const component::DigitalReader GoalSwitch(PIN_GOAL_SWITCH, INPUT_PULLUP);
+
+const component::DigitalReader LineSensorD1(PIN_LINE_SENSOR_D1, INPUT_PULLUP);
+const component::DigitalReader LineSensorD2(PIN_LINE_SENSOR_D2, INPUT_PULLUP);
+const component::DigitalReader LineSensorD3(PIN_LINE_SENSOR_D3, INPUT_PULLUP);
+const component::DigitalReader LineSensorD4(PIN_LINE_SENSOR_D4, INPUT_PULLUP);
+const component::DigitalReader LineSensorD5(PIN_LINE_SENSOR_D5, INPUT_PULLUP);
+
+const component::DigitalReader AUX1(PIN_AUX1, INPUT);
+const component::DigitalReader AUX2(PIN_AUX2, INPUT);
+
 // PWM = 37KHz
 const component::Motor MotorCh1(PIN_MOTOR1_FORWARD_BRAKE, PIN_MOTOR1_REVERSE_BRAKE, PIN_MOTOR1_PWM, 37000);
 const component::Motor MotorCh2(PIN_MOTOR2_FORWARD_BRAKE, PIN_MOTOR2_REVERSE_BRAKE, PIN_MOTOR2_PWM, 37000);
@@ -95,18 +108,6 @@ void setup() {
     Serial.begin(9600);
     Serial.println("DONE open Serial(9600)");
 
-    pinMode(PIN_START_SWITCH, INPUT_PULLUP);
-    pinMode(PIN_GOAL_SWITCH, INPUT_PULLUP);
-    pinMode(PIN_LINE_SENSOR_D1, INPUT_PULLUP);
-    pinMode(PIN_LINE_SENSOR_D2, INPUT_PULLUP);
-    pinMode(PIN_LINE_SENSOR_D3, INPUT_PULLUP);
-    pinMode(PIN_LINE_SENSOR_D4, INPUT_PULLUP);
-    pinMode(PIN_LINE_SENSOR_D5, INPUT_PULLUP);
-    pinMode(PIN_AUX1, INPUT);
-    pinMode(PIN_AUX2, INPUT);
-    pinMode(PIN_INTERRUPT_29, INPUT_PULLUP);
-    Serial.println("DONE setup pin-mode");
-
     Wire.begin();
     Serial.println("DONE open Wire");
 
@@ -120,6 +121,7 @@ void setup() {
     Serial.println("DONE setup ToF_front");
 
     // Caution D29 -> Interrupt
+    pinMode(PIN_INTERRUPT_29, INPUT_PULLUP);
     attachInterrupt(PIN_INTERRUPT_29, intHandle, RISING);
     Serial.print("DONE attach interrupt to pin(RISING): ");
     Serial.println(PIN_INTERRUPT_29);
@@ -176,7 +178,7 @@ void loop() {
     exist_yellow_goal = OpenMV.GetYellowGoalCount() != 0;
     yellow_goal = OpenMV.GetYellowGoalPosition();
 
-    target_goal_type = digitalRead(PIN_GOAL_SWITCH) == HIGH ? GoalType::Blue : GoalType::Yellow;
+    target_goal_type = GoalSwitch.IsHigh() ? GoalType::Blue : GoalType::Yellow;
 
     // 中心補正
     if (exist_ball) {
@@ -233,8 +235,8 @@ void loop() {
     SwitchLedR.TernOn();
     SwitchLedG.TernOn();
 
-    // PIN_START_SWITCH == Low でスタート、それ以外はロボット停止
-    if (digitalRead(PIN_START_SWITCH) != LOW) {
+    // Start Switch が Low でスタート、それ以外はロボット停止
+    if (StartSwitch.IsHigh()) {
         MotorContoroler.FreeAll();
         Dribbler.Stop();
         LineSensorLed.TernOff();
@@ -261,9 +263,9 @@ void loop() {
     LineSensorLed.TernOn();
 
     // 役割判定
-    if (digitalRead(PIN_AUX1) == LOW) {
+    if (AUX1.IsLow()) {
         attacker(gyro);
-    } else if (digitalRead(PIN_AUX2) == LOW) {
+    } else if (AUX2.IsLow()) {
         keeper(gyro);
     } else {
         // どちらがボールに近いか
@@ -467,27 +469,29 @@ int powerLimit(const int max, const int power) {
 // Lineを踏んだらバックする
 
 void intHandle() {  // Lineを踏んだらlineflagをセットして止まる。
-    LedB.TernOn();
-
-    if (digitalRead(PIN_START_SWITCH) == HIGH) {  // スイッチがOFFなら何もしない。
+    if (StartSwitch.IsHigh()) {  // スイッチがOFFなら何もしない。
         return;
     }
 
+    LedB.TernOn();
+
     constexpr int power = 30;
 
-    while (digitalRead(PIN_INTERRUPT_29) == HIGH) {   // Lineセンサが反応している間は繰り返す
-        if (digitalRead(PIN_LINE_SENSOR_D1) == HIGH) {  // lineを踏んだセンサーを調べる
-            back_Line1(power);              // Lineセンサと反対方向へ移動する
-            lineflag = true;                // set lineflag
-        } else if (digitalRead(PIN_LINE_SENSOR_D2) == HIGH) {
+   // Lineセンサが反応している間は繰り返す
+    while (digitalRead(PIN_INTERRUPT_29) == HIGH) {
+        // lineを踏んだセンサーを調べ、Lineセンサと反対方向へ移動する
+        if (LineSensorD1.IsHigh()) {
+            back_Line1(power);
+            lineflag = true;
+        } else if (LineSensorD2.IsHigh()) {
             back_Line2(power);
-            lineflag = true;  // set lineflag
-        } else if (digitalRead(PIN_LINE_SENSOR_D3) == HIGH) {
+            lineflag = true;
+        } else if (LineSensorD3.IsHigh()) {
             back_Line3(power);
-            lineflag = true;  // set lineflag
-        } else if (digitalRead(PIN_LINE_SENSOR_D4) == HIGH) {
+            lineflag = true;
+        } else if (LineSensorD4.IsHigh()) {
             back_Line4(power);
-            lineflag = true;  // set lineflag
+            lineflag = true;
         } else {
             LedR.TernOn();
         }
@@ -509,10 +513,10 @@ void back_Line1(const int power) {  // Lineセンサ1が反応しなくなるま
 #if DEBUG_MODE
     LedR.TernOn();
 #endif
-    while ((digitalRead(PIN_LINE_SENSOR_D1) == HIGH) || (digitalRead(PIN_LINE_SENSOR_D5) == HIGH) || (digitalRead(PIN_LINE_SENSOR_D3) == HIGH)) {
-        if (digitalRead(PIN_LINE_SENSOR_D4) == HIGH) {
+    while (LineSensorD1.IsHigh() || LineSensorD5.IsHigh() || LineSensorD3.IsHigh()) {
+        if (LineSensorD4.IsHigh()) {
             azimuth = PI * 3.0 / 4.0;  // 後ろ方向(1+4)をradianに変換
-        } else if (digitalRead(PIN_LINE_SENSOR_D2) == HIGH) {
+        } else if (LineSensorD2.IsHigh()) {
             azimuth = PI * 5.0 / 4.0;  // 後ろ方向(1+2)をradianに変換
         } else {
             azimuth = PI * 4.0 / 4.0;  // 後ろ方向(3)をradianに変換
@@ -530,10 +534,10 @@ void back_Line2(const int power) {  // Lineセンサ2が反応しなくなるま
 #if DEBUG_MODE
     LedY.TernOn();
 #endif
-    while ((digitalRead(PIN_LINE_SENSOR_D2) == HIGH) || (digitalRead(PIN_LINE_SENSOR_D5) == HIGH) || (digitalRead(PIN_LINE_SENSOR_D4) == HIGH)) {
-        if (digitalRead(PIN_LINE_SENSOR_D1) == HIGH) {
+    while (LineSensorD2.IsHigh() || LineSensorD5.IsHigh() || LineSensorD4.IsHigh()) {
+        if (LineSensorD1.IsHigh()) {
             azimuth = PI * 5.0 / 4.0;  // 後ろ方向(2+1)を radian に変換
-        } else if (digitalRead(PIN_LINE_SENSOR_D3) == HIGH) {
+        } else if (LineSensorD3.IsHigh()) {
             azimuth = PI * 7.0 / 4.0;  // 後ろ方向(2+3)を radian に変換
         } else {
             azimuth = PI * 6.0 / 4.0;  // 後ろ方向(4)を radian に変換
@@ -551,10 +555,10 @@ void back_Line3(const int power) {  // Lineセンサ3 が反応しなくなる�
 #if DEBUG_MODE
     LedG.TernOn();
 #endif
-    while ((digitalRead(PIN_LINE_SENSOR_D3) == HIGH) || (digitalRead(PIN_LINE_SENSOR_D5) == HIGH) || (digitalRead(PIN_LINE_SENSOR_D1) == HIGH)) {
-        if (digitalRead(PIN_LINE_SENSOR_D4) == HIGH) {
+    while (LineSensorD3.IsHigh() || LineSensorD5.IsHigh() || LineSensorD1.IsHigh()) {
+        if (LineSensorD4.IsHigh()) {
             azimuth = PI * 1.0 / 4.0;  // 後ろ方向(3+4)を radian に変換
-        } else if (digitalRead(PIN_LINE_SENSOR_D2) == HIGH) {
+        } else if (LineSensorD2.IsHigh()) {
             azimuth = PI * 7.0 / 4.0;  // 後ろ方向(3+2)を radian に変換
         } else {
             azimuth = PI * 0.0 / 4.0;  // 後ろ方向(1)を radian に変換
@@ -572,10 +576,10 @@ void back_Line4(const int power) {  // Lineセンサ4 が反応しなくなる�
 #if DEBUG_MODE
     LedB.TernOn();
 #endif
-    while ((digitalRead(PIN_LINE_SENSOR_D4) == HIGH) || (digitalRead(PIN_LINE_SENSOR_D5) == HIGH) || (digitalRead(PIN_LINE_SENSOR_D2) == HIGH)) {
-        if (digitalRead(PIN_LINE_SENSOR_D3) == HIGH) {
+    while (LineSensorD4.IsHigh() || LineSensorD5.IsHigh() || LineSensorD2.IsHigh()) {
+        if (LineSensorD3.IsHigh()) {
             azimuth = PI * 1.0 / 4.0;  // 後ろ方向(4+3)を radian に変換
-        } else if (digitalRead(PIN_LINE_SENSOR_D1) == HIGH) {
+        } else if (LineSensorD1.IsHigh()) {
             azimuth = PI * 3.0 / 4.0;  // 後ろ方向(4+1)を radian に変換
         } else {
             azimuth = PI * 2.0 / 4.0;  // 後ろ方向(2)を radian に変換
@@ -599,9 +603,10 @@ void doOutofbound() {
     LineSensorLed.TernOff();
 
     while (true) {
-        if (digitalRead(PIN_START_SWITCH) == LOW) {
+        // スタートスイッチが切られたら止まる
+        if (StartSwitch.IsLow()) {
             MotorContoroler.Drive(PI / 2.0, 30, 0);
-        } else {  // スタートスイッチが切られたら止まる
+        } else {
             MotorContoroler.Drive(PI / 2.0, 0, 0);
         }
         SwitchLedG.TernOff();
