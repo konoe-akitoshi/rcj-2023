@@ -68,6 +68,8 @@ const component::LedLight LedY(PIN_LED_Y);
 const component::LedLight LedG(PIN_LED_G);
 const component::LedLight LedB(PIN_LED_B);
 const component::LedLight BuiltinLed(LED_BUILTIN);
+const component::LedLight SwitchLedG(PIN_SWITCH_LED_G);
+const component::LedLight SwitchLedR(PIN_SWITCH_LED_R);
 
 // PWM = 37KHz
 const component::Motor MotorCh1(PIN_MOTOR1_FORWARD_BRAKE, PIN_MOTOR1_REVERSE_BRAKE, PIN_MOTOR1_PWM, 37000);
@@ -94,8 +96,6 @@ void setup() {
     pinMode(PIN_LINE_SENSOR_D5, INPUT_PULLUP);
     pinMode(PIN_KICKER, OUTPUT);
     pinMode(PIN_KICK_DIR, OUTPUT);
-    pinMode(PIN_SWITCH_LED_R, OUTPUT);
-    pinMode(PIN_SWITCH_LED_G, OUTPUT);
     pinMode(PIN_AUX1, INPUT);
     pinMode(PIN_AUX2, INPUT);
     pinMode(PIN_INTERRUPT_29, INPUT_PULLUP);
@@ -139,8 +139,8 @@ void setup() {
     Serial2.begin(115200);
     Serial.println("DONE open Serial2(115200)");
 
-    digitalWrite(PIN_SWITCH_LED_R, HIGH);
-    digitalWrite(PIN_SWITCH_LED_G, HIGH);
+    SwitchLedR.TernOn();
+    SwitchLedG.TernOn();
     Serial.println("DONE setup");
 }
 
@@ -152,16 +152,14 @@ void loop() {
     blob_count = OpenMV.BlobCount();
     lineflag = false;
 
-    // get gyrodata
+    // Gyro の方位データを gyro に取り込む
     if (Serial2.available() > 0) {
         while (Serial2.available() != 0) {
-            // Gyro の方位データを gyro に取り込む
             // Serial2の送信側がint8_tで送ってるので、intで受け取ると負の数が期待通り受け取れない。
             // そのため、int8_tにキャストする必要がある。
             gyro_o = (int8_t)Serial2.read();
         }
     }
-
     const int gyro = gyro_o;
 
     if (XBee.HasData()) {
@@ -179,8 +177,8 @@ void loop() {
     if (exist_ball) {
         ball_pos = Vector2(156, 67) - ball_pos;
     }
-
-    if (digitalRead(PIN_GOAL_SWITCH)) {  // 青色ゴールをする場合
+    if (digitalRead(PIN_GOAL_SWITCH) == HIGH) {
+        // 青色ゴールをする場合
         if (exist_yellow_goal) {
             yellow_goal.x = 154 - yellow_goal.x;
             yellow_goal.y = yellow_goal.y - 184;
@@ -189,7 +187,8 @@ void loop() {
             blue_goal.x = 151 - blue_goal.x;
             blue_goal.y = blue_goal.y - 58;
         }
-    } else {  // 黄色ゴールをする場合
+    } else {
+        // 黄色ゴールをする場合
         if (exist_yellow_goal) {
             yellow_goal.x = 151 - yellow_goal.x;
             yellow_goal.y = yellow_goal.y - 63;
@@ -205,66 +204,67 @@ void loop() {
         int send_data = sqrt(fixed_x * fixed_x + ball_pos.y * ball_pos.y);
         XBee.SendData(send_data);
     }
-
     ball_dist = Vector2::Norm(ball_pos);
 
-    Serial.print("ball_pos.x:");
-    Serial.print(ball_pos.x);
-    Serial.print(" ,ball_pos.y:");
-    Serial.print(ball_pos.y);
-    Serial.print(" ,tof_front=");
-    Serial.println(ball_front);
-    Serial.print(" ,yellowgoal_x=");  // 青ゴールのx座標
-    Serial.print(blue_goal.x);
-    Serial.print(" ,yellowgoal_y=");  // 青ゴールのy座標
-    Serial.print(blue_goal.y);
-    Serial.print(" ,tan=");
-    Serial.println(atan2(blue_goal.x, -blue_goal.y));
-
     ball_front = ToF_front.readRangeSingleMillimeters();
+
+#if DEBUG_MODE
+    Serial.print("ball_pos: ");
+    Serial.print(ball_pos.x);
+    Serial.print(", ");
+    Serial.print(ball_pos.y);
+    Serial.print(" / tof_front: ");
+    Serial.print(ball_front);
+    Serial.print(" / yellow_goal: ");
+    Serial.print(yellow_goal.x);
+    Serial.print(", ");
+    Serial.print(yellow_goal.y);
+    Serial.print(" / blue_goal: ");
+    Serial.print(blue_goal.x);
+    Serial.print(", ");
+    Serial.print(blue_goal.y);
+    Serial.print(" / tan: ");
+    Serial.println(atan2(blue_goal.x, -blue_goal.y));
+#endif
+
+    SwitchLedR.TernOn();
+    SwitchLedG.TernOn();
 
     // PIN_START_SWITCH == Low でスタート、それ以外はロボット停止
     if (digitalRead(PIN_START_SWITCH) != LOW) {
         MotorContoroler.FreeAll();
         Dribbler.Stop();
-        LineLed.TernOff();  // ラインセンサのLEDを消灯
-        digitalWrite(PIN_SWITCH_LED_R, HIGH);
-        digitalWrite(PIN_SWITCH_LED_G, HIGH);
+        LineLed.TernOff();
         wrap = 0;
         return;
     }
 
-    digitalWrite(PIN_SWITCH_LED_R, HIGH);
-    digitalWrite(PIN_SWITCH_LED_G, HIGH);
-
     if (Battery.IsEmergency()) {
-        Serial.println("");
-        Serial.print("  Battery Low!: ");
+        Serial.print("!! Battery Low !!  Voltage: ");
         Serial.println(Battery.Voltage());
         doOutofbound();
         LineLed.TernOff();
         MotorContoroler.FreeAll();
         while (true) {
-            digitalWrite(PIN_SWITCH_LED_R, HIGH);
-            digitalWrite(PIN_SWITCH_LED_G, HIGH);
+            SwitchLedR.TernOff();
+            SwitchLedG.TernOff();
             delay(300);
-            digitalWrite(PIN_SWITCH_LED_R, LOW);
-            digitalWrite(PIN_SWITCH_LED_G, LOW);
+            SwitchLedR.TernOn();
+            SwitchLedG.TernOn();
             delay(300);
         }
     }
 
-    LineLed.TernOn();  // ラインセンサのLEDを点灯
-    lineflag = false;
+    LineLed.TernOn();
 
     // 役割判定
     if (digitalRead(PIN_AUX1) == LOW) {
         attacker(gyro);
     } else if (digitalRead(PIN_AUX2) == LOW) {
         keeper(gyro);
-
     } else {
-        if (p_ball <= ball_dist) {  // どちらがボールに近いか
+        // どちらがボールに近いか
+        if (p_ball <= ball_dist) {
             keeper(gyro);
         } else {
             attacker(gyro);
@@ -603,11 +603,11 @@ void doOutofbound() {
         } else {  // スタートスイッチが切られたら止まる
             MotorContoroler.Drive(PI / 2.0, 0, 0);
         }
-        digitalWrite(PIN_SWITCH_LED_G, LOW);
-        digitalWrite(PIN_SWITCH_LED_R, LOW);
+        SwitchLedG.TernOff();
+        SwitchLedR.TernOff();
         delay(25);
-        digitalWrite(PIN_SWITCH_LED_G, HIGH);
-        digitalWrite(PIN_SWITCH_LED_R, HIGH);
+        SwitchLedG.TernOn();
+        SwitchLedR.TernOn();
         delay(25);
     }
 }
