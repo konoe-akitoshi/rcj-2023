@@ -73,73 +73,66 @@ const component::XBee XBee(9600);
 component::OpenMV OpenMV(19200);
 
 void setup() {
-    pinMode(PIN_START_SWITCH, INPUT_PULLUP);
+    Serial.begin(9600);
+    Serial.println("DONE open Serial(9600)");
 
+    pinMode(PIN_START_SWITCH, INPUT_PULLUP);
+    pinMode(PIN_GOAL_SWITCH, INPUT_PULLUP);
     pinMode(PIN_LINE_SENSOR_D1, INPUT_PULLUP);
     pinMode(PIN_LINE_SENSOR_D2, INPUT_PULLUP);
     pinMode(PIN_LINE_SENSOR_D3, INPUT_PULLUP);
     pinMode(PIN_LINE_SENSOR_D4, INPUT_PULLUP);
     pinMode(PIN_LINE_SENSOR_D5, INPUT_PULLUP);
-
     pinMode(PIN_KICKER, OUTPUT);
     pinMode(PIN_KICK_DIR, OUTPUT);
-
     pinMode(PIN_SWITCH_LED_R, OUTPUT);
     pinMode(PIN_SWITCH_LED_G, OUTPUT);
-
     pinMode(PIN_AUX1, INPUT);
     pinMode(PIN_AUX2, INPUT);
-
-    pinMode(PIN_GOAL_SWITCH, INPUT_PULLUP);
-
-    digitalWrite(PIN_KICKER, LOW);
-    digitalWrite(PIN_KICK_DIR, LOW);
-    digitalWrite(PIN_SWITCH_LED_R, HIGH);
-    digitalWrite(PIN_SWITCH_LED_G, HIGH);
-
     pinMode(PIN_INTERRUPT_29, INPUT_PULLUP);
-
-    Serial.begin(9600);
-    Serial.println("Starting...");
+    Serial.println("DONE setup pin-mode");
 
     Wire.begin();
-    /*
-      CE端子をLOWにするとデバイスがリセットされアドレスが初期値に戻るので注意
-    */
+    Serial.println("DONE open Wire");
 
+    // CE端子をLOWにするとデバイスがリセットされアドレスが初期値に戻るので注意
     delay(10);
     ToF_front.init();
     ToF_front.configureDefault();
     ToF_front.setAddress(0x52);  // 好きなアドレスに設定
     ToF_front.setTimeout(100);
     delay(10);
+    Serial.println("DONE setup ToF_front");
 
-    Serial.println("Initialize 1 ...");
+    // Caution D29 -> Interrupt
+    attachInterrupt(PIN_INTERRUPT_29, intHandle, RISING);
+    Serial.print("DONE attach interrupt to pin(RISING): ");
+    Serial.println(PIN_INTERRUPT_29);
 
-    Serial.println("Initialize 2 ...");
-    delay(1000);  //  ドリブラ・キッカーの動作チェック
+    // Dribbler 動作テスト
     Dribbler.Start(100);
     delay(1000);
     Dribbler.Stop();
-    delay(100);
+    Serial.println("DONE check dribbler");
+
+    delay(1000);
+
+    // Kicker 動作テスト
+    digitalWrite(PIN_KICKER, LOW);
     digitalWrite(PIN_KICK_DIR, LOW);
     delay(100);
     digitalWrite(PIN_KICKER, HIGH);
     delay(100);
     digitalWrite(PIN_KICKER, LOW);
-    delay(1000);
+    Serial.println("DONE check kicker");
 
-    Serial.println("Initialize 3 ...");
-
-    Serial2.begin(115200);  // WT901 IMU Sener
-
-    // Caution D29 -> Interrupt5
-
-    attachInterrupt(PIN_INTERRUPT_29, intHandle, RISING);
+    // WT901 IMU Sener
+    Serial2.begin(115200);
+    Serial.println("DONE open Serial2(115200)");
 
     digitalWrite(PIN_SWITCH_LED_R, HIGH);
     digitalWrite(PIN_SWITCH_LED_G, HIGH);
-    Serial.println("Initialize end");
+    Serial.println("DONE setup");
 }
 
 void loop() {
