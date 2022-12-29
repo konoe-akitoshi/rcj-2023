@@ -75,6 +75,11 @@ const component::Dribbler Dribbler(PIN_DRIBBLER_PWM);
 const component::XBee XBee(9600);
 component::OpenMV OpenMV(19200);
 
+enum class GoalType {
+    Blue,
+    Yellow
+} target_goal_type;
+
 void setup() {
     Serial.begin(9600);
     Serial.println("DONE open Serial(9600)");
@@ -165,12 +170,13 @@ void loop() {
     exist_yellow_goal = OpenMV.GetYellowGoalCount() != 0;
     yellow_goal = OpenMV.GetYellowGoalPosition();
 
+    target_goal_type = digitalRead(PIN_GOAL_SWITCH) == HIGH ? GoalType::Blue : GoalType::Yellow;
+
     // 中心補正
     if (exist_ball) {
         ball_pos = Vector2(156, 67) - ball_pos;
     }
-    if (digitalRead(PIN_GOAL_SWITCH) == HIGH) {
-        // 青色ゴールをする場合
+    if(target_goal_type == GoalType::Blue) {
         if (exist_yellow_goal) {
             yellow_goal.x = 154 - yellow_goal.x;
             yellow_goal.y = yellow_goal.y - 184;
@@ -179,8 +185,7 @@ void loop() {
             blue_goal.x = 151 - blue_goal.x;
             blue_goal.y = blue_goal.y - 58;
         }
-    } else {
-        // 黄色ゴールをする場合
+    } else { // GoalType::Yellow
         if (exist_yellow_goal) {
             yellow_goal.x = 151 - yellow_goal.x;
             yellow_goal.y = yellow_goal.y - 63;
@@ -273,10 +278,10 @@ void keeper(const int rotation) {
 
     Vector2 goal;
     bool exist_goal;
-    if (digitalRead(PIN_GOAL_SWITCH)) {  // 青色の場合
+    if (target_goal_type == GoalType::Blue) {
         exist_goal = exist_yellow_goal;
         goal = {-yellow_goal.x, yellow_goal.y};
-    } else {  // 黄色の場合
+    } else {  // GoalType::Yellow
         exist_goal = exist_blue_goal;
         goal = {-blue_goal.x, blue_goal.y};
     }
@@ -317,11 +322,10 @@ void attacker(const int rotation) {
 
     Vector2 goal;
     bool exist_goal;
-    if (digitalRead(PIN_GOAL_SWITCH)) {  // PIN_GOAL_SWITCHは攻める方向をスイッチに入れる,
-        // 相手ゴールの座標は機体中心
+    if (target_goal_type == GoalType::Blue) {
         exist_goal = exist_blue_goal;
         goal = {blue_goal.x, -blue_goal.y};
-    } else {
+    } else { // GoalType::Yellow
         exist_goal = exist_yellow_goal;
         goal = {yellow_goal.x, -yellow_goal.y};
     }
