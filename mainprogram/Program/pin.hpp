@@ -26,7 +26,6 @@ constexpr int PIN_LINE_SENSOR_D4 = 27;
 constexpr int PIN_LINE_SENSOR_D5 = 28;
 
 constexpr int PIN_KICKER = 11;
-constexpr int PIN_KICK_DIR = 12;
 
 constexpr int PIN_LINE_SENSOR_LED = 30;
 

@@ -92,7 +92,6 @@ void setup() {
     pinMode(PIN_LINE_SENSOR_D4, INPUT_PULLUP);
     pinMode(PIN_LINE_SENSOR_D5, INPUT_PULLUP);
     pinMode(PIN_KICKER, OUTPUT);
-    pinMode(PIN_KICK_DIR, OUTPUT);
     pinMode(PIN_AUX1, INPUT);
     pinMode(PIN_AUX2, INPUT);
     pinMode(PIN_INTERRUPT_29, INPUT_PULLUP);
@@ -125,7 +124,6 @@ void setup() {
 
     // Kicker 動作テスト
     digitalWrite(PIN_KICKER, LOW);
-    digitalWrite(PIN_KICK_DIR, LOW);
     delay(100);
     digitalWrite(PIN_KICKER, HIGH);
     delay(100);
@@ -366,7 +364,6 @@ void attacker(const int rotation) {
                         MotorContoroler.Drive(0, 80, -rotation);
                     } else if (goal.y <= 33 && abs(goal.x) < 17) {  // ゴールにけれる距離
                         kick = true;
-                        digitalWrite(PIN_KICK_DIR, LOW);
                         Dribbler.Stop();
                         digitalWrite(PIN_KICKER, HIGH);
                         delay(200);
