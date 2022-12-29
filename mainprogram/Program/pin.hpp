@@ -17,6 +17,8 @@ constexpr int PIN_MOTOR2_PWM = 36;
 constexpr int PIN_MOTOR3_PWM = 37;
 constexpr int PIN_MOTOR4_PWM = 38;
 
+constexpr int PIN_DRIBBLER_PWM = 6;
+
 constexpr int PIN_LINE_SENSOR_D1 = 24;
 constexpr int PIN_LINE_SENSOR_D2 = 25;
 constexpr int PIN_LINE_SENSOR_D3 = 26;

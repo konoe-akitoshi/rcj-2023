@@ -18,7 +18,7 @@
 #include "components/open_mv.hpp"
 #include "components/xbee.hpp"
 #include "components/motor.hpp"
-#include "motorDRV6.h"
+#include "components/dribbler.hpp"
 #include "types/vector2.hpp"
 #include "pin.hpp"
 
@@ -76,6 +76,8 @@ const component::Motor MotorCh3(PIN_MOTOR3_FORWARD_BRAKE, PIN_MOTOR3_REVERSE_BRA
 const component::Motor MotorCh4(PIN_MOTOR4_FORWARD_BRAKE, PIN_MOTOR4_REVERSE_BRAKE, PIN_MOTOR4_PWM, 37000);
 const component::MotorContoroler MotorContoroler(MotorCh1, MotorCh2, MotorCh3, MotorCh4);
 
+const component::Dribbler Dribbler(PIN_DRIBBLER_PWM);
+
 const component::XBee XBee(9600);
 component::OpenMV OpenMV(19200);
 
@@ -123,13 +125,11 @@ void setup() {
 
     Serial.println("Initialize 1 ...");
 
-    dribInit();   //  ドリブラモーターの初期化
-
     Serial.println("Initialize 2 ...");
     delay(1000);  //  ドリブラ・キッカーの動作チェック
-    dribbler(100);
+    Dribbler.Start(100);
     delay(1000);
-    dribbler(0);
+    Dribbler.Stop();
     delay(100);
     digitalWrite(PIN_KICK_DIR, LOW);
     delay(100);
@@ -233,7 +233,7 @@ void loop() {
     // PIN_START_SWITCH == Low でスタート、それ以外はロボット停止
     if (digitalRead(PIN_START_SWITCH) != LOW) {
         MotorContoroler.FreeAll();
-        dribbler(0);
+        Dribbler.Stop();
         LineLed.TernOff();  // ラインセンサのLEDを消灯
         digitalWrite(PIN_SWITCH_LED_R, HIGH);
         digitalWrite(PIN_SWITCH_LED_G, HIGH);
@@ -283,7 +283,7 @@ void loop() {
  * rotation(-100:100)
  */
 void keeper(const int rotation) {
-    dribbler(0);
+    Dribbler.Stop();
     wrap = 0;
 
     Vector2 goal;
@@ -367,7 +367,7 @@ void attacker(const int rotation) {
 
     static bool kick = false;
     if (-5 <= ball_pos.y && ball_pos.y <= 30) {  // ボールが前(0 <= y <= 0)にあるとき
-        dribbler(100);
+        Dribbler.Start(100);
         wrap = 0;
         if (abs(ball_pos.x) < 5) {       // 目の前
             if (ball_front <= 60) {      // y の距離近い
@@ -378,7 +378,7 @@ void attacker(const int rotation) {
                     } else if (goal.y <= 33 && abs(goal.x) < 17) {  // ゴールにけれる距離
                         kick = true;
                         digitalWrite(PIN_KICK_DIR, LOW);
-                        dribbler(0);
+                        Dribbler.Stop();
                         digitalWrite(PIN_KICKER, HIGH);
                         delay(200);
                         MotorContoroler.Drive(0, 0, 0);
@@ -404,7 +404,7 @@ void attacker(const int rotation) {
             MotorContoroler.Drive(z, powerLimit(Pmax, Pcontrol), -rotation);
         }
     } else if (ball_pos.y <= 0) {  // 後ろにボールがあるとき
-        dribbler(0);
+        Dribbler.Stop();
         if (abs(ball_pos.x) < 30) {
             if (ball_pos.y >= -129) {
                 MotorContoroler.Drive(0, 50, -rotation);
@@ -433,7 +433,7 @@ void attacker(const int rotation) {
             MotorContoroler.Drive(z, Vector2::Norm(ball_pos) + 10, -rotation);
         }
     } else {  // 30 > y になるとき
-        dribbler(0);
+        Dribbler.Stop();
         wrap = 0;
         if (exist_ball == false) {  // ボールがないとき(y = 4096)
             MotorContoroler.Drive(0, 0, 0);
