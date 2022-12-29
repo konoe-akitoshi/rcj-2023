@@ -82,8 +82,6 @@ component::OpenMV OpenMV(19200);
 
 VL6180X ToF_front;
 
-int blob_count;
-
 Vector2 ball_pos;
 Vector2 blue_goal;
 Vector2 yellow_goal;
@@ -151,7 +149,6 @@ void loop() {
     static int gyro_o;
 
     OpenMV.WaitData();
-    blob_count = OpenMV.BlobCount();
 
     // Gyro の方位データを gyro に取り込む
     if (Serial2.available() > 0) {
@@ -338,19 +335,17 @@ void attacker(const int rotation) {
 
     // Convert coordinates data
     float ball_dir = 0;
-    if (blob_count != 0) {                  // 物体を検出したら
-        const float fx = 150 - ball_pos.x;  // ロボットが原点に来るようjに座標を変換
-        const float fy = 130 - ball_pos.y;
-
-        if (fy > 0) {  // 正面から見たボールの方位(radian)を計算
-            ball_dir = atan(fx / fy);
-        } else if (fx > 0) {
-            ball_dir = atan((-fy) / fx) + 1.571;  // 1.571 = Pi/2
-        } else {
-            ball_dir = atan((-fy) / fx) - 1.571;
-        }
-        ball_dir = ball_dir + 0.150;  // +0.150は製作誤差による方位のオフセット補正値(radian)
+    const float fx = 150 - ball_pos.x;  // ロボットが原点に来るようjに座標を変換
+    const float fy = 130 - ball_pos.y;
+    if (fy > 0) {  // 正面から見たボールの方位(radian)を計算
+        ball_dir = atan(fx / fy);
+    } else if (fx > 0) {
+        ball_dir = atan((-fy) / fx) + 1.571;  // 1.571 = Pi/2
+    } else {
+        ball_dir = atan((-fy) / fx) - 1.571;
     }
+    ball_dir = ball_dir + 0.150;  // +0.150は製作誤差による方位のオフセット補正値(radian)
+
     const float data_diff = ball_dir - pre_dir;                                       // 前回の方位との差分を計算
     data_sum += data_diff;                                                            // 方位誤差の累積を計算
     const float Pcontrol = Power * (Kp * ball_dir + Ki * data_sum + Kd * data_diff);  // PIDの制御値を計算

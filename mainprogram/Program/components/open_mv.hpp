@@ -23,11 +23,6 @@ class OpenMV
     Vector2 GetYellowGoalPosition() const;
     Vector2 GetBlueGoalPosition() const;
 
-    // ↓なんのためにある？
-    inline int BlobCount() const {
-        return raw_[0];
-    }
-
   private:
     std::array<int, 39> raw_;
     inline int GetDataUnit_() const {
