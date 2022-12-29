@@ -8,10 +8,8 @@
 #ifdef LOCAL_INCLUDE
 #include "../local/arduino_deps.h"
 #include "../local/vl6180x.hpp"
-#include "../local/wire.hpp"
 #else
 #include <VL6180X.h>
-#include <Wire.h>
 #endif
 #include "components/battery.hpp"
 #include "components/digital_reader.hpp"
@@ -103,9 +101,6 @@ enum class GoalType
 void setup() {
     Serial.begin(9600);
     Serial.println("DONE open Serial(9600)");
-
-    Wire.begin();
-    Serial.println("DONE open Wire");
 
     // CE端子をLOWにするとデバイスがリセットされアドレスが初期値に戻るので注意
     delay(10);
