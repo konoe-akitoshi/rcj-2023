@@ -14,43 +14,25 @@
 #include <Wire.h>
 #endif
 #include "components/battery.hpp"
-#include "components/led_light.hpp"
-#include "components/open_mv.hpp"
-#include "components/xbee.hpp"
-#include "components/motor.hpp"
+#include "components/digital_reader.hpp"
 #include "components/dribbler.hpp"
 #include "components/kicker.hpp"
-#include "components/digital_reader.hpp"
-#include "types/vector2.hpp"
+#include "components/led_light.hpp"
+#include "components/motor.hpp"
+#include "components/open_mv.hpp"
+#include "components/xbee.hpp"
 #include "pin.hpp"
-
-VL6180X ToF_front;  // create front ToF object
-
-int blob_count;
-
-bool lineflag = false;
-
-Vector2 ball_pos;
-Vector2 blue_goal;
-Vector2 yellow_goal;
-bool exist_ball;
-bool exist_yellow_goal;
-bool exist_blue_goal;
-int ball_front;
-
-float p_ball = 255;
-float ball_dist;
-float wrap;
+#include "types/vector2.hpp"
 
 void keeper(const int rotation);
 void attacker(const int rotation);
-int powerLimit(const int max, const int power);
-void intHandle();
+void interruptHandler();
 void back_Line1(const int power);
 void back_Line2(const int power);
 void back_Line3(const int power);
 void back_Line4(const int power);
-void doOutofbound();
+void forceOutOfBounds();
+int powerLimit(const int max, const int power);
 
 // 制御パラメータの設定
 constexpr float Kp = 0.45;   // 比例要素の感度
@@ -86,7 +68,6 @@ const component::DigitalReader LineSensorD5(PIN_LINE_SENSOR_D5, INPUT_PULLUP);
 const component::DigitalReader AUX1(PIN_AUX1, INPUT);
 const component::DigitalReader AUX2(PIN_AUX2, INPUT);
 
-// PWM = 37KHz
 const component::Motor MotorCh1(PIN_MOTOR1_FORWARD_BRAKE, PIN_MOTOR1_REVERSE_BRAKE, PIN_MOTOR1_PWM, 37000);
 const component::Motor MotorCh2(PIN_MOTOR2_FORWARD_BRAKE, PIN_MOTOR2_REVERSE_BRAKE, PIN_MOTOR2_PWM, 37000);
 const component::Motor MotorCh3(PIN_MOTOR3_FORWARD_BRAKE, PIN_MOTOR3_REVERSE_BRAKE, PIN_MOTOR3_PWM, 37000);
@@ -99,7 +80,25 @@ const component::Kicker Kicker(PIN_KICKER);
 const component::XBee XBee(9600);
 component::OpenMV OpenMV(19200);
 
-enum class GoalType {
+VL6180X ToF_front;
+
+int blob_count;
+bool lineflag = false;
+
+Vector2 ball_pos;
+Vector2 blue_goal;
+Vector2 yellow_goal;
+bool exist_ball;
+bool exist_yellow_goal;
+bool exist_blue_goal;
+int ball_front;
+
+float p_ball = 255;
+float ball_dist;
+float wrap;
+
+enum class GoalType
+{
     Blue,
     Yellow
 } target_goal_type;
@@ -122,7 +121,7 @@ void setup() {
 
     // Caution D29 -> Interrupt
     pinMode(PIN_INTERRUPT_29, INPUT_PULLUP);
-    attachInterrupt(PIN_INTERRUPT_29, intHandle, RISING);
+    attachInterrupt(PIN_INTERRUPT_29, interruptHandler, RISING);
     Serial.print("DONE attach interrupt to pin(RISING): ");
     Serial.println(PIN_INTERRUPT_29);
 
@@ -152,7 +151,6 @@ void setup() {
 void loop() {
     static int gyro_o;
 
-    LedB.TernOff();
     OpenMV.WaitData();
     blob_count = OpenMV.BlobCount();
     lineflag = false;
@@ -184,7 +182,7 @@ void loop() {
     if (exist_ball) {
         ball_pos = Vector2(156, 67) - ball_pos;
     }
-    if(target_goal_type == GoalType::Blue) {
+    if (target_goal_type == GoalType::Blue) {
         if (exist_yellow_goal) {
             yellow_goal.x = 154 - yellow_goal.x;
             yellow_goal.y = yellow_goal.y - 184;
@@ -193,7 +191,7 @@ void loop() {
             blue_goal.x = 151 - blue_goal.x;
             blue_goal.y = blue_goal.y - 58;
         }
-    } else { // GoalType::Yellow
+    } else {  // GoalType::Yellow
         if (exist_yellow_goal) {
             yellow_goal.x = 151 - yellow_goal.x;
             yellow_goal.y = yellow_goal.y - 63;
@@ -247,7 +245,7 @@ void loop() {
     if (Battery.IsEmergency()) {
         Serial.print("!! Battery Low !!  Voltage: ");
         Serial.println(Battery.Voltage());
-        doOutofbound();
+        forceOutOfBounds();
         LineSensorLed.TernOff();
         MotorContoroler.FreeAll();
         while (true) {
@@ -278,7 +276,7 @@ void loop() {
 }
 
 /**
- * rotation(-100:100)
+ * @param rotation [-100, 100]
  */
 void keeper(const int rotation) {
     Dribbler.Stop();
@@ -320,7 +318,7 @@ void keeper(const int rotation) {
 }
 
 /**
- * rotation(-100:100)
+ * @param rotation [-100, 100]
  */
 void attacker(const int rotation) {
     static float pre_dir = 0;   // 前回観測値
@@ -333,7 +331,7 @@ void attacker(const int rotation) {
     if (target_goal_type == GoalType::Blue) {
         exist_goal = exist_blue_goal;
         goal = {blue_goal.x, -blue_goal.y};
-    } else { // GoalType::Yellow
+    } else {  // GoalType::Yellow
         exist_goal = exist_yellow_goal;
         goal = {yellow_goal.x, -yellow_goal.y};
     }
@@ -360,8 +358,6 @@ void attacker(const int rotation) {
     const float Pcontrol = Power * (Kp * ball_dir + Ki * data_sum + Kd * data_diff);  // PIDの制御値を計算
     pre_dir = ball_dir;                                                               // 今回の値を代入し次周期から見て前回観測値にする
 
-    BuiltinLed.TernOff();
-
     static bool kick = false;
     if (-5 <= ball_pos.y && ball_pos.y <= 30) {  // ボールが前(0 <= y <= 0)にあるとき
         Dribbler.Start(100);
@@ -380,9 +376,9 @@ void attacker(const int rotation) {
                         MotorContoroler.Drive(0, 0, 0);
                         delay(800);
                         Kicker.PullBack();
-                    } else if (goal.y < 5) {                // ゴールに近づいた時
+                    } else if (goal.y < 5) {                        // ゴールに近づいた時
                         MotorContoroler.Drive(PI, 100, -rotation);  // 後ろに下がる
-                    } else {                                // ゴール見えてて近くない
+                    } else {                                        // ゴール見えてて近くない
                         const float z = atan2(goal.x, goal.y);
                         MotorContoroler.Drive(z, powerLimit(Pmax, Pcontrol), -rotation);
                     }
@@ -433,51 +429,33 @@ void attacker(const int rotation) {
         wrap = 0;
         if (exist_ball == false) {  // ボールがないとき(y = 4096)
             MotorContoroler.Drive(0, 0, 0);
-        } else {                              // ボールがあるとき
+        } else {                                      // ボールがあるとき
             MotorContoroler.Drive(0, 80, -rotation);  // これでたまに回り込みがおおげさになる？
         }
     }
-    Serial.print(" dir ");
+
+#if DEBUG_MODE
+    Serial.print("[attacker] dir: ");
     Serial.print(ball_dir);
-    Serial.print(" sum ");
+    Serial.print(" / sum: ");
     Serial.print(data_sum);
-    Serial.print(" diff ");
+    Serial.print(" / diff: ");
     Serial.print(data_diff);
-    Serial.print(" Pcontrol ");
+    Serial.print(" / Pcontrol: ");
     Serial.print(Pcontrol);
-    Serial.print(" kick ");
+    Serial.print(" / kick: ");
     Serial.println(kick);
+#endif
 }
 
-/**
- * powerの値がmax(ex.100)を超えないようにする
- *
- * Note: C++17 からは std::clamp() が使える
- */
-int powerLimit(const int max, const int power) {
-    if (power > max) {
-        return max;
-    } else if (power < -max) {
-        return -max;
-    }
-    return power;
-}
-
-//*****************************************************************************
-// interrupt handler
-// 割り込みの処理プログラム
-// Lineを踏んだらバックする
-
-void intHandle() {  // Lineを踏んだらlineflagをセットして止まる。
+void interruptHandler() {        // Lineを踏んだらlineflagをセットして止まる。
     if (StartSwitch.IsHigh()) {  // スイッチがOFFなら何もしない。
         return;
     }
 
-    LedB.TernOn();
-
     constexpr int power = 30;
 
-   // Lineセンサが反応している間は繰り返す
+    // Lineセンサが反応している間は繰り返す
     while (digitalRead(PIN_INTERRUPT_29) == HIGH) {
         // lineを踏んだセンサーを調べ、Lineセンサと反対方向へ移動する
         if (LineSensorD1.IsHigh()) {
@@ -497,22 +475,16 @@ void intHandle() {  // Lineを踏んだらlineflagをセットして止まる。
         }
     }
 
-    LedB.TernOff();
-    LedR.TernOff();
-
     if (lineflag == false) {  // センサーの反応がない場合は何もしない
         return;
     }
-    lineflag = true;  // set lineflag
-    MotorContoroler.StopAll();      // ラインから外れたらモーターstop
+    lineflag = true;            // set lineflag
+    MotorContoroler.StopAll();  // ラインから外れたらモーターstop
     return;
 }
 
 void back_Line1(const int power) {  // Lineセンサ1が反応しなくなるまで後ろに進む
     float azimuth;
-#if DEBUG_MODE
-    LedR.TernOn();
-#endif
     while (LineSensorD1.IsHigh() || LineSensorD5.IsHigh() || LineSensorD3.IsHigh()) {
         if (LineSensorD4.IsHigh()) {
             azimuth = PI * 3.0 / 4.0;  // 後ろ方向(1+4)をradianに変換
@@ -523,17 +495,11 @@ void back_Line1(const int power) {  // Lineセンサ1が反応しなくなるま
         }
         MotorContoroler.Drive(azimuth, power, 0);  // azimuthの方向に進ませる
     }
-#if DEBUG_MODE
-    LedR.TernOff();
-#endif
     MotorContoroler.StopAll();
 }
 
 void back_Line2(const int power) {  // Lineセンサ2が反応しなくなるまで左に進む
     float azimuth;
-#if DEBUG_MODE
-    LedY.TernOn();
-#endif
     while (LineSensorD2.IsHigh() || LineSensorD5.IsHigh() || LineSensorD4.IsHigh()) {
         if (LineSensorD1.IsHigh()) {
             azimuth = PI * 5.0 / 4.0;  // 後ろ方向(2+1)を radian に変換
@@ -544,17 +510,11 @@ void back_Line2(const int power) {  // Lineセンサ2が反応しなくなるま
         }
         MotorContoroler.Drive(azimuth, power, 0);  // azimuth の方向に進ませる
     }
-#if DEBUG_MODE
-    LedY.TernOff();
-#endif
     MotorContoroler.StopAll();
 }
 
 void back_Line3(const int power) {  // Lineセンサ3 が反応しなくなるまで前に進む
     float azimuth;
-#if DEBUG_MODE
-    LedG.TernOn();
-#endif
     while (LineSensorD3.IsHigh() || LineSensorD5.IsHigh() || LineSensorD1.IsHigh()) {
         if (LineSensorD4.IsHigh()) {
             azimuth = PI * 1.0 / 4.0;  // 後ろ方向(3+4)を radian に変換
@@ -565,17 +525,11 @@ void back_Line3(const int power) {  // Lineセンサ3 が反応しなくなる�
         }
         MotorContoroler.Drive(azimuth, power, 0);  // azimuth の方向に進ませる
     }
-#if DEBUG_MODE
-    LedG.TernOff();
-#endif
     MotorContoroler.StopAll();
 }
 
 void back_Line4(const int power) {  // Lineセンサ4 が反応しなくなるまで右に進む
     float azimuth;
-#if DEBUG_MODE
-    LedB.TernOn();
-#endif
     while (LineSensorD4.IsHigh() || LineSensorD5.IsHigh() || LineSensorD2.IsHigh()) {
         if (LineSensorD3.IsHigh()) {
             azimuth = PI * 1.0 / 4.0;  // 後ろ方向(4+3)を radian に変換
@@ -586,17 +540,10 @@ void back_Line4(const int power) {  // Lineセンサ4 が反応しなくなる�
         }
         MotorContoroler.Drive(azimuth, power, 0);  // azimuth の方向に進ませる
     }
-#if DEBUG_MODE
-    LedB.TernOff();
-#endif
     MotorContoroler.StopAll();
 }
 
-// 割り込みの処理プログラム終わり
-//*****************************************************************************
-
-// 強制的に Out of bounds させる。
-void doOutofbound() {
+void forceOutOfBounds() {
     // Out of bounds するために割込みを禁止する
     detachInterrupt(5);
 
@@ -616,6 +563,20 @@ void doOutofbound() {
         SwitchLedR.TernOn();
         delay(25);
     }
+}
+
+/**
+ * powerの値がmax(ex.100)を超えないようにする
+ *
+ * Note: C++17 からは std::clamp() が使える
+ */
+int powerLimit(const int max, const int power) {
+    if (power > max) {
+        return max;
+    } else if (power < -max) {
+        return -max;
+    }
+    return power;
 }
 
 #endif
