@@ -21,8 +21,8 @@ struct Vector2
     inline Vector2& operator*=(const float s);
     inline Vector2& operator/=(const float s);
 
-    static constexpr float squareNorm(const Vector2& vec);
-    static constexpr float norm(const Vector2& vec);
+    static constexpr float SquareNorm(const Vector2& vec);
+    static constexpr float Norm(const Vector2& vec);
 };
 
 constexpr Vector2::Vector2() : x(0), y(0) {}
@@ -67,11 +67,11 @@ inline Vector2& Vector2::operator/=(const float s) {
     return *this;
 }
 
-constexpr float Vector2::squareNorm(const Vector2 &vec) {
+constexpr float Vector2::SquareNorm(const Vector2 &vec) {
     return vec.x * vec.x + vec.y * vec.y;
 }
 
-constexpr float Vector2::norm(const Vector2 &vec) {
+constexpr float Vector2::Norm(const Vector2 &vec) {
     return sqrt(vec.x * vec.x + vec.y * vec.y);
 }
 

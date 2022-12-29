@@ -11,26 +11,26 @@ class Battery
 {
   public:
     explicit Battery(const int pin, const float limit);
-    bool is_emergency() const;
-    float voltage() const;
+    bool IsEmergency() const;
+    float Voltage() const;
   private:
-    const int PIN;
-    const float LIMIT;
-    static constexpr float K = 0.01811; // 0.01811V/count
+    const int PIN_;
+    const float LIMIT_;
+    static constexpr float kCOUNT_ = 0.01811; // 0.01811V/count
 };
 
-inline Battery::Battery(const int pin, const float limit): PIN(pin), LIMIT(limit) {
+inline Battery::Battery(const int pin, const float limit): PIN_(pin), LIMIT_(limit) {
 }
 
-inline bool Battery::is_emergency() const {
-    int limit = LIMIT / K;
-    int voltage = analogRead(PIN);
+inline bool Battery::IsEmergency() const {
+    int limit = LIMIT_ / kCOUNT_;
+    int voltage = analogRead(PIN_);
     return voltage < limit;
 }
 
-inline float Battery::voltage() const {
-    int read_voltage = analogRead(PIN);
-    return read_voltage * K;
+inline float Battery::Voltage() const {
+    int read_voltage = analogRead(PIN_);
+    return read_voltage * kCOUNT_;
 }
 
 }  // namespace component

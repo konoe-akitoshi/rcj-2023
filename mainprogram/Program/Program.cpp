@@ -157,8 +157,8 @@ void loop() {
     static int gyro_o;
 
     LedB.TernOff();
-    OpenMV.wait_data();
-    blob_count = OpenMV.blob_count();
+    OpenMV.WaitData();
+    blob_count = OpenMV.BlobCount();
     lineflag = false;
 
     // get gyrodata
@@ -173,16 +173,16 @@ void loop() {
 
     const int gyro = gyro_o;
 
-    if (XBee.has_data()) {
-        p_ball = XBee.read_data();
+    if (XBee.HasData()) {
+        p_ball = XBee.ReadData();
     }
 
-    exist_ball = OpenMV.get_ball_count() != 0;
-    ball_pos = OpenMV.get_ball_position();
-    exist_blue_goal = OpenMV.get_blue_goal_count() != 0;
-    blue_goal = OpenMV.get_blue_goal_position();
-    exist_yellow_goal = OpenMV.get_yellow_goal_count() != 0;
-    yellow_goal = OpenMV.get_yellow_goal_position();
+    exist_ball = OpenMV.GetBallCount() != 0;
+    ball_pos = OpenMV.GetBallPosition();
+    exist_blue_goal = OpenMV.GetBlueGoalCount() != 0;
+    blue_goal = OpenMV.GetBlueGoalPosition();
+    exist_yellow_goal = OpenMV.GetYellowGoalCount() != 0;
+    yellow_goal = OpenMV.GetYellowGoalPosition();
 
     // 中心補正
     if (exist_ball) {
@@ -212,10 +212,10 @@ void loop() {
     if (exist_ball) {
         int fixed_x = ball_pos.x > 4095 ? 4095 : ball_pos.x;
         int send_data = sqrt(fixed_x * fixed_x + ball_pos.y * ball_pos.y);
-        XBee.send_data(send_data);
+        XBee.SendData(send_data);
     }
 
-    ball_dist = Vector2::norm(ball_pos);
+    ball_dist = Vector2::Norm(ball_pos);
 
     Serial.print("ball_pos.x:");
     Serial.print(ball_pos.x);
@@ -247,10 +247,10 @@ void loop() {
     digitalWrite(PIN_SWITCH_LED_R, HIGH);
     digitalWrite(PIN_SWITCH_LED_G, HIGH);
 
-    if (Battery.is_emergency()) {
+    if (Battery.IsEmergency()) {
         Serial.println("");
         Serial.print("  Battery Low!: ");
-        Serial.println(Battery.voltage());
+        Serial.println(Battery.Voltage());
         doOutofbound();
         LineLed.TernOff();
         MotorContoroler.FreeAll();
@@ -418,22 +418,22 @@ void attacker(const int rotation) {
             } else if (abs(ball_pos.x) < 5 + abs(ball_pos.y) / 5) {
                 if (goal.x > 0 || wrap == 1) {
                     const float z = atan2(ball_pos.x + 800, ball_pos.y * 3);
-                    MotorContoroler.Drive(z, Vector2::norm(ball_pos) + 10, -rotation);
+                    MotorContoroler.Drive(z, Vector2::Norm(ball_pos) + 10, -rotation);
                     wrap = 1;
                 } else {
                     const float z = atan2(ball_pos.x - 800, ball_pos.y * 3);
-                    MotorContoroler.Drive(z, Vector2::norm(ball_pos) + 10, -rotation);
+                    MotorContoroler.Drive(z, Vector2::Norm(ball_pos) + 10, -rotation);
                     wrap = 0;
                 }
             } else {
                 wrap = 0;
                 const float z = atan2(ball_pos.x, ball_pos.y * 3);
-                MotorContoroler.Drive(z, Vector2::norm(ball_pos) + 10, -rotation);
+                MotorContoroler.Drive(z, Vector2::Norm(ball_pos) + 10, -rotation);
             }
         } else {
             wrap = 0;
             const float z = atan2(ball_pos.x, ball_pos.y * 4);
-            MotorContoroler.Drive(z, Vector2::norm(ball_pos) + 10, -rotation);
+            MotorContoroler.Drive(z, Vector2::Norm(ball_pos) + 10, -rotation);
         }
     } else {  // 30 > y になるとき
         dribbler1(0);

@@ -19,9 +19,9 @@ class Motor
     void Free() const;
 
   private:
-    const int PIN_FORWARD_BRAKE;
-    const int PIN_REVERSE_BRAKE;
-    const int PIN_PWM;
+    const int PIN_FORWARD_BRAKE_;
+    const int PIN_REVERSE_BRAKE_;
+    const int PIN_PWM_;
 };
 
 class MotorContoroler
@@ -46,11 +46,11 @@ class MotorContoroler
 // Impl for Motor
 
 inline Motor::Motor(const int pin_forward_brake, const int pin_reverse_brake, const int pin_pwm, const int frequency)
-    : PIN_FORWARD_BRAKE(pin_forward_brake), PIN_REVERSE_BRAKE(pin_reverse_brake), PIN_PWM(pin_pwm) {
-    pinMode(PIN_FORWARD_BRAKE, OUTPUT);
-    pinMode(PIN_REVERSE_BRAKE, OUTPUT);
-    pinMode(PIN_PWM, OUTPUT);
-    analogWriteFrequency(PIN_PWM, frequency);
+    : PIN_FORWARD_BRAKE_(pin_forward_brake), PIN_REVERSE_BRAKE_(pin_reverse_brake), PIN_PWM_(pin_pwm) {
+    pinMode(PIN_FORWARD_BRAKE_, OUTPUT);
+    pinMode(PIN_REVERSE_BRAKE_, OUTPUT);
+    pinMode(PIN_PWM_, OUTPUT);
+    analogWriteFrequency(PIN_PWM_, frequency);
 }
 
 inline void Motor::Start(const int power) const {
@@ -59,28 +59,28 @@ inline void Motor::Start(const int power) const {
         return;
     }
     if (power > 0) {  // move forward
-        digitalWrite(PIN_FORWARD_BRAKE, LOW);
-        digitalWrite(PIN_REVERSE_BRAKE, HIGH);
+        digitalWrite(PIN_FORWARD_BRAKE_, LOW);
+        digitalWrite(PIN_REVERSE_BRAKE_, HIGH);
     } else {  // move backward
-        digitalWrite(PIN_FORWARD_BRAKE, HIGH);
-        digitalWrite(PIN_REVERSE_BRAKE, LOW);
+        digitalWrite(PIN_FORWARD_BRAKE_, HIGH);
+        digitalWrite(PIN_REVERSE_BRAKE_, LOW);
     }
     // power -> 0 < p(power) < 250
     int p = std::min(abs(power), 100);
     p = (p << 1) + (p >> 1);  // p *= 2.5;
-    analogWrite(PIN_PWM, p);
+    analogWrite(PIN_PWM_, p);
 }
 
 inline void Motor::Stop() const {
-    analogWrite(PIN_PWM, 0);
-    digitalWrite(PIN_FORWARD_BRAKE, HIGH);
-    digitalWrite(PIN_REVERSE_BRAKE, HIGH);
+    analogWrite(PIN_PWM_, 0);
+    digitalWrite(PIN_FORWARD_BRAKE_, HIGH);
+    digitalWrite(PIN_REVERSE_BRAKE_, HIGH);
 }
 
 inline void Motor::Free() const {
-    analogWrite(PIN_PWM, HIGH);  // よくわからないけど、HIGH だと power = 0 なんだと。(LOWじゃないんだ...)
-    digitalWrite(PIN_FORWARD_BRAKE, LOW);
-    digitalWrite(PIN_REVERSE_BRAKE, LOW);
+    analogWrite(PIN_PWM_, HIGH);  // よくわからないけど、HIGH だと power = 0 なんだと。(LOWじゃないんだ...)
+    digitalWrite(PIN_FORWARD_BRAKE_, LOW);
+    digitalWrite(PIN_REVERSE_BRAKE_, LOW);
 }
 
 // Impl for MotorContoroler

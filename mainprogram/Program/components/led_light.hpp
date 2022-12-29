@@ -16,20 +16,20 @@ class LedLight
     void TernOff() const;
 
   private:
-    const int PIN;
+    const int PIN_;
 };
 
-inline LedLight::LedLight(const int pin) : PIN(pin) {
-    pinMode(PIN, OUTPUT);
-    digitalWrite(PIN, LOW);
+inline LedLight::LedLight(const int pin) : PIN_(pin) {
+    pinMode(PIN_, OUTPUT);
+    digitalWrite(PIN_, LOW);
 }
 
 inline void LedLight::TernOn() const {
-    digitalWrite(PIN, HIGH);
+    digitalWrite(PIN_, HIGH);
 }
 
 inline void LedLight::TernOff() const {
-    digitalWrite(PIN, LOW);
+    digitalWrite(PIN_, LOW);
 }
 
 }  // namespace component

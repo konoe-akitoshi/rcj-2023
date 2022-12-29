@@ -11,20 +11,20 @@ class XBee
 {
   public:
     explicit XBee(const int speed);
-    bool has_data() const;
-    int read_data() const;
-    void send_data(const int data) const;
+    bool HasData() const;
+    int ReadData() const;
+    void SendData(const int data) const;
 };
 
 inline XBee::XBee(const int speed) {
     Serial1.begin(speed);
 }
 
-inline bool XBee::has_data() const {
+inline bool XBee::HasData() const {
     return Serial1.available() > 0;
 }
 
-inline int XBee::read_data() const {
+inline int XBee::ReadData() const {
     int ret = 0;
     while (Serial1.available() > 0) {
         ret = Serial1.read();
@@ -32,7 +32,7 @@ inline int XBee::read_data() const {
     return ret;
 }
 
-inline void XBee::send_data(const int data) const {
+inline void XBee::SendData(const int data) const {
     Serial.write(data);
 }
 }  // namespace component
