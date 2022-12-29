@@ -14,8 +14,8 @@
 #include "pin.hpp"
 #include "types/vector2.hpp"
 
-void keeper(const int rotation);
-void attacker(const int rotation);
+void keeper();
+void attacker();
 void interruptHandler();
 void back_Line1(const int power);
 void back_Line2(const int power);
@@ -71,6 +71,7 @@ const component::XBee XBee(9600);
 component::OpenMV OpenMV(19200);
 
 VL6180X ToF_front;
+int ball_front;
 
 Vector2 ball_pos;
 Vector2 blue_goal;
@@ -78,8 +79,8 @@ Vector2 yellow_goal;
 bool exist_ball;
 bool exist_yellow_goal;
 bool exist_blue_goal;
-int ball_front;
 
+int rotation;
 float p_ball = 255;
 float ball_dist;
 float wrap;
@@ -133,19 +134,18 @@ void setup() {
 }
 
 void loop() {
-    static int gyro_o;
+    static int rotation_o;
 
     OpenMV.WaitData();
 
-    // Gyro の方位データを gyro に取り込む
     if (Serial2.available() > 0) {
         while (Serial2.available() != 0) {
             // Serial2の送信側がint8_tで送ってるので、intで受け取ると負の数が期待通り受け取れない。
             // そのため、int8_tにキャストする必要がある。
-            gyro_o = (int8_t)Serial2.read();
+            rotation_o = (int8_t)Serial2.read();
         }
     }
-    const int gyro = gyro_o;
+    rotation = rotation_o;
 
     if (XBee.HasData()) {
         p_ball = XBee.ReadData();
@@ -244,15 +244,15 @@ void loop() {
 
     // 役割判定
     if (AUX1.IsLow()) {
-        attacker(gyro);
+        attacker();
     } else if (AUX2.IsLow()) {
-        keeper(gyro);
+        keeper();
     } else {
         // どちらがボールに近いか
         if (p_ball <= ball_dist) {
-            keeper(gyro);
+            keeper();
         } else {
-            attacker(gyro);
+            attacker();
         }
     }
 }
@@ -260,7 +260,7 @@ void loop() {
 /**
  * @param rotation [-100, 100]
  */
-void keeper(const int rotation) {
+void keeper() {
     Dribbler.Stop();
     wrap = 0;
 
@@ -302,7 +302,7 @@ void keeper(const int rotation) {
 /**
  * @param rotation [-100, 100]
  */
-void attacker(const int rotation) {
+void attacker() {
     static float pre_dir = 0;   // 前回観測値
     static float data_sum = 0;  // 誤差(観測値)の累積値
 
