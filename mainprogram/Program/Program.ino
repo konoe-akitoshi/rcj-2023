@@ -74,7 +74,6 @@ component::OpenMV OpenMV(19200);
 VL6180X ToF_front;
 
 int blob_count;
-bool lineflag = false;
 
 Vector2 ball_pos;
 Vector2 blue_goal;
@@ -144,7 +143,6 @@ void loop() {
 
     OpenMV.WaitData();
     blob_count = OpenMV.BlobCount();
-    lineflag = false;
 
     // Gyro の方位データを gyro に取り込む
     if (Serial2.available() > 0) {
@@ -439,7 +437,7 @@ void attacker(const int rotation) {
 #endif
 }
 
-void interruptHandler() {        // Lineを踏んだらlineflagをセットして止まる。
+void interruptHandler() {
     if (StartSwitch.IsHigh()) {  // スイッチがOFFなら何もしない。
         return;
     }
@@ -451,25 +449,17 @@ void interruptHandler() {        // Lineを踏んだらlineflagをセットし�
         // lineを踏んだセンサーを調べ、Lineセンサと反対方向へ移動する
         if (LineSensorD1.IsHigh()) {
             back_Line1(power);
-            lineflag = true;
         } else if (LineSensorD2.IsHigh()) {
             back_Line2(power);
-            lineflag = true;
         } else if (LineSensorD3.IsHigh()) {
             back_Line3(power);
-            lineflag = true;
         } else if (LineSensorD4.IsHigh()) {
             back_Line4(power);
-            lineflag = true;
         } else {
             LedR.TernOn();
         }
     }
 
-    if (lineflag == false) {  // センサーの反応がない場合は何もしない
-        return;
-    }
-    lineflag = true;            // set lineflag
     MotorContoroler.StopAll();  // ラインから外れたらモーターstop
     return;
 }
