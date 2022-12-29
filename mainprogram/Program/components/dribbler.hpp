@@ -16,6 +16,7 @@ class Dribbler
     explicit Dribbler(const int pin_pwm);
     void Start(const int power) const;
     void Stop() const;
+
   private:
     const int PIN_;
 };
@@ -27,12 +28,12 @@ inline Dribbler::Dribbler(const int pin_pwm) : PIN_(pin_pwm) {
 }
 
 inline void Dribbler::Start(const int power) const {
-    if(power <= 0) {
+    if (power <= 0) {
         Stop();
         return;
     }
     int p = std::min(power, 100);
-    p = (p << 1) + (p >> 1); // p *= 2.5
+    p = (p << 1) + (p >> 1);  // p *= 2.5
     analogWrite(PIN_, p);
 }
 

@@ -19,6 +19,7 @@
 #include "components/xbee.hpp"
 #include "components/motor.hpp"
 #include "components/dribbler.hpp"
+#include "components/kicker.hpp"
 #include "types/vector2.hpp"
 #include "pin.hpp"
 
@@ -80,6 +81,7 @@ const component::Motor MotorCh4(PIN_MOTOR4_FORWARD_BRAKE, PIN_MOTOR4_REVERSE_BRA
 const component::MotorContoroler MotorContoroler(MotorCh1, MotorCh2, MotorCh3, MotorCh4);
 
 const component::Dribbler Dribbler(PIN_DRIBBLER_PWM);
+const component::Kicker Kicker(PIN_KICKER);
 
 const component::XBee XBee(9600);
 component::OpenMV OpenMV(19200);
@@ -100,7 +102,6 @@ void setup() {
     pinMode(PIN_LINE_SENSOR_D3, INPUT_PULLUP);
     pinMode(PIN_LINE_SENSOR_D4, INPUT_PULLUP);
     pinMode(PIN_LINE_SENSOR_D5, INPUT_PULLUP);
-    pinMode(PIN_KICKER, OUTPUT);
     pinMode(PIN_AUX1, INPUT);
     pinMode(PIN_AUX2, INPUT);
     pinMode(PIN_INTERRUPT_29, INPUT_PULLUP);
@@ -132,11 +133,9 @@ void setup() {
     delay(1000);
 
     // Kicker 動作テスト
-    digitalWrite(PIN_KICKER, LOW);
+    Kicker.PushFront();
     delay(100);
-    digitalWrite(PIN_KICKER, HIGH);
-    delay(100);
-    digitalWrite(PIN_KICKER, LOW);
+    Kicker.PullBack();
     Serial.println("DONE check kicker");
 
     // WT901 IMU Sener
@@ -374,11 +373,11 @@ void attacker(const int rotation) {
                     } else if (goal.y <= 33 && abs(goal.x) < 17) {  // ゴールにけれる距離
                         kick = true;
                         Dribbler.Stop();
-                        digitalWrite(PIN_KICKER, HIGH);
+                        Kicker.PushFront();
                         delay(200);
                         MotorContoroler.Drive(0, 0, 0);
                         delay(800);
-                        digitalWrite(PIN_KICKER, LOW);
+                        Kicker.PullBack();
                     } else if (goal.y < 5) {                // ゴールに近づいた時
                         MotorContoroler.Drive(PI, 100, -rotation);  // 後ろに下がる
                     } else {                                // ゴール見えてて近くない
