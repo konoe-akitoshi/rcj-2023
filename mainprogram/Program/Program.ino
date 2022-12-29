@@ -42,18 +42,19 @@ void back_Line4(const int power);
 void doOutofbound();
 
 // 制御パラメータの設定
-constexpr float Kp = 0.45;   //  比例要素の感度
-constexpr float Ki = 0.1;    //  積分要素の感度
-constexpr float Kd = 0.025;  //  微分要素の感度
+constexpr float Kp = 0.45;   // 比例要素の感度
+constexpr float Ki = 0.1;    // 積分要素の感度
+constexpr float Kd = 0.025;  // 微分要素の感度
 
-constexpr int Power = 70;  // initial motor power
+// initial motor power
+constexpr int Power = 70;
 
 // Low limit voltage 1.1*12 = 13.2
 // Mi-NH なら 13.0, Li-po なら 13.5 (Li-po は過放電するので注意！)
 const component::Battery Battery(PIN_BATTERY_VOLYAGE, 13.0);
 
 const component::LedLight NativeLed(PIN_NATIVE_LED);
-const component::LedLight LineLed(PIN_LINE_LED);
+const component::LedLight LineSensorLed(PIN_LINE_SENSOR_LED);
 const component::LedLight LedR(PIN_LED_R);
 const component::LedLight LedY(PIN_LED_Y);
 const component::LedLight LedG(PIN_LED_G);
@@ -225,7 +226,7 @@ void loop() {
     if (digitalRead(PIN_START_SWITCH) != LOW) {
         MotorContoroler.FreeAll();
         Dribbler.Stop();
-        LineLed.TernOff();
+        LineSensorLed.TernOff();
         wrap = 0;
         return;
     }
@@ -234,7 +235,7 @@ void loop() {
         Serial.print("!! Battery Low !!  Voltage: ");
         Serial.println(Battery.Voltage());
         doOutofbound();
-        LineLed.TernOff();
+        LineSensorLed.TernOff();
         MotorContoroler.FreeAll();
         while (true) {
             SwitchLedR.TernOff();
@@ -246,7 +247,7 @@ void loop() {
         }
     }
 
-    LineLed.TernOn();
+    LineSensorLed.TernOn();
 
     // 役割判定
     if (digitalRead(PIN_AUX1) == LOW) {
@@ -586,7 +587,7 @@ void doOutofbound() {
     // Out of bounds するために割込みを禁止する
     detachInterrupt(5);
 
-    LineLed.TernOff();
+    LineSensorLed.TernOff();
 
     while (true) {
         if (digitalRead(PIN_START_SWITCH) == LOW) {
