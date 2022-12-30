@@ -1,12 +1,3 @@
-#
-# Orange Ball Tracking program for RCJJ
-# Multi Color Version.
-# This program can fined OrangeBall, BlueGoal, YellowGoal.
-# Fixed Gain & White balance
-# written by H.Saeki
-# Dec.17.2019
-#
-
 import sensor, image, time
 from pyb import UART
 from pyb import LED
