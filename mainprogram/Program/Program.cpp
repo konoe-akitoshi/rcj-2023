@@ -50,7 +50,6 @@ const component::LedLight LedR(PIN_LED_R);
 const component::LedLight LedY(PIN_LED_Y);
 const component::LedLight LedG(PIN_LED_G);
 const component::LedLight LedB(PIN_LED_B);
-const component::LedLight BuiltinLed(LED_BUILTIN);
 const component::LedLight SwitchLedG(PIN_SWITCH_LED_G);
 const component::LedLight SwitchLedR(PIN_SWITCH_LED_R);
 
@@ -89,8 +88,8 @@ bool exist_yellow_goal;
 bool exist_blue_goal;
 
 int rotation;
-float p_ball = 255;
 float ball_dist;
+float pair_ball_dist = 255;
 float wrap;
 
 enum class GoalType
@@ -156,7 +155,7 @@ void loop() {
     rotation = rotation_o;
 
     if (XBee.HasData()) {
-        p_ball = XBee.ReadData();
+        pair_ball_dist = XBee.ReadData();
     }
 
     exist_ball = OpenMV.GetBallCount() != 0;
@@ -257,7 +256,7 @@ void loop() {
         keeper();
     } else {
         // どちらがボールに近いか
-        if (p_ball <= ball_dist) {
+        if (pair_ball_dist <= ball_dist) {
             keeper();
         } else {
             attacker();
@@ -282,8 +281,7 @@ void keeper() {
         goal = {-blue_goal.x, blue_goal.y};
     }
 
-    BuiltinLed.TernOff();
-    if (ball_dist - p_ball < 60 || exist_ball == false) {  // ボールとの距離の差が近い、ボールを任せてゴール前に帰る
+    if (ball_dist - pair_ball_dist < 60 || exist_ball == false) {  // ボールとの距離の差が近い、ボールを任せてゴール前に帰る
         if (exist_goal == false) {
             MotorContoroler.Drive(PI, 100, -rotation);
         } else if (goal.y > 23) {  // ゴールから遠い
