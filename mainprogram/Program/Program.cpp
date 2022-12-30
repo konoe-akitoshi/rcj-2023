@@ -285,25 +285,25 @@ void keeper() {
     BuiltinLed.TernOff();
     if (ball_dist - p_ball < 60 || exist_ball == false) {  // ボールとの距離の差が近い、ボールを任せてゴール前に帰る
         if (exist_goal == false) {
-            MotorContoroler.Drive(PI, 100, -rotation);
+            MotorContoroler.Drive(PI, -rotation);
         } else if (goal.y > 23) {  // ゴールから遠い
             float z = atan2(goal.x, goal.y - 23) + PI;
-            MotorContoroler.Drive(z, 100, -rotation);
+            MotorContoroler.Drive(z, -rotation);
         } else if (goal.y < 23 && goal.y > 15 && abs(goal.x) > 33) {  // x座標が 0 から遠い
             float z = atan2(goal.x, goal.y - 23) + PI;
-            MotorContoroler.Drive(z, 100, -rotation);
+            MotorContoroler.Drive(z, -rotation);
         } else if (goal.y < 15) {  // ゴールエリアの横にいるとき
             if (goal.x > 0) {
-                MotorContoroler.Drive(-0.60, 60, 0);
+                MotorContoroler.Drive(-0.60, 0, 60);
             } else {
-                MotorContoroler.Drive(0.60, 60, 0);
+                MotorContoroler.Drive(0.60, 0, 60);
             }
         } else {  // ゴール前にいるとき
             MotorContoroler.Drive(0, 0, 0);
         }
     } else {  // ボールとの距離の差が遠い、自ら近づく
         float az = atan2(ball_pos.x, sqrt(ball_pos.y));
-        MotorContoroler.Drive(az, sqrt(ball_pos.x * ball_pos.x + ball_pos.y * ball_pos.y / 4), -rotation);
+        MotorContoroler.Drive(az, -rotation, sqrt(ball_pos.x * ball_pos.x + ball_pos.y * ball_pos.y / 4));
     }
 }
 
@@ -355,7 +355,7 @@ void attacker() {
                 if (ball_front <= 30) {  // 保持
                     data_sum = 0;
                     if (exist_goal == false) {  // ゴールなし
-                        MotorContoroler.Drive(0, 80, -rotation);
+                        MotorContoroler.Drive(0, -rotation, 80);
                     } else if (goal.y <= 33 && abs(goal.x) < 17) {  // ゴールにけれる距離
                         kick = true;
                         Dribbler.Stop();
@@ -365,52 +365,52 @@ void attacker() {
                         delay(800);
                         Kicker.PullBack();
                     } else if (goal.y < 5) {                        // ゴールに近づいた時
-                        MotorContoroler.Drive(PI, 100, -rotation);  // 後ろに下がる
+                        MotorContoroler.Drive(PI, -rotation);  // 後ろに下がる
                     } else {                                        // ゴール見えてて近くない
                         const float z = atan2(goal.x, goal.y);
-                        MotorContoroler.Drive(z, powerLimit(Pmax, Pcontrol), -rotation);
+                        MotorContoroler.Drive(z, -rotation, powerLimit(Pmax, Pcontrol));
                     }
                 } else {  // 目の前のボールを保持しに行く
                     kick = false;
                     data_sum = 0;
-                    MotorContoroler.Drive(0, 50, -rotation);
+                    MotorContoroler.Drive(0, -rotation, 50);
                 }
             } else {
                 const float z = atan2(ball_pos.x, ball_pos.y);
-                MotorContoroler.Drive(z, powerLimit(Pmax, Pcontrol), -rotation);  // ココボール前 制御甘い？
+                MotorContoroler.Drive(z, -rotation, powerLimit(Pmax, Pcontrol));  // ココボール前 制御甘い？
             }
         } else {
             const float z = atan2(ball_pos.x, ball_pos.y);
-            MotorContoroler.Drive(z, powerLimit(Pmax, Pcontrol), -rotation);
+            MotorContoroler.Drive(z, -rotation, powerLimit(Pmax, Pcontrol));
         }
     } else if (ball_pos.y <= 0) {  // 後ろにボールがあるとき
         Dribbler.Stop();
         if (abs(ball_pos.x) < 30) {
             if (ball_pos.y >= -129) {
-                MotorContoroler.Drive(0, 50, -rotation);
+                MotorContoroler.Drive(0, -rotation, 50);
                 wrap = 0;
             } else if (ball_pos.y <= -150) {
-                MotorContoroler.Drive(PI, abs(ball_pos.y) / 2.4, -rotation);
+                MotorContoroler.Drive(PI, -rotation, abs(ball_pos.y) / 2.4);
                 wrap = 0;
             } else if (abs(ball_pos.x) < 5 + abs(ball_pos.y) / 5) {
                 if (goal.x > 0 || wrap == 1) {
                     const float z = atan2(ball_pos.x + 800, ball_pos.y * 3);
-                    MotorContoroler.Drive(z, Vector2::Norm(ball_pos) + 10, -rotation);
+                    MotorContoroler.Drive(z, -rotation, Vector2::Norm(ball_pos) + 10);
                     wrap = 1;
                 } else {
                     const float z = atan2(ball_pos.x - 800, ball_pos.y * 3);
-                    MotorContoroler.Drive(z, Vector2::Norm(ball_pos) + 10, -rotation);
+                    MotorContoroler.Drive(z,  -rotation, Vector2::Norm(ball_pos) + 10);
                     wrap = 0;
                 }
             } else {
                 wrap = 0;
                 const float z = atan2(ball_pos.x, ball_pos.y * 3);
-                MotorContoroler.Drive(z, Vector2::Norm(ball_pos) + 10, -rotation);
+                MotorContoroler.Drive(z, -rotation, Vector2::Norm(ball_pos) + 10);
             }
         } else {
             wrap = 0;
             const float z = atan2(ball_pos.x, ball_pos.y * 4);
-            MotorContoroler.Drive(z, Vector2::Norm(ball_pos) + 10, -rotation);
+            MotorContoroler.Drive(z, -rotation, Vector2::Norm(ball_pos) + 10);
         }
     } else {  // 30 > y になるとき
         Dribbler.Stop();
@@ -418,7 +418,7 @@ void attacker() {
         if (exist_ball == false) {  // ボールがないとき(y = 4096)
             MotorContoroler.Drive(0, 0, 0);
         } else {                                      // ボールがあるとき
-            MotorContoroler.Drive(0, 80, -rotation);  // これでたまに回り込みがおおげさになる？
+            MotorContoroler.Drive(0, -rotation, 80);  // これでたまに回り込みがおおげさになる？
         }
     }
 
@@ -473,7 +473,7 @@ void back_Line1(const int power) {  // Lineセンサ1が反応しなくなるま
         } else {
             azimuth = PI * 4.0 / 4.0;  // 後ろ方向(3)をradianに変換
         }
-        MotorContoroler.Drive(azimuth, power, 0);  // azimuthの方向に進ませる
+        MotorContoroler.Drive(azimuth, 0, power);  // azimuthの方向に進ませる
     }
     MotorContoroler.StopAll();
 }
@@ -488,7 +488,7 @@ void back_Line2(const int power) {  // Lineセンサ2が反応しなくなるま
         } else {
             azimuth = PI * 6.0 / 4.0;  // 後ろ方向(4)を radian に変換
         }
-        MotorContoroler.Drive(azimuth, power, 0);  // azimuth の方向に進ませる
+        MotorContoroler.Drive(azimuth, 0, power);  // azimuth の方向に進ませる
     }
     MotorContoroler.StopAll();
 }
@@ -503,7 +503,7 @@ void back_Line3(const int power) {  // Lineセンサ3 が反応しなくなる�
         } else {
             azimuth = PI * 0.0 / 4.0;  // 後ろ方向(1)を radian に変換
         }
-        MotorContoroler.Drive(azimuth, power, 0);  // azimuth の方向に進ませる
+        MotorContoroler.Drive(azimuth, 0, power);  // azimuth の方向に進ませる
     }
     MotorContoroler.StopAll();
 }
@@ -518,7 +518,7 @@ void back_Line4(const int power) {  // Lineセンサ4 が反応しなくなる�
         } else {
             azimuth = PI * 2.0 / 4.0;  // 後ろ方向(2)を radian に変換
         }
-        MotorContoroler.Drive(azimuth, power, 0);  // azimuth の方向に進ませる
+        MotorContoroler.Drive(azimuth, 0, power);  // azimuth の方向に進ませる
     }
     MotorContoroler.StopAll();
 }
@@ -532,7 +532,7 @@ void forceOutOfBounds() {
     while (true) {
         // スタートスイッチが切られたら止まる
         if (StartSwitch.IsLow()) {
-            MotorContoroler.Drive(PI / 2.0, 30, 0);
+            MotorContoroler.Drive(PI / 2.0, 0, 30);
         } else {
             MotorContoroler.Drive(PI / 2.0, 0, 0);
         }
