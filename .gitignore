@@ -1,2 +1,13 @@
-# for MacOS
+# MacOS
 .DS_Store
+
+# VisualStudioCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# Python
+__pycache__/
