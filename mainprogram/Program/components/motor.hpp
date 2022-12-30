@@ -28,14 +28,6 @@ class MotorContoroler
 {
   public:
     explicit MotorContoroler(const Motor& motor1, const Motor& motor2, const Motor& motor3, const Motor& motor4);
-
-    /**
-     * Contorol 4 motors.
-     *
-     * @param azimuth radian
-     * @param rotation [-100, 100]
-     */
-    void Drive(float azimuth, int rotation) const;
     /**
      * Contorol 4 motors.
      *
@@ -43,14 +35,12 @@ class MotorContoroler
      * @param power [-100, 100]
      * @param rotation [-100, 100]
      */
-    void Drive(float azimuth, int rotation, int power) const;
-    void SetPower(const int power);
+    void Drive(float azimuth, int power, int rotation) const;
     void StopAll() const;
     void FreeAll() const;
 
   private:
     const Motor MOTOR1, MOTOR2, MOTOR3, MOTOR4;
-    int power_ = 100;
 };
 
 // Impl for Motor
@@ -103,14 +93,12 @@ inline MotorContoroler::MotorContoroler(const Motor& motor1, const Motor& motor2
     MOTOR4.Stop();
 }
 
-inline void MotorContoroler::Drive(float azimuth, int rotation) const {
-    Drive(azimuth, rotation, power_);
-}
-
-inline void MotorContoroler::Drive(float azimuth, int rotation, int power) const {
-    // clamp(rotation, -100, 100)
-    rotation = rotation > 100 ? 100 : rotation < -100 ? -100 : rotation;
-    power = power > 100 ? 100 : power < -100 ? -100 : power;
+inline void MotorContoroler::Drive(float azimuth, int power, int rotation) const {
+    // clamp(power|rotation, -100, 100)
+    power = power > 100 ? 100 : power < -100 ? -100
+                                             : power;
+    rotation = rotation > 100 ? 100 : rotation < -100 ? -100
+                                                      : rotation;
 
     float x[4];
     x[0] = -sin(azimuth - (1 * PI / 4));
@@ -143,10 +131,6 @@ inline void MotorContoroler::Drive(float azimuth, int rotation, int power) const
     MOTOR2.Start(x[1] * power);
     MOTOR3.Start(x[2] * power);
     MOTOR4.Start(x[3] * power);
-}
-
-inline void MotorContoroler::SetPower(const int power) {
-    power_ = power > 100 ? 100 : power < -100 ? -100 : power;
 }
 
 inline void MotorContoroler::StopAll() const {
