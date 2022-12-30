@@ -1,5 +1,4 @@
 import sensor
-import image
 import time
 from pyb import UART
 from pyb import LED
