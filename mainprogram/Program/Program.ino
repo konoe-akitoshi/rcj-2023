@@ -141,7 +141,7 @@ void loop() {
         while (Serial2.available() != 0) {
             // Serial2の送信側がint8_tで送ってるので、intで受け取ると負の数が期待通り受け取れない。
             // そのため、int8_tにキャストする必要がある。
-            rotation_o = (int8_t)Serial2.read();
+            rotation_o = (int)((int8_t)Serial2.read()) * 100 / 128;
         }
     }
     rotation = rotation_o;
