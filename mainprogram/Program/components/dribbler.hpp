@@ -13,8 +13,19 @@ namespace component
 class Dribbler
 {
   public:
+    /**
+     * @param pin_pwm PWM pin number.
+     */
     explicit Dribbler(const int pin_pwm);
+
+    /**
+     * Start dribbler with specified power. If power is zero or negative, it meens Stop().
+     */
     void Start(const int power) const;
+
+    /**
+     * Stop dribbler.
+     */
     void Stop() const;
 
   private:

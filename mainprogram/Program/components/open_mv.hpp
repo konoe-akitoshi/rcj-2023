@@ -14,13 +14,56 @@ namespace component
 class OpenMV
 {
   public:
+    /**
+     * @param speed transfer speed rate (in bits per second).
+     */
     explicit OpenMV(const int speed);
+
+    /**
+     * Wait for data from Vison-OpenMV.
+     */
     void WaitData();
+
+    /**
+     * Get the ball count.
+     *
+     * @return the number of ball.
+     */
     int GetBallCount() const;
+
+    /**
+     * Get the yellow goal count.
+     *
+     * @return the number of yellow goal.
+     */
     int GetYellowGoalCount() const;
+
+    /**
+     * Get the blue goal count.
+     *
+     * @return the number of blue goal.
+     */
     int GetBlueGoalCount() const;
+
+    /**
+     * Get the ball position.
+     *
+     * @return the coordinate of the ball.
+     */
     Vector2 GetBallPosition() const;
+
+    /**
+     * Get the yellow goal position.
+     *
+     * @return the coordinate of yellow goal.
+     */
     Vector2 GetYellowGoalPosition() const;
+
+    /**
+     * Get the blue goal position.
+     *
+     * @return the coordinate of blue goal.
+     */
     Vector2 GetBlueGoalPosition() const;
 
   private:

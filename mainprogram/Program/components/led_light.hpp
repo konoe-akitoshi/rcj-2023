@@ -11,8 +11,19 @@ namespace component
 class LedLight
 {
   public:
+    /**
+     * @param pin pin number.
+     */
     explicit LedLight(const int pin);
+
+    /**
+     * Tern on the LED light.
+     */
     void TernOn() const;
+
+    /**
+     * Tern off the LED light.
+     */
     void TernOff() const;
 
   private:

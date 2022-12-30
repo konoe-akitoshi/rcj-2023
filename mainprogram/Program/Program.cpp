@@ -264,9 +264,6 @@ void loop() {
     }
 }
 
-/**
- * @param rotation [-100, 100]
- */
 void keeper() {
     Dribbler.Stop();
     wrap = 0;
@@ -305,9 +302,6 @@ void keeper() {
     }
 }
 
-/**
- * @param rotation [-100, 100]
- */
 void attacker() {
     static float pre_dir = 0;   // 前回観測値
     static float data_sum = 0;  // 誤差(観測値)の累積値

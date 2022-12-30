@@ -12,8 +12,6 @@
 #define INPUT_PULLUP 0x2
 #define RISING 4
 
-#define LED_BUILTIN 13
-
 #define PI 3.1415926535897932384626433832795
 #define abs(x) ((x) > 0 ? (x) : -(x))
 

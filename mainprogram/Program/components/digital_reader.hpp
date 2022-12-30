@@ -10,8 +10,24 @@ namespace component
 class DigitalReader
 {
   public:
+    /**
+     * @param pin pin number.
+     * @param mode pin mode. e.g. INPUT
+     */
     explicit DigitalReader(const int pin, const int mode);
+
+    /**
+     * Check whether the pin is HIGH.
+     *
+     * @returns ture: pin value is HIGH.
+     */
     bool IsHigh() const;
+
+    /**
+     * Check whether the pin is LOW.
+     *
+     * @returns ture: pin value is LOW.
+     */
     bool IsLow() const;
 
   private:

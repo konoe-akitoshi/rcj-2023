@@ -10,8 +10,19 @@ namespace component
 class Kicker
 {
   public:
+    /**
+     * @param pin pin number.
+     */
     explicit Kicker(const int pin);
+
+    /**
+     * Push kicker to front.
+     */
     void PushFront() const;
+
+    /**
+     * Pull kicker to the first place.
+     */
     void PullBack() const;
 
   private:

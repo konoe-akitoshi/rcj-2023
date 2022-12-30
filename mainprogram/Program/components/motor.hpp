@@ -13,9 +13,29 @@ namespace component
 class Motor
 {
   public:
+    /**
+     * @param pin_forward_brake forward-brake pin number.
+     * @param pin_reverse_brake reverse-brake pin number.
+     * @param pin_pwm PWM pin number.
+     * @param frequency PWM frequency.
+     */
     explicit Motor(const int pin_forward_brake, const int pin_reverse_brake, const int pin_pwm, const int frequency);
+
+    /**
+     * Start motor with specified power. If power is negative, motor move reverse.
+     *
+     * @param power [-100, 100]
+     */
     void Start(const int power) const;
+
+    /**
+     * Brake motor. Set PWM to 0.
+     */
     void Stop() const;
+
+    /**
+     * Free reverse-brake and forward-brake.
+     */
     void Free() const;
 
   private:
@@ -27,7 +47,18 @@ class Motor
 class MotorContoroler
 {
   public:
+    /**
+     * @param motor1 right-top motor. forward-direction: ↖︎
+     * @param motor2 right-bottom motor. forward-direction: ↗︎
+     * @param motor3 left-bottom motor. forward-direction: ↘︎
+     * @param motor4 left-top motor. forward-direction: ↙︎
+     * @code
+     *   ④ ①   ↙︎ ↖︎
+     *   ③ ②   ↘︎ ↗︎
+     * @endcode
+     */
     explicit MotorContoroler(const Motor& motor1, const Motor& motor2, const Motor& motor3, const Motor& motor4);
+
     /**
      * Contorol 4 motors.
      *
@@ -36,7 +67,15 @@ class MotorContoroler
      * @param rotation [-100, 100]
      */
     void Drive(float azimuth, int power, int rotation) const;
+
+    /**
+     * Stop all motors.
+     */
     void StopAll() const;
+
+    /**
+     * Free all motors.
+     */
     void FreeAll() const;
 
   private:
@@ -78,7 +117,7 @@ inline void Motor::Stop() const {
 }
 
 inline void Motor::Free() const {
-    analogWrite(PIN_PWM_, HIGH);  // よくわからないけど、HIGH だと power = 0 なんだと。(LOWじゃないんだ...)
+    digitalWrite(PIN_PWM_, HIGH);
     digitalWrite(PIN_FORWARD_BRAKE_, LOW);
     digitalWrite(PIN_REVERSE_BRAKE_, LOW);
 }
@@ -95,10 +134,8 @@ inline MotorContoroler::MotorContoroler(const Motor& motor1, const Motor& motor2
 
 inline void MotorContoroler::Drive(float azimuth, int power, int rotation) const {
     // clamp(power|rotation, -100, 100)
-    power = power > 100 ? 100 : power < -100 ? -100
-                                             : power;
-    rotation = rotation > 100 ? 100 : rotation < -100 ? -100
-                                                      : rotation;
+    power = power > 100 ? 100 : power < -100 ? -100 : power;
+    rotation = rotation > 100 ? 100 : rotation < -100 ? -100 : rotation;
 
     float x[4];
     x[0] = -sin(azimuth - (1 * PI / 4));

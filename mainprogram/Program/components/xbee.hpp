@@ -10,9 +10,29 @@ namespace component
 class XBee
 {
   public:
+    /**
+     * @param speed transfer speed rate (in bits per second).
+     */
     explicit XBee(const int speed);
+
+    /**
+     * Check the data is reached at the serial port.
+     *
+     * @return true: exist data in the serial port.
+     */
     bool HasData() const;
+
+    /**
+     * Read the top of the data which is reached at the serial port.
+     * If there are no data at the port, returns -1.
+     */
     int ReadData() const;
+
+    /**
+     * Send specified data.
+     *
+     * @param data the transfer data
+     */
     void SendData(const int data) const;
 };
 
