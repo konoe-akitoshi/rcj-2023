@@ -77,8 +77,7 @@ const component::Kicker Kicker(PIN_KICKER);
 const component::XBee XBee(9600);
 component::OpenMV OpenMV(19200);
 
-VL6180X ToF_front;
-int ball_front;
+VL6180X ToFSensor;
 
 Vector2 ball_pos;
 Vector2 blue_goal;
@@ -86,7 +85,7 @@ Vector2 yellow_goal;
 bool exist_ball;
 bool exist_yellow_goal;
 bool exist_blue_goal;
-
+int ball_front;
 int rotation;
 float ball_dist;
 float pair_ball_dist = 255;
@@ -104,10 +103,10 @@ void setup() {
 
     // CE端子をLOWにするとデバイスがリセットされアドレスが初期値に戻るので注意
     delay(10);
-    ToF_front.init();
-    ToF_front.configureDefault();
-    ToF_front.setAddress(0x52);  // 好きなアドレスに設定
-    ToF_front.setTimeout(100);
+    ToFSensor.init();
+    ToFSensor.configureDefault();
+    ToFSensor.setAddress(0x52);  // 好きなアドレスに設定
+    ToFSensor.setTimeout(100);
     delay(10);
     Serial.println("DONE setup ToF_front");
 
@@ -198,7 +197,7 @@ void loop() {
     }
     ball_dist = Vector2::Norm(ball_pos);
 
-    ball_front = ToF_front.readRangeSingleMillimeters();
+    ball_front = ToFSensor.readRangeSingleMillimeters();
 
 #if DEBUG_MODE
     Serial.print("ball_pos: ");
@@ -433,19 +432,17 @@ void interruptHandler() {
         return;
     }
 
-    constexpr int power = 30;
-
     // Lineセンサが反応している間は繰り返す
     while (digitalRead(PIN_INTERRUPT_29) == HIGH) {
         // lineを踏んだセンサーを調べ、Lineセンサと反対方向へ移動する
         if (LineSensorD1.IsHigh()) {
-            back_Line1(power);
+            back_Line1(30);
         } else if (LineSensorD2.IsHigh()) {
-            back_Line2(power);
+            back_Line2(30);
         } else if (LineSensorD3.IsHigh()) {
-            back_Line3(power);
+            back_Line3(30);
         } else if (LineSensorD4.IsHigh()) {
-            back_Line4(power);
+            back_Line4(30);
         } else {
             LedR.TernOn();
         }

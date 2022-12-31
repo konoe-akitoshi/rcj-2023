@@ -1,5 +1,5 @@
-#ifndef COMPONENT_KICKER_HPP
-#define COMPONENT_KICKER_HPP
+#ifndef COMPONENTS_KICKER_HPP
+#define COMPONENTS_KICKER_HPP
 
 #ifdef LOCAL_INCLUDE
 #include "../../local/arduino_deps.h"

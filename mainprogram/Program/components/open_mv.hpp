@@ -1,5 +1,5 @@
-#ifndef COMPONENT_OPEN_VM_HPP
-#define COMPONENT_OPEN_VM_HPP
+#ifndef COMPONENTS_OPEN_VM_HPP
+#define COMPONENTS_OPEN_VM_HPP
 
 #ifdef LOCAL_INCLUDE
 #include "../../local/arduino_deps.h"

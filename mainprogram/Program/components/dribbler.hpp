@@ -1,5 +1,5 @@
-#ifndef COMPONENT_DRIBBLER_HPP
-#define COMPONENT_DRIBBLER_HPP
+#ifndef COMPONENTS_DRIBBLER_HPP
+#define COMPONENTS_DRIBBLER_HPP
 
 #ifdef LOCAL_INCLUDE
 #include "../../local/arduino_deps.h"

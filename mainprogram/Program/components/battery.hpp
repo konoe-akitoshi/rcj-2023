@@ -1,5 +1,5 @@
-#ifndef COMPONENT_BATTERY_HPP
-#define COMPONENT_BATTERY_HPP
+#ifndef COMPONENTS_BATTERY_HPP
+#define COMPONENTS_BATTERY_HPP
 
 #ifdef LOCAL_INCLUDE
 #include "../../local/arduino_deps.h"

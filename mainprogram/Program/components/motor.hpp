@@ -1,5 +1,5 @@
-#ifndef COMPONENT_MOTOR_HPP
-#define COMPONENT_MOTOR_HPP
+#ifndef COMPONENTS_MOTOR_HPP
+#define COMPONENTS_MOTOR_HPP
 
 // std::min のために include してるけど、Arduino.h とかで include or define されてるかも
 #include <algorithm>
@@ -62,9 +62,11 @@ class MotorContoroler
     /**
      * Contorol 4 motors.
      *
-     * @param azimuth radian
+     * Move to the `azimuth` direction and turn to the `rotation` direction with the `power`.
+     *
+     * @param azimuth radian(clockwise) (forward is 0, right is PI/2, backward is PI).
      * @param power [-100, 100]
-     * @param rotation [-100, 100]
+     * @param rotation [-100, 100] (positive is right, negative is left)
      */
     void Drive(float azimuth, int power, int rotation) const;
 
@@ -79,7 +81,7 @@ class MotorContoroler
     void FreeAll() const;
 
   private:
-    const Motor MOTOR1, MOTOR2, MOTOR3, MOTOR4;
+    const Motor MOTOR1_, MOTOR2_, MOTOR3_, MOTOR4_;
 };
 
 // Impl for Motor
@@ -125,11 +127,11 @@ inline void Motor::Free() const {
 // Impl for MotorContoroler
 
 inline MotorContoroler::MotorContoroler(const Motor& motor1, const Motor& motor2, const Motor& motor3, const Motor& motor4)
-    : MOTOR1(motor1), MOTOR2(motor2), MOTOR3(motor3), MOTOR4(motor4) {
-    MOTOR1.Stop();
-    MOTOR2.Stop();
-    MOTOR3.Stop();
-    MOTOR4.Stop();
+    : MOTOR1_(motor1), MOTOR2_(motor2), MOTOR3_(motor3), MOTOR4_(motor4) {
+    MOTOR1_.Stop();
+    MOTOR2_.Stop();
+    MOTOR3_.Stop();
+    MOTOR4_.Stop();
 }
 
 inline void MotorContoroler::Drive(float azimuth, int power, int rotation) const {
@@ -149,9 +151,8 @@ inline void MotorContoroler::Drive(float azimuth, int power, int rotation) const
             x_max = abs(x[i]);
         }
     }
-    const float w = -(rotation / 100.0);
     for (int i = 0; i < 4; ++i) {
-        x[i] = (x[i] / x_max) + w;
+        x[i] = (x[i] / x_max) - (rotation / 100.0);
     }
 
     x_max = 0;
@@ -164,24 +165,24 @@ inline void MotorContoroler::Drive(float azimuth, int power, int rotation) const
         x[i] /= x_max;
     }
 
-    MOTOR1.Start(x[0] * power);
-    MOTOR2.Start(x[1] * power);
-    MOTOR3.Start(x[2] * power);
-    MOTOR4.Start(x[3] * power);
+    MOTOR1_.Start(x[0] * power);
+    MOTOR2_.Start(x[1] * power);
+    MOTOR3_.Start(x[2] * power);
+    MOTOR4_.Start(x[3] * power);
 }
 
 inline void MotorContoroler::StopAll() const {
-    MOTOR1.Stop();
-    MOTOR2.Stop();
-    MOTOR3.Stop();
-    MOTOR4.Stop();
+    MOTOR1_.Stop();
+    MOTOR2_.Stop();
+    MOTOR3_.Stop();
+    MOTOR4_.Stop();
 }
 
 inline void MotorContoroler::FreeAll() const {
-    MOTOR1.Free();
-    MOTOR2.Free();
-    MOTOR3.Free();
-    MOTOR4.Free();
+    MOTOR1_.Free();
+    MOTOR2_.Free();
+    MOTOR3_.Free();
+    MOTOR4_.Free();
 }
 
 }  // namespace component

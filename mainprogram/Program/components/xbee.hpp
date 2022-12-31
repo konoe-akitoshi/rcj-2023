@@ -1,5 +1,5 @@
-#ifndef COMPONENT_XBEE_HPP
-#define COMPONENT_XBEE_HPP
+#ifndef COMPONENTS_XBEE_HPP
+#define COMPONENTS_XBEE_HPP
 
 #ifdef LOCAL_INCLUDE
 #include "../../local/arduino_deps.h"
