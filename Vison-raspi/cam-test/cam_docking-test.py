@@ -43,6 +43,7 @@ import random
 
 import time
 
+import serial
 
 #import serial
 
@@ -126,8 +127,8 @@ def main():
     #cap = final
 
     # 縦横の長さの変更
-    Height=640
-    Width=480
+    Height=600
+    Width=600
 
     print('HEIGHT',end='---')
     print(cap.set(cv.CAP_PROP_FRAME_HEIGHT, Height))
@@ -269,14 +270,59 @@ def main():
 
         # マスク画像をブロブ解析（面積最大のブロブ情報を取得）
         target = analysis_blob(mask)
+        # print(target["found"])
 
         if target["found"]:
+            # uart = serial.Serial("/dev/ttyS0", 19200, timeout=1000)
+
+            # i_o=200
+            # i_y=201
+            # i_b=202
+
+            # x_data_ball=203
+            # y_data_ball=204
+            # w_data_ball=205
+            # h_data_ball=206
+            # ball_area=207
+
             # 面積最大ブロブの中心座標を取得
-            center_x = int(target["center"][0])
-            center_y = int(target["center"][1])
+            x_data_ball = int(target["center"][0])
+            y_data_ball = int(target["center"][1])
+            w_data_ball = int(target["width"])
+            h_data_ball = int(target["height"])
+
+            # # Send Data
+            # # Send Orange Ball Data
+            # uart.write(bytes([254]))
+            # uart.write(bytes([i_o]))
+            # uart.write(bytes([0]))
+            # uart.write(bytes([0]))
+            # uart.write(bytes([0]))
+            # uart.write(bytes([x_data_ball & 0b00000000000111111]))
+            # uart.write(bytes([(x_data_ball & 0b0000111111000000)>>6]))
+            # uart.write(bytes([y_data_ball & 0b00000000100111111]))
+            # uart.write(bytes([(y_data_ball & 0b0000111111000000)>>6]))
+            # uart.write(bytes([w_data_ball & 0b00000000000111111]))
+            # uart.write(bytes([(w_data_ball & 0b0000111111000000)>>6]))
+            # uart.write(bytes([h_data_ball & 0b00000000100111111]))
+            # uart.write(bytes([(h_data_ball & 0b0000111111000000)>>6]))
+
+            # print(" ***** ", end="")
+            # print(" Orange ball_No=%d" % i_o, end="")
+            # print(" Orange ball_x=%d" % x_data_ball, end="")
+            # print(" Orange ball_y=%d" % y_data_ball, end="")
+            # print(" Orange ball_h=%d" % w_data_ball, end="")
+            # print(" Orange ball_w=%d" % h_data_ball, end="")
+            # print(" ***** ")
+
+            # uart.close()
+
 
             # フレームに面積最大ブロブの中心周囲を円で描く
-            cv.circle(frame, (center_x, center_y), 30, (0, 200, 0),thickness=3, lineType=cv.LINE_AA)
+            cv.circle(frame, (x_data_ball, y_data_ball), 30, (0, 200, 0),thickness=3, lineType=cv.LINE_AA)
+
+            
+
         # 画像全体に円表示
         #cv.circle(frame,(Hw,Hh),h/3,(255,255,0),thickness=1, lineType=cv.LINE_AA)
         #cv.circle(frame,(Hw,Hh),,(255,255,0),thickness=1, lineType=cv.LINE_AA)
@@ -296,12 +342,12 @@ def main():
         cv.line(frame, (Hw, Hh), (xT[0,1],yT[0,1]), (0, 255, 255), thickness=1, lineType=cv.LINE_AA)
         
         #表示
-        cv.imshow('output',frame)
+#        cv.imshow('output',frame)
         
         #緊急脱出
-        key = cv.waitKey(1)
-        if key == 27:  # ESC
-            break
+#        key = cv.waitKey(1)
+#        if key == 27:  # ESC
+#            break
         
     
     cap.release()  #動画を閉じる
