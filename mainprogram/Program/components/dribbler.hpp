@@ -5,9 +5,6 @@
 #include "../../local/arduino_deps.h"
 #endif
 
-// std::min のために include してるけど、Arduino.h とかで include or define されてるかも
-#include <algorithm>
-
 namespace component
 {
 class Dribbler
@@ -43,7 +40,7 @@ inline void Dribbler::Start(const int power) const {
         Stop();
         return;
     }
-    int p = std::min(power, 100);
+    int p = min(power, 100);
     p = (p << 1) + (p >> 1);  // p *= 2.5
     analogWrite(PIN_, p);
 }

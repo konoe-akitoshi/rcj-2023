@@ -14,6 +14,8 @@
 
 #define PI 3.1415926535897932384626433832795
 #define abs(x) ((x) > 0 ? (x) : -(x))
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#define max(a, b) ((a) > (b) ? (a) : (b))
 
 /* IO */
 extern void pinMode(uint8_t pin, uint8_t mode);
@@ -27,6 +29,7 @@ void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode);
 void detachInterrupt(uint32_t pin);
 
 extern void delay(uint32_t dwMs);
+extern uint32_t millis();
 
 /* class */
 // 存在しないクラス、適当に作った。

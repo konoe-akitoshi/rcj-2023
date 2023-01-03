@@ -8,7 +8,7 @@
 #include "components/dribbler.hpp"
 #include "components/kicker.hpp"
 #include "components/led_light.hpp"
-#include "components/motor.hpp"
+#include "components/motor_controller.hpp"
 #include "components/open_mv.hpp"
 #include "components/xbee.hpp"
 #include "pin.hpp"
@@ -22,15 +22,6 @@ void back_Line2(const int power);
 void back_Line3(const int power);
 void back_Line4(const int power);
 void forceOutOfBounds();
-int powerLimit(const int max, const int power);
-
-// 制御パラメータの設定
-constexpr float Kp = 0.45;   // 比例要素の感度
-constexpr float Ki = 0.1;    // 積分要素の感度
-constexpr float Kd = 0.025;  // 微分要素の感度
-
-// initial motor power
-constexpr int Power = 70;
 
 // Low limit voltage 1.1*12 = 13.2
 // Mi-NH なら 13.0, Li-po なら 13.5 (Li-po は過放電するので注意！)
@@ -61,7 +52,7 @@ const component::Motor MotorCh1(PIN_MOTOR1_FORWARD_BRAKE, PIN_MOTOR1_REVERSE_BRA
 const component::Motor MotorCh2(PIN_MOTOR2_FORWARD_BRAKE, PIN_MOTOR2_REVERSE_BRAKE, PIN_MOTOR2_PWM, 37000);
 const component::Motor MotorCh3(PIN_MOTOR3_FORWARD_BRAKE, PIN_MOTOR3_REVERSE_BRAKE, PIN_MOTOR3_PWM, 37000);
 const component::Motor MotorCh4(PIN_MOTOR4_FORWARD_BRAKE, PIN_MOTOR4_REVERSE_BRAKE, PIN_MOTOR4_PWM, 37000);
-const component::MotorContoroler MotorContoroler(MotorCh1, MotorCh2, MotorCh3, MotorCh4);
+const component::MotorController MotorController(MotorCh1, MotorCh2, MotorCh3, MotorCh4);
 
 const component::Dribbler Dribbler(PIN_DRIBBLER_PWM);
 const component::Kicker Kicker(PIN_KICKER);
@@ -69,8 +60,7 @@ const component::Kicker Kicker(PIN_KICKER);
 const component::XBee XBee(9600);
 component::OpenMV OpenMV(19200);
 
-VL6180X ToF_front;
-int ball_front;
+VL6180X ToFSensor;
 
 Vector2 ball_pos;
 Vector2 blue_goal;
@@ -78,11 +68,11 @@ Vector2 yellow_goal;
 bool exist_ball;
 bool exist_yellow_goal;
 bool exist_blue_goal;
-
+int ball_front;
 int rotation;
+// Vector2 velocity; // NEXT: impl
 float ball_dist;
 float pair_ball_dist = 255;
-float wrap;
 
 enum class GoalType
 {
@@ -96,10 +86,10 @@ void setup() {
 
     // CE端子をLOWにするとデバイスがリセットされアドレスが初期値に戻るので注意
     delay(10);
-    ToF_front.init();
-    ToF_front.configureDefault();
-    ToF_front.setAddress(0x52);  // 好きなアドレスに設定
-    ToF_front.setTimeout(100);
+    ToFSensor.init();
+    ToFSensor.configureDefault();
+    ToFSensor.setAddress(0x52);  // 好きなアドレスに設定
+    ToFSensor.setTimeout(100);
     delay(10);
     Serial.println("DONE setup ToF_front");
 
@@ -159,7 +149,18 @@ void loop() {
 
     target_goal_type = GoalSwitch.IsHigh() ? GoalType::Blue : GoalType::Yellow;
 
-    // 中心補正
+    // 機体のホールドエリアの座標(*)が(0, 0)になるように座標を変換する
+    //    +x      (0,0)            +y
+    //    |‾‾‾‾‾‾‾‾‾|          |‾‾‾‾‾‾‾‾‾|
+    //    |  (?,?)  |          |  (0,0)  |
+    //    |    *    |   =>  -x |    *    | +x
+    //    |         |          |         |
+    //    |_________|          |_________|
+    //             +y              -y
+    //  (なんか変換方法おかしい気がするので、実機と合わせて確認しながら調整する)
+    //  (多分、物体によって画像認識の誤差があるので個別調整が必要。だけどGoalTypeによって値が違うのが謎)
+    //  (送られてくる座標の取り方が間違ってるかも、いずれにしても変換後は変わらない)
+    //  (それと、おそらくrotationも考慮して変換後の向きを調整しないといけない)
     if (exist_ball) {
         ball_pos = Vector2(156, 67) - ball_pos;
     }
@@ -184,13 +185,13 @@ void loop() {
     }
 
     if (exist_ball) {
-        int fixed_x = ball_pos.x > 4095 ? 4095 : ball_pos.x;
+        int fixed_x = abs(ball_pos.x) > 4095 ? 4095 : ball_pos.x;
         int send_data = sqrt(fixed_x * fixed_x + ball_pos.y * ball_pos.y);
         XBee.SendData(send_data);
     }
-    ball_dist = Vector2::Norm(ball_pos);
 
-    ball_front = ToF_front.readRangeSingleMillimeters();
+    ball_dist = Vector2::Norm(ball_pos);
+    ball_front = ToFSensor.readRangeSingleMillimeters();
 
 #if DEBUG_MODE
     Serial.print("ball_pos: ");
@@ -216,10 +217,9 @@ void loop() {
 
     // Start Switch が Low でスタート、それ以外はロボット停止
     if (StartSwitch.IsHigh()) {
-        MotorContoroler.FreeAll();
+        MotorController.FreeAll();
         Dribbler.Stop();
         LineSensorLed.TernOff();
-        wrap = 0;
         return;
     }
 
@@ -228,7 +228,7 @@ void loop() {
         Serial.println(Battery.Voltage());
         forceOutOfBounds();
         LineSensorLed.TernOff();
-        MotorContoroler.FreeAll();
+        MotorController.FreeAll();
         while (true) {
             SwitchLedR.TernOff();
             SwitchLedG.TernOff();
@@ -241,209 +241,178 @@ void loop() {
 
     LineSensorLed.TernOn();
 
+    if (exist_ball == false) {
+        MotorController.StopAll();
+        return;
+    }
+
     // 役割判定
     if (AUX1.IsLow()) {
         attacker();
     } else if (AUX2.IsLow()) {
         keeper();
     } else {
-        // どちらがボールに近いか
-        if (pair_ball_dist <= ball_dist) {
-            keeper();
-        } else {
+        // ボールに近いが attacker になる
+        if (ball_dist < pair_ball_dist) {
             attacker();
+        } else {
+            keeper();
         }
     }
 }
 
 void keeper() {
     Dribbler.Stop();
-    wrap = 0;
 
-    Vector2 goal;
-    bool exist_goal;
-    if (target_goal_type == GoalType::Blue) {
-        exist_goal = exist_yellow_goal;
-        goal = {-yellow_goal.x, yellow_goal.y};
-    } else {  // GoalType::Yellow
-        exist_goal = exist_blue_goal;
-        goal = {-blue_goal.x, blue_goal.y};
+    const auto goal = target_goal_type == GoalType::Blue ? yellow_goal : blue_goal;
+    const auto exist_goal = target_goal_type == GoalType::Blue ? exist_yellow_goal : exist_blue_goal;
+
+    if (exist_goal == false) {
+        // ゴールから離れているのでゴールまで後進する
+        MotorController.Drive(3 * PI / 2, 100, -rotation);
+        return;
     }
 
-    if (ball_dist - pair_ball_dist < 60 || exist_ball == false) {  // ボールとの距離の差が近い、ボールを任せてゴール前に帰る
-        if (exist_goal == false) {
-            MotorContoroler.Drive(PI, 100, -rotation);
-        } else if (goal.y > 23) {  // ゴールから遠い
-            float z = atan2(goal.x, goal.y - 23) + PI;
-            MotorContoroler.Drive(z, 100, -rotation);
-        } else if (goal.y < 23 && goal.y > 15 && abs(goal.x) > 33) {  // x座標が 0 から遠い
-            float z = atan2(goal.x, goal.y - 23) + PI;
-            MotorContoroler.Drive(z, 100, -rotation);
-        } else if (goal.y < 15) {  // ゴールエリアの横にいるとき
-            if (goal.x > 0) {
-                MotorContoroler.Drive(-0.60, 60, 0);
-            } else {
-                MotorContoroler.Drive(0.60, 60, 0);
-            }
-        } else {  // ゴール前にいるとき
-            MotorContoroler.Drive(0, 0, 0);
-        }
-    } else {  // ボールとの距離の差が遠い、自ら近づく
-        float az = atan2(ball_pos.x, sqrt(ball_pos.y));
-        MotorContoroler.Drive(az, sqrt(ball_pos.x * ball_pos.x + ball_pos.y * ball_pos.y / 4), -rotation);
+    // NEXT: ボールが後ろにある時の動作
+    //       横移動のみして、相手がボールに向かってくるのを邪魔する + ボールに触れないようにする
+    if (ball_pos.y < 0) {
+        // 後ろにボールがある時は、諦める
+        MotorController.StopAll();
+        return;
     }
+
+    if (ball_dist > 60 + pair_ball_dist) {
+        // ボールとの距離が十分遠い or ペアのロボットがボールに十分近い ので、自らボールに近づく
+        // keeper となっている時点で、ball_dist > pair_ball_dist である
+        const auto az = Vector2::Angle(ball_pos);
+        const auto pw = sqrt((ball_pos.x * ball_pos.x) + (ball_pos.y * ball_pos.y / 4));
+        MotorController.Drive(az, pw, -rotation);
+        return;
+    }
+
+    if (goal.y > 15) {
+        // ゴール横にいるので、ゴール前の角に移動するように動く
+        // 機体がゴール前の角にいる時の goal の座標を target とすると、進む方向のベクトル dir は dir = goal - target で求まる
+        const auto target = goal.x < 0 ? Vector2(-10, -5) : Vector2(10, -5);
+        const auto dir = goal - target;
+        const auto pw = 100; // NEXT: velocity が導入されたら PD 制御する
+        MotorController.Drive(Vector2::Angle(dir), pw, -rotation);
+        return;
+    }
+
+    // あとはゴール前でボールがゴールに入らないように守る
+    // だたし、1次元的な動きのみはルール違反になるので、ボールとの距離をみて少し前後にも動くようにする
+    const auto dir = Vector2(ball_pos.x, goal.y + 5 + max(0, 0.5 * (ball_dist - 20)));
+    MotorController.Drive(Vector2::Angle(dir), 100, -rotation);
 }
 
 void attacker() {
-    static float pre_dir = 0;   // 前回観測値
-    static float data_sum = 0;  // 誤差(観測値)の累積値
+    static float pre_ball_dist = 0;
 
-    const float Pmax = Power;
+    const auto goal = target_goal_type == GoalType::Blue ? blue_goal : yellow_goal;
+    const auto exist_goal = target_goal_type == GoalType::Blue ? exist_blue_goal : exist_yellow_goal;
 
-    Vector2 goal;
-    bool exist_goal;
-    if (target_goal_type == GoalType::Blue) {
-        exist_goal = exist_blue_goal;
-        goal = {blue_goal.x, -blue_goal.y};
-    } else {  // GoalType::Yellow
-        exist_goal = exist_yellow_goal;
-        goal = {yellow_goal.x, -yellow_goal.y};
-    }
-    // PID制御をするので
-    // 制御値 = 誤差(方位)値 + 誤差(方位)の時間積分値 + 誤差(方位)の時間微分値
-
-    // Convert coordinates data
-    float ball_dir = 0;
-    const float fx = 150 - ball_pos.x;  // ロボットが原点に来るようjに座標を変換
-    const float fy = 130 - ball_pos.y;
-    if (fy > 0) {  // 正面から見たボールの方位(radian)を計算
-        ball_dir = atan(fx / fy);
-    } else if (fx > 0) {
-        ball_dir = atan((-fy) / fx) + 1.571;  // 1.571 = Pi/2
-    } else {
-        ball_dir = atan((-fy) / fx) - 1.571;
-    }
-    ball_dir = ball_dir + 0.150;  // +0.150は製作誤差による方位のオフセット補正値(radian)
-
-    const float data_diff = ball_dir - pre_dir;                                       // 前回の方位との差分を計算
-    data_sum += data_diff;                                                            // 方位誤差の累積を計算
-    const float Pcontrol = Power * (Kp * ball_dir + Ki * data_sum + Kd * data_diff);  // PIDの制御値を計算
-    pre_dir = ball_dir;                                                               // 今回の値を代入し次周期から見て前回観測値にする
-
-    static bool kick = false;
-    if (-5 <= ball_pos.y && ball_pos.y <= 30) {  // ボールが前(0 <= y <= 0)にあるとき
-        Dribbler.Start(100);
-        wrap = 0;
-        if (abs(ball_pos.x) < 5) {       // 目の前
-            if (ball_front <= 60) {      // y の距離近い
-                if (ball_front <= 30) {  // 保持
-                    data_sum = 0;
-                    if (exist_goal == false) {  // ゴールなし
-                        MotorContoroler.Drive(0, 80, -rotation);
-                    } else if (goal.y <= 33 && abs(goal.x) < 17) {  // ゴールにけれる距離
-                        kick = true;
-                        Dribbler.Stop();
-                        Kicker.PushFront();
-                        delay(200);
-                        MotorContoroler.Drive(0, 0, 0);
-                        delay(800);
-                        Kicker.PullBack();
-                    } else if (goal.y < 5) {                        // ゴールに近づいた時
-                        MotorContoroler.Drive(PI, 100, -rotation);  // 後ろに下がる
-                    } else {                                        // ゴール見えてて近くない
-                        const float z = atan2(goal.x, goal.y);
-                        MotorContoroler.Drive(z, powerLimit(Pmax, Pcontrol), -rotation);
-                    }
-                } else {  // 目の前のボールを保持しに行く
-                    kick = false;
-                    data_sum = 0;
-                    MotorContoroler.Drive(0, 50, -rotation);
-                }
-            } else {
-                const float z = atan2(ball_pos.x, ball_pos.y);
-                MotorContoroler.Drive(z, powerLimit(Pmax, Pcontrol), -rotation);  // ココボール前 制御甘い？
-            }
-        } else {
-            const float z = atan2(ball_pos.x, ball_pos.y);
-            MotorContoroler.Drive(z, powerLimit(Pmax, Pcontrol), -rotation);
-        }
-    } else if (ball_pos.y <= 0) {  // 後ろにボールがあるとき
-        Dribbler.Stop();
-        if (abs(ball_pos.x) < 30) {
-            if (ball_pos.y >= -129) {
-                MotorContoroler.Drive(0, 50, -rotation);
-                wrap = 0;
-            } else if (ball_pos.y <= -150) {
-                MotorContoroler.Drive(PI, abs(ball_pos.y) / 2.4, -rotation);
-                wrap = 0;
-            } else if (abs(ball_pos.x) < 5 + abs(ball_pos.y) / 5) {
-                if (goal.x > 0 || wrap == 1) {
-                    const float z = atan2(ball_pos.x + 800, ball_pos.y * 3);
-                    MotorContoroler.Drive(z, Vector2::Norm(ball_pos) + 10, -rotation);
-                    wrap = 1;
-                } else {
-                    const float z = atan2(ball_pos.x - 800, ball_pos.y * 3);
-                    MotorContoroler.Drive(z, Vector2::Norm(ball_pos) + 10, -rotation);
-                    wrap = 0;
-                }
-            } else {
-                wrap = 0;
-                const float z = atan2(ball_pos.x, ball_pos.y * 3);
-                MotorContoroler.Drive(z, Vector2::Norm(ball_pos) + 10, -rotation);
-            }
-        } else {
-            wrap = 0;
-            const float z = atan2(ball_pos.x, ball_pos.y * 4);
-            MotorContoroler.Drive(z, Vector2::Norm(ball_pos) + 10, -rotation);
-        }
-    } else {  // 30 > y になるとき
-        Dribbler.Stop();
-        wrap = 0;
-        if (exist_ball == false) {  // ボールがないとき(y = 4096)
-            MotorContoroler.Drive(0, 0, 0);
-        } else {                                      // ボールがあるとき
-            MotorContoroler.Drive(0, 80, -rotation);  // これでたまに回り込みがおおげさになる？
-        }
-    }
-
+    // NEXT: velocity導入されたら、それを使うようにする
+    const auto ball_dist_diff = ball_dist - pre_ball_dist;
 #if DEBUG_MODE
-    Serial.print("[attacker] dir: ");
-    Serial.print(ball_dir);
-    Serial.print(" / sum: ");
-    Serial.print(data_sum);
-    Serial.print(" / diff: ");
-    Serial.print(data_diff);
-    Serial.print(" / Pcontrol: ");
-    Serial.print(Pcontrol);
-    Serial.print(" / kick: ");
-    Serial.println(kick);
+    Serial.print("[attacker] pre_ball_dist: ");
+    Serial.println(pre_ball_dist);
 #endif
+
+    if (ball_pos.y > 10 || abs(ball_pos.x) > 30) {
+        // ボールから離れてるので、近づく
+        Dribbler.Stop();
+        const float pw = (0.1 * ball_dist) + (0.01 * ball_dist_diff); // PD制御
+        MotorController.Drive(Vector2::Angle(ball_pos), pw, -rotation);
+        return;
+    }
+
+    if (ball_pos.y <= 0) {
+        // ボールが後方近くにあるので、下がって回り込んでボールを取りにいく
+        // 機体はボールの方向に垂直な方向に進んで回り込む
+        // この時ラインを踏まないようにコートの中心側(ラインから遠い方)を通るように回り込む
+        Dribbler.Stop();
+        Vector2 dir;
+        if (exist_goal) {
+            dir.x = goal.x > 0 ? 1 : -1;
+        } else {
+            const auto goal2 = target_goal_type == GoalType::Yellow ? blue_goal : yellow_goal;
+            dir.x = goal2.x > 0 ? 1 : -1;
+        }
+        dir.y = dir.x * -1 * ball_pos.x / ball_pos.y;
+        const auto pw = 80 + (0.1 * ball_pos.y); // 若干楕円軌道を描くように調整
+        MotorController.Drive(Vector2::Angle(dir), pw, -rotation);
+        return;
+    }
+
+    // ボールが前方近くにあるのでボールを保持しに行く or 保持し続ける
+    Dribbler.Start(100);
+
+    if (ball_front > 30) {
+        // ボールを保持してないので、目の前のボールを保持しに行く
+        const auto az = Vector2::Angle(ball_pos);
+        const auto pw = Vector2::Norm(ball_pos);
+        MotorController.Drive(az, pw, -rotation);
+        return;
+    }
+
+    // NEXT: 相手に接触 and ゴールに近い (= 両方のゴールが見えない時?)
+    //         -> ランダムに左右に揺れる + 少し後ろに
+
+    if (exist_goal == false) {
+        // ゴールから離れているので、直進
+        MotorController.Drive(PI / 2, 80, -rotation);
+        return;
+    }
+
+    if (goal.y <= 33 && abs(goal.x) < 17) {
+        // ゴールにボールを蹴れる距離にいるので、ボールを蹴る
+        Dribbler.Stop();
+        Kicker.PushFront();
+        delay(500);
+        Kicker.PullBack();
+        MotorController.Drive(3 * PI / 2, 100, -rotation); // 蹴ったあとリバウンドに備えて少し下がる
+        return;
+    }
+
+    if (goal.y < 5) {
+        // ゴール横にいるので、ゴール前の角に移動するように動く
+        // 機体がゴール前の角にいる時の goal の座標を target とすると、進む方向のベクトル dir は dir = goal - target で求まる
+        const auto target = goal.x < 0 ? Vector2(-10, 5) : Vector2(10, 5);
+        const auto dir = goal - target;
+        MotorController.Drive(Vector2::Angle(dir), 100, -rotation);
+        return;
+    }
+
+    // ゴールに向かう
+    const auto az = Vector2::Angle(goal);
+    const auto pw = Vector2::Norm(goal);
+    MotorController.Drive(az, pw, -rotation);
 }
 
+// TODO: back_Line. の動く方向が壊れてるのでなおす
 void interruptHandler() {
     if (StartSwitch.IsHigh()) {  // スイッチがOFFなら何もしない。
         return;
     }
 
-    constexpr int power = 30;
-
     // Lineセンサが反応している間は繰り返す
     while (digitalRead(PIN_INTERRUPT_29) == HIGH) {
         // lineを踏んだセンサーを調べ、Lineセンサと反対方向へ移動する
         if (LineSensorD1.IsHigh()) {
-            back_Line1(power);
+            back_Line1(30);
         } else if (LineSensorD2.IsHigh()) {
-            back_Line2(power);
+            back_Line2(30);
         } else if (LineSensorD3.IsHigh()) {
-            back_Line3(power);
+            back_Line3(30);
         } else if (LineSensorD4.IsHigh()) {
-            back_Line4(power);
+            back_Line4(30);
         } else {
             LedR.TernOn();
         }
     }
 
-    MotorContoroler.StopAll();  // ラインから外れたらモーターstop
+    MotorController.StopAll();  // ラインから外れたらモーターstop
     return;
 }
 
@@ -457,9 +426,9 @@ void back_Line1(const int power) {  // Lineセンサ1が反応しなくなるま
         } else {
             azimuth = PI * 4.0 / 4.0;  // 後ろ方向(3)をradianに変換
         }
-        MotorContoroler.Drive(azimuth, power, 0);  // azimuthの方向に進ませる
+        MotorController.Drive(azimuth, power, 0);
     }
-    MotorContoroler.StopAll();
+    MotorController.StopAll();
 }
 
 void back_Line2(const int power) {  // Lineセンサ2が反応しなくなるまで左に進む
@@ -472,9 +441,9 @@ void back_Line2(const int power) {  // Lineセンサ2が反応しなくなるま
         } else {
             azimuth = PI * 6.0 / 4.0;  // 後ろ方向(4)を radian に変換
         }
-        MotorContoroler.Drive(azimuth, power, 0);  // azimuth の方向に進ませる
+        MotorController.Drive(azimuth, power, 0);
     }
-    MotorContoroler.StopAll();
+    MotorController.StopAll();
 }
 
 void back_Line3(const int power) {  // Lineセンサ3 が反応しなくなるまで前に進む
@@ -487,9 +456,9 @@ void back_Line3(const int power) {  // Lineセンサ3 が反応しなくなる�
         } else {
             azimuth = PI * 0.0 / 4.0;  // 後ろ方向(1)を radian に変換
         }
-        MotorContoroler.Drive(azimuth, power, 0);  // azimuth の方向に進ませる
+        MotorController.Drive(azimuth, power, 0);
     }
-    MotorContoroler.StopAll();
+    MotorController.StopAll();
 }
 
 void back_Line4(const int power) {  // Lineセンサ4 が反応しなくなるまで右に進む
@@ -502,9 +471,9 @@ void back_Line4(const int power) {  // Lineセンサ4 が反応しなくなる�
         } else {
             azimuth = PI * 2.0 / 4.0;  // 後ろ方向(2)を radian に変換
         }
-        MotorContoroler.Drive(azimuth, power, 0);  // azimuth の方向に進ませる
+        MotorController.Drive(azimuth, power, 0);
     }
-    MotorContoroler.StopAll();
+    MotorController.StopAll();
 }
 
 void forceOutOfBounds() {
@@ -516,9 +485,9 @@ void forceOutOfBounds() {
     while (true) {
         // スタートスイッチが切られたら止まる
         if (StartSwitch.IsLow()) {
-            MotorContoroler.Drive(PI / 2.0, 30, 0);
+            MotorController.Drive(PI, 30, 0);
         } else {
-            MotorContoroler.Drive(PI / 2.0, 0, 0);
+            MotorController.StopAll();
         }
         SwitchLedG.TernOff();
         SwitchLedR.TernOff();
@@ -527,18 +496,4 @@ void forceOutOfBounds() {
         SwitchLedR.TernOn();
         delay(25);
     }
-}
-
-/**
- * powerの値がmax(ex.100)を超えないようにする
- *
- * Note: C++17 からは std::clamp() が使える
- */
-int powerLimit(const int max, const int power) {
-    if (power > max) {
-        return max;
-    } else if (power < -max) {
-        return -max;
-    }
-    return power;
 }

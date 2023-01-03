@@ -1,9 +1,6 @@
 #ifndef COMPONENTS_MOTOR_HPP
 #define COMPONENTS_MOTOR_HPP
 
-// std::min のために include してるけど、Arduino.h とかで include or define されてるかも
-#include <algorithm>
-
 #ifdef LOCAL_INCLUDE
 #include "../../local/arduino_deps.h"
 #endif
@@ -44,7 +41,7 @@ class Motor
     const int PIN_PWM_;
 };
 
-class MotorContoroler
+class MotorController
 {
   public:
     /**
@@ -57,16 +54,16 @@ class MotorContoroler
      *   ③ ②   ↘︎ ↗︎
      * @endcode
      */
-    explicit MotorContoroler(const Motor& motor1, const Motor& motor2, const Motor& motor3, const Motor& motor4);
+    explicit MotorController(const Motor& motor1, const Motor& motor2, const Motor& motor3, const Motor& motor4);
 
     /**
      * Contorol 4 motors.
      *
      * Move to the `azimuth` direction and turn to the `rotation` direction with the `power`.
      *
-     * @param azimuth radian(clockwise) (forward is 0, right is PI/2, backward is PI).
+     * @param azimuth radian(counter-clockwise) (rightward is 0, frontward is PI/2, backward is 3*PI/2)
      * @param power [-100, 100]
-     * @param rotation [-100, 100] (positive is right, negative is left)
+     * @param rotation [-100, 100] (positive is clockwise, negative is counter-clockwise)
      */
     void Drive(float azimuth, int power, int rotation) const;
 
@@ -107,7 +104,7 @@ inline void Motor::Start(const int power) const {
         digitalWrite(PIN_REVERSE_BRAKE_, LOW);
     }
     // power -> 0 < p(power) < 250
-    int p = std::min(abs(power), 100);
+    int p = min(abs(power), 100);
     p = (p << 1) + (p >> 1);  // p *= 2.5;
     analogWrite(PIN_PWM_, p);
 }
@@ -126,7 +123,7 @@ inline void Motor::Free() const {
 
 // Impl for MotorContoroler
 
-inline MotorContoroler::MotorContoroler(const Motor& motor1, const Motor& motor2, const Motor& motor3, const Motor& motor4)
+inline MotorController::MotorController(const Motor& motor1, const Motor& motor2, const Motor& motor3, const Motor& motor4)
     : MOTOR1_(motor1), MOTOR2_(motor2), MOTOR3_(motor3), MOTOR4_(motor4) {
     MOTOR1_.Stop();
     MOTOR2_.Stop();
@@ -134,16 +131,16 @@ inline MotorContoroler::MotorContoroler(const Motor& motor1, const Motor& motor2
     MOTOR4_.Stop();
 }
 
-inline void MotorContoroler::Drive(float azimuth, int power, int rotation) const {
+inline void MotorController::Drive(float azimuth, int power, int rotation) const {
     // clamp(power|rotation, -100, 100)
     power = power > 100 ? 100 : power < -100 ? -100 : power;
     rotation = rotation > 100 ? 100 : rotation < -100 ? -100 : rotation;
 
     float x[4];
-    x[0] = -sin(azimuth - (1 * PI / 4));
-    x[1] = -sin(azimuth - (3 * PI / 4));
-    x[2] = -sin(azimuth - (5 * PI / 4));
-    x[3] = -sin(azimuth - (7 * PI / 4));
+    x[0] = sin(azimuth - (PI / 4));
+    x[1] = sin(azimuth + (PI / 4));
+    x[2] = -sin(azimuth - (PI / 4));
+    x[3] = -sin(azimuth + (PI / 4));
 
     float x_max = 0;
     for (int i = 0; i < 4; ++i) {
@@ -171,14 +168,14 @@ inline void MotorContoroler::Drive(float azimuth, int power, int rotation) const
     MOTOR4_.Start(x[3] * power);
 }
 
-inline void MotorContoroler::StopAll() const {
+inline void MotorController::StopAll() const {
     MOTOR1_.Stop();
     MOTOR2_.Stop();
     MOTOR3_.Stop();
     MOTOR4_.Stop();
 }
 
-inline void MotorContoroler::FreeAll() const {
+inline void MotorController::FreeAll() const {
     MOTOR1_.Free();
     MOTOR2_.Free();
     MOTOR3_.Free();
@@ -186,4 +183,47 @@ inline void MotorContoroler::FreeAll() const {
 }
 
 }  // namespace component
+
+
+/* Appendix
+MotorController::Drive の 配列x の数値確認用スクリプト
+```typescript
+const sin = Math.sin;
+const cos = Math.cos;
+const fround = (x: number, e: number) => {
+  const p = 10 ** e;
+  return Math.round(x * p) / p
+}
+const PI = 3.14159265358979323846
+
+const calc = (s: number) => {
+  let x = [];
+  x[0] = sin(s - (PI / 4))
+  x[1] = sin(s + (PI / 4))
+  x[2] = -sin(s - (PI / 4))
+  x[3] = -sin(s + (PI / 4))
+
+  let max_x = Math.max(...x.map(x => Math.abs(x)))
+  for (let i = 0; i < 4; i++) {
+    x[i] /= max_x;
+    x[i] = fround(x[i], 2);
+  }
+
+  let arrow = [];
+  arrow[0] = x[0] == 0 ? '*' : x[0] > 0 ? '↖︎' : '↘︎';
+  arrow[1] = x[1] == 0 ? '*' : x[1] > 0 ? '↗︎' : '↙︎';
+  arrow[2] = x[2] == 0 ? '*' : x[2] > 0 ? '↘︎' : '↖︎';
+  arrow[3] = x[3] == 0 ? '*' : x[3] > 0 ? '↙︎' : '↗︎';
+
+  console.log(` ${fround(s, 3)}
+  ${x[3].toString().padStart(5, ' ')} ${arrow[3]} ${arrow[0]} ${x[0]}
+  ${x[2].toString().padStart(5, ' ')} ${arrow[2]} ${arrow[1]} ${x[1]}
+  `)
+}
+
+for(let s = 0; s < PI; s += PI/8) {
+  calc(s);
+}
+```
+ */
 #endif

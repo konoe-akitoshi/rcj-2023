@@ -23,6 +23,7 @@ struct Vector2
 
     static constexpr float SquareNorm(const Vector2& vec);
     static constexpr float Norm(const Vector2& vec);
+    static constexpr float Angle(const Vector2& vec);
 };
 
 constexpr Vector2::Vector2() : x(0), y(0) {}
@@ -73,6 +74,10 @@ constexpr float Vector2::SquareNorm(const Vector2 &vec) {
 
 constexpr float Vector2::Norm(const Vector2 &vec) {
     return sqrt(vec.x * vec.x + vec.y * vec.y);
+}
+
+constexpr float Vector2::Angle(const Vector2 &vec) {
+    return atan2(vec.y, vec.x);
 }
 
 #endif
