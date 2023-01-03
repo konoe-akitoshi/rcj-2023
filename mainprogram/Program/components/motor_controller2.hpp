@@ -50,13 +50,19 @@ inline MotorController::MotorController(const int address) : ADDRESS_(address) {
 
 inline uint8_t MotorController::FormatPower_(const int power) const {
     const int p = min(abs(power), 100);
+
+    // bit 8: モーターの回転方向 (0: 正転, 1: 逆転)
+    // bit 1~7: モーターの出力(%)
+    // 0b10000000: ショートブレーキ
+    // 0b00000000: フリーストップ
     uint8_t ret;
-    if (p == 0) {          // data == 0 なら停止
-        ret = 0b10000000;  // ショートブレーキ
-    } else if (p > 0) {    //  data > 0 なら正転、data < 0 なら逆転
-        ret = p;           // Forward
+
+    if (power == 0) {
+        ret = 0b10000000;
+    } else if (power > 0) {
+        ret = p;
     } else {
-        ret = (p | 0b10000000);  // Reverse
+        ret = (p | 0b10000000);
     }
     return ret;
 }
