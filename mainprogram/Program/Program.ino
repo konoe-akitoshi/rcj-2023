@@ -3,14 +3,15 @@
 #define DEBUG_MODE 1
 
 #include <VL6180X.h>
-#include "components/setup_handler.hpp"
 #include "components/battery.hpp"
 #include "components/digital_reader.hpp"
 #include "components/dribbler.hpp"
+#include "components/gyro.hpp"
 #include "components/kicker.hpp"
 #include "components/led_light.hpp"
 #include "components/motor_controller.hpp"
 #include "components/open_mv.hpp"
+#include "components/setup_handler.hpp"
 #include "components/xbee.hpp"
 #include "pin.hpp"
 #include "types/vector2.hpp"
@@ -60,6 +61,7 @@ const component::MotorController MotorController(MotorCh1, MotorCh2, MotorCh3, M
 const component::Dribbler Dribbler(SetupHandler, PIN_DRIBBLER_PWM);
 const component::Kicker Kicker(SetupHandler, PIN_KICKER);
 
+const component::Gyro Gyro(SetupHandler, 115200);
 const component::XBee XBee(SetupHandler, 9600);
 component::OpenMV OpenMV(SetupHandler, 19200);
 
@@ -119,29 +121,14 @@ void setup() {
     Kicker.PullBack();
     Serial.println("DONE check kicker");
 
-    // WT901 IMU Sener
-    Serial2.begin(115200);
-    Serial.println("DONE open Serial2(115200)");
-
     SwitchLedR.TernOn();
     SwitchLedG.TernOn();
     Serial.println("DONE setup");
 }
 
 void loop() {
-    static int rotation_o;
-
     OpenMV.WaitData();
-
-    if (Serial2.available() > 0) {
-        while (Serial2.available() != 0) {
-            // Serial2の送信側がint8_tで送ってるので、intで受け取ると負の数が期待通り受け取れない。
-            // そのため、int8_tにキャストする必要がある。
-            rotation_o = (int)((int8_t)Serial2.read()) * 100 / 128;
-        }
-    }
-    rotation = rotation_o;
-
+    rotation = Gyro.GetRotation();
     if (XBee.HasData()) {
         pair_ball_dist = XBee.ReadData();
     }
@@ -301,7 +288,7 @@ void keeper() {
         // 機体がゴール前の角にいる時の goal の座標を target とすると、進む方向のベクトル dir は dir = goal - target で求まる
         const auto target = goal.x < 0 ? Vector2(-10, -5) : Vector2(10, -5);
         const auto dir = goal - target;
-        const auto pw = 100; // NEXT: velocity が導入されたら PD 制御する
+        const auto pw = 100;  // NEXT: velocity が導入されたら PD 制御する
         MotorController.Drive(Vector2::Angle(dir), pw, -rotation);
         return;
     }
@@ -328,7 +315,7 @@ void attacker() {
     if (ball_pos.y > 10 || abs(ball_pos.x) > 30) {
         // ボールから離れてるので、近づく
         Dribbler.Stop();
-        const float pw = (0.1 * ball_dist) + (0.01 * ball_dist_diff); // PD制御
+        const float pw = (0.1 * ball_dist) + (0.01 * ball_dist_diff);  // PD制御
         MotorController.Drive(Vector2::Angle(ball_pos), pw, -rotation);
         return;
     }
@@ -346,7 +333,7 @@ void attacker() {
             dir.x = goal2.x > 0 ? 1 : -1;
         }
         dir.y = dir.x * -1 * ball_pos.x / ball_pos.y;
-        const auto pw = 80 + (0.1 * ball_pos.y); // 若干楕円軌道を描くように調整
+        const auto pw = 80 + (0.1 * ball_pos.y);  // 若干楕円軌道を描くように調整
         MotorController.Drive(Vector2::Angle(dir), pw, -rotation);
         return;
     }
@@ -377,7 +364,7 @@ void attacker() {
         Kicker.PushFront();
         delay(500);
         Kicker.PullBack();
-        MotorController.Drive(3 * PI / 2, 100, -rotation); // 蹴ったあとリバウンドに備えて少し下がる
+        MotorController.Drive(3 * PI / 2, 100, -rotation);  // 蹴ったあとリバウンドに備えて少し下がる
         return;
     }
 
