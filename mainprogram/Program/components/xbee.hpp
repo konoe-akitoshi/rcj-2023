@@ -39,7 +39,9 @@ class XBee
 };
 
 inline XBee::XBee(SetupHandler& handler, const int speed) {
-    handler.SetSerialSpeed(1, speed);
+    handler.SetCallback([speed]() {
+        Serial1.begin(speed);
+    });
 }
 
 inline bool XBee::HasData() const {

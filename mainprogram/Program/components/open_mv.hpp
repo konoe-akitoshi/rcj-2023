@@ -77,7 +77,9 @@ class OpenMV
 };
 
 inline OpenMV::OpenMV(SetupHandler& handler, const int speed) {
-    handler.SetSerialSpeed(3, speed);
+    handler.SetCallback([speed]() {
+        Serial3.begin(speed);
+    });
 }
 
 inline void OpenMV::WaitData() {
