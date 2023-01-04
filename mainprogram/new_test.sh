@@ -9,11 +9,17 @@ fi
 
 DIRECTORY="Tests/$1"
 
-mkdir -p "$DIRECTORY"
+if [ -d "$DIRECTORY" ]; then
+    echo "already exist $DIRECTORY"
+    exit 1
+fi
+
+mkdir "$DIRECTORY"
 
 ln -sfnv ../../Program/components "$DIRECTORY/components"
 ln -sfnv ../../Program/types      "$DIRECTORY/types"
 ln -sfnv ../../Program/pin.hpp    "$DIRECTORY/pin.hpp"
+ln -sfnv ../../Program/utils       "$DIRECTORY/utils"
 
 echo "void setup() {" >> "$DIRECTORY/$1.ino"
 echo "}"              >> "$DIRECTORY/$1.ino"
