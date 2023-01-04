@@ -72,6 +72,7 @@ const component::MotorController MotorController(MotorCh1, MotorCh2, MotorCh3, M
 const component::Dribbler Dribbler(SetupHandler, PIN_DRIBBLER_PWM);
 const component::Kicker Kicker(SetupHandler, PIN_KICKER);
 
+const component::Gyro Gyro(SetupHandler, 115200);
 const component::XBee XBee(SetupHandler, 9600);
 component::OpenMV OpenMV(SetupHandler, 19200);
 
