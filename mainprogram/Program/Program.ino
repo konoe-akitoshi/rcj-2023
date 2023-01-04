@@ -3,6 +3,7 @@
 #define DEBUG_MODE 1
 
 #include <VL6180X.h>
+#include "components/setup_handler.hpp"
 #include "components/battery.hpp"
 #include "components/digital_reader.hpp"
 #include "components/dribbler.hpp"
@@ -23,42 +24,44 @@ void back_Line3(const int power);
 void back_Line4(const int power);
 void forceOutOfBounds();
 
+component::SetupHandler SetupHandler;
+
 // Low limit voltage 1.1*12 = 13.2
 // Mi-NH なら 13.0, Li-po なら 13.5 (Li-po は過放電するので注意！)
 const component::Battery Battery(PIN_BATTERY_VOLYAGE, 13.0);
 
-const component::LedLight NativeLed(PIN_NATIVE_LED);
-const component::LedLight LineSensorLed(PIN_LINE_SENSOR_LED);
-const component::LedLight LedR(PIN_LED_R);
-const component::LedLight LedY(PIN_LED_Y);
-const component::LedLight LedG(PIN_LED_G);
-const component::LedLight LedB(PIN_LED_B);
-const component::LedLight SwitchLedG(PIN_SWITCH_LED_G);
-const component::LedLight SwitchLedR(PIN_SWITCH_LED_R);
+const component::LedLight NativeLed(SetupHandler, PIN_NATIVE_LED);
+const component::LedLight LineSensorLed(SetupHandler, PIN_LINE_SENSOR_LED);
+const component::LedLight LedR(SetupHandler, PIN_LED_R);
+const component::LedLight LedY(SetupHandler, PIN_LED_Y);
+const component::LedLight LedG(SetupHandler, PIN_LED_G);
+const component::LedLight LedB(SetupHandler, PIN_LED_B);
+const component::LedLight SwitchLedG(SetupHandler, PIN_SWITCH_LED_G);
+const component::LedLight SwitchLedR(SetupHandler, PIN_SWITCH_LED_R);
 
-const component::DigitalReader StartSwitch(PIN_START_SWITCH, INPUT_PULLUP);
-const component::DigitalReader GoalSwitch(PIN_GOAL_SWITCH, INPUT_PULLUP);
+const component::DigitalReader StartSwitch(SetupHandler, PIN_START_SWITCH, INPUT_PULLUP);
+const component::DigitalReader GoalSwitch(SetupHandler, PIN_GOAL_SWITCH, INPUT_PULLUP);
 
-const component::DigitalReader LineSensorD1(PIN_LINE_SENSOR_D1, INPUT_PULLUP);
-const component::DigitalReader LineSensorD2(PIN_LINE_SENSOR_D2, INPUT_PULLUP);
-const component::DigitalReader LineSensorD3(PIN_LINE_SENSOR_D3, INPUT_PULLUP);
-const component::DigitalReader LineSensorD4(PIN_LINE_SENSOR_D4, INPUT_PULLUP);
-const component::DigitalReader LineSensorD5(PIN_LINE_SENSOR_D5, INPUT_PULLUP);
+const component::DigitalReader LineSensorD1(SetupHandler, PIN_LINE_SENSOR_D1, INPUT_PULLUP);
+const component::DigitalReader LineSensorD2(SetupHandler, PIN_LINE_SENSOR_D2, INPUT_PULLUP);
+const component::DigitalReader LineSensorD3(SetupHandler, PIN_LINE_SENSOR_D3, INPUT_PULLUP);
+const component::DigitalReader LineSensorD4(SetupHandler, PIN_LINE_SENSOR_D4, INPUT_PULLUP);
+const component::DigitalReader LineSensorD5(SetupHandler, PIN_LINE_SENSOR_D5, INPUT_PULLUP);
 
-const component::DigitalReader AUX1(PIN_AUX1, INPUT);
-const component::DigitalReader AUX2(PIN_AUX2, INPUT);
+const component::DigitalReader AUX1(SetupHandler, PIN_AUX1, INPUT);
+const component::DigitalReader AUX2(SetupHandler, PIN_AUX2, INPUT);
 
-const component::Motor MotorCh1(PIN_MOTOR1_FORWARD_BRAKE, PIN_MOTOR1_REVERSE_BRAKE, PIN_MOTOR1_PWM, 37000);
-const component::Motor MotorCh2(PIN_MOTOR2_FORWARD_BRAKE, PIN_MOTOR2_REVERSE_BRAKE, PIN_MOTOR2_PWM, 37000);
-const component::Motor MotorCh3(PIN_MOTOR3_FORWARD_BRAKE, PIN_MOTOR3_REVERSE_BRAKE, PIN_MOTOR3_PWM, 37000);
-const component::Motor MotorCh4(PIN_MOTOR4_FORWARD_BRAKE, PIN_MOTOR4_REVERSE_BRAKE, PIN_MOTOR4_PWM, 37000);
+const component::Motor MotorCh1(SetupHandler, PIN_MOTOR1_FORWARD_BRAKE, PIN_MOTOR1_REVERSE_BRAKE, PIN_MOTOR1_PWM, 37000);
+const component::Motor MotorCh2(SetupHandler, PIN_MOTOR2_FORWARD_BRAKE, PIN_MOTOR2_REVERSE_BRAKE, PIN_MOTOR2_PWM, 37000);
+const component::Motor MotorCh3(SetupHandler, PIN_MOTOR3_FORWARD_BRAKE, PIN_MOTOR3_REVERSE_BRAKE, PIN_MOTOR3_PWM, 37000);
+const component::Motor MotorCh4(SetupHandler, PIN_MOTOR4_FORWARD_BRAKE, PIN_MOTOR4_REVERSE_BRAKE, PIN_MOTOR4_PWM, 37000);
 const component::MotorController MotorController(MotorCh1, MotorCh2, MotorCh3, MotorCh4);
 
-const component::Dribbler Dribbler(PIN_DRIBBLER_PWM);
-const component::Kicker Kicker(PIN_KICKER);
+const component::Dribbler Dribbler(SetupHandler, PIN_DRIBBLER_PWM);
+const component::Kicker Kicker(SetupHandler, PIN_KICKER);
 
-const component::XBee XBee(9600);
-component::OpenMV OpenMV(19200);
+const component::XBee XBee(SetupHandler, 9600);
+component::OpenMV OpenMV(SetupHandler, 19200);
 
 VL6180X ToFSensor;
 
@@ -83,6 +86,9 @@ enum class GoalType
 void setup() {
     Serial.begin(9600);
     Serial.println("DONE open Serial(9600)");
+
+    SetupHandler.Setup();
+    Serial.println("DONE setup components");
 
     // CE端子をLOWにするとデバイスがリセットされアドレスが初期値に戻るので注意
     delay(10);

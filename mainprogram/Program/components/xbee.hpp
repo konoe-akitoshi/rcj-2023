@@ -5,6 +5,8 @@
 #include "../../local/arduino_deps.h"
 #endif
 
+#include "setup_handler.hpp"
+
 namespace component
 {
 class XBee
@@ -13,7 +15,7 @@ class XBee
     /**
      * @param speed transfer speed rate (in bits per second).
      */
-    explicit XBee(const int speed);
+    explicit XBee(SetupHandler& handler, const int speed);
 
     /**
      * Check the data is reached at the serial port.
@@ -36,8 +38,8 @@ class XBee
     void SendData(const int data) const;
 };
 
-inline XBee::XBee(const int speed) {
-    Serial1.begin(speed);
+inline XBee::XBee(SetupHandler& handler, const int speed) {
+    handler.SetSerialSpeed(1, speed);
 }
 
 inline bool XBee::HasData() const {

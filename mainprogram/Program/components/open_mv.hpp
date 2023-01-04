@@ -7,17 +7,17 @@
 
 #include <array>
 #include "../types/vector2.hpp"
+#include "setup_handler.hpp"
 
 namespace component
 {
-
 class OpenMV
 {
   public:
     /**
      * @param speed transfer speed rate (in bits per second).
      */
-    explicit OpenMV(const int speed);
+    explicit OpenMV(SetupHandler& handler, const int speed);
 
     /**
      * Wait for data from Vison-OpenMV.
@@ -76,8 +76,8 @@ class OpenMV
     }
 };
 
-inline OpenMV::OpenMV(const int speed) {
-    Serial3.begin(speed);
+inline OpenMV::OpenMV(SetupHandler& handler, const int speed) {
+    handler.SetSerialSpeed(3, speed);
 }
 
 inline void OpenMV::WaitData() {

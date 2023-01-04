@@ -7,6 +7,8 @@
 #include <Wire.h>
 #endif
 
+#include "setup_handler.hpp"
+
 namespace component
 {
 class MotorController
@@ -15,7 +17,7 @@ class MotorController
     /**
      * @param address the address of the I2C slave for transmission processing
      */
-    explicit MotorController(const int address);
+    explicit MotorController(SetupHandler& handler, const int address);
 
     /**
      * Contorol 4 motors.
@@ -44,8 +46,10 @@ class MotorController
     void Transmit_(const uint8_t* motorPower, const int size) const;
 };
 
-inline MotorController::MotorController(const int address) : ADDRESS_(address) {
-    Wire.begin();
+inline MotorController::MotorController(SetupHandler& handler, const int address) : ADDRESS_(address) {
+    handler.SetCallback([] {
+        Wire.begin();
+    });
 }
 
 inline uint8_t MotorController::FormatPower_(const int power) const {

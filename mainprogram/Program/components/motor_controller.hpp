@@ -5,6 +5,8 @@
 #include "../../local/arduino_deps.h"
 #endif
 
+#include "setup_handler.hpp"
+
 namespace component
 {
 class Motor
@@ -16,7 +18,7 @@ class Motor
      * @param pin_pwm PWM pin number.
      * @param frequency PWM frequency.
      */
-    explicit Motor(const int pin_forward_brake, const int pin_reverse_brake, const int pin_pwm, const int frequency);
+    explicit Motor(SetupHandler& handler, const int pin_forward_brake, const int pin_reverse_brake, const int pin_pwm, const int frequency);
 
     /**
      * Start motor with specified power. If power is negative, motor move reverse.
@@ -83,12 +85,14 @@ class MotorController
 
 // Impl for Motor
 
-inline Motor::Motor(const int pin_forward_brake, const int pin_reverse_brake, const int pin_pwm, const int frequency)
+inline Motor::Motor(SetupHandler& handler, const int pin_forward_brake, const int pin_reverse_brake, const int pin_pwm, const int frequency)
     : PIN_FORWARD_BRAKE_(pin_forward_brake), PIN_REVERSE_BRAKE_(pin_reverse_brake), PIN_PWM_(pin_pwm) {
-    pinMode(PIN_FORWARD_BRAKE_, OUTPUT);
-    pinMode(PIN_REVERSE_BRAKE_, OUTPUT);
-    pinMode(PIN_PWM_, OUTPUT);
-    analogWriteFrequency(PIN_PWM_, frequency);
+    handler.SetPinMode(PIN_FORWARD_BRAKE_, OUTPUT);
+    handler.SetPinMode(PIN_REVERSE_BRAKE_, OUTPUT);
+    handler.SetPinMode(PIN_PWM_, OUTPUT);
+    handler.SetCallback([=](){
+        analogWriteFrequency(PIN_PWM_, frequency);
+    });
 }
 
 inline void Motor::Start(const int power) const {

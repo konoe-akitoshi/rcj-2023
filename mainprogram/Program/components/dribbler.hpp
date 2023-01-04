@@ -5,6 +5,8 @@
 #include "../../local/arduino_deps.h"
 #endif
 
+#include "setup_handler.hpp"
+
 namespace component
 {
 class Dribbler
@@ -13,7 +15,7 @@ class Dribbler
     /**
      * @param pin_pwm PWM pin number.
      */
-    explicit Dribbler(const int pin_pwm);
+    explicit Dribbler(SetupHandler& handler, const int pin_pwm);
 
     /**
      * Start dribbler with specified power. If power is zero or negative, it meens Stop().
@@ -29,8 +31,8 @@ class Dribbler
     const int PIN_;
 };
 
-inline Dribbler::Dribbler(const int pin_pwm) : PIN_(pin_pwm) {
-    pinMode(PIN_, OUTPUT);
+inline Dribbler::Dribbler(SetupHandler& handler, const int pin_pwm) : PIN_(pin_pwm) {
+    handler.SetPinMode(PIN_, OUTPUT);
     // ↓なんかコメントアウトされてた、よくわからないのでコメントアウトしておく。
     // analogWriteFrequency(DR1PWM, 37000);
 }

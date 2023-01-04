@@ -5,6 +5,8 @@
 #include "../../local/arduino_deps.h"
 #endif
 
+#include "setup_handler.hpp"
+
 namespace component
 {
 
@@ -14,7 +16,7 @@ class LedLight
     /**
      * @param pin pin number.
      */
-    explicit LedLight(const int pin);
+    explicit LedLight(SetupHandler& handler, const int pin);
 
     /**
      * Tern on the LED light.
@@ -30,9 +32,8 @@ class LedLight
     const int PIN_;
 };
 
-inline LedLight::LedLight(const int pin) : PIN_(pin) {
-    pinMode(PIN_, OUTPUT);
-    digitalWrite(PIN_, LOW);
+inline LedLight::LedLight(SetupHandler& handler, const int pin) : PIN_(pin) {
+    handler.SetPinMode(PIN_, OUTPUT);
 }
 
 inline void LedLight::TernOn() const {

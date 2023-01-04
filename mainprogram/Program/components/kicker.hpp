@@ -5,6 +5,8 @@
 #include "../../local/arduino_deps.h"
 #endif
 
+#include "setup_handler.hpp"
+
 namespace component
 {
 class Kicker
@@ -13,7 +15,7 @@ class Kicker
     /**
      * @param pin pin number.
      */
-    explicit Kicker(const int pin);
+    explicit Kicker(SetupHandler& handler, const int pin);
 
     /**
      * Push kicker to front.
@@ -29,9 +31,8 @@ class Kicker
     const int PIN_;
 };
 
-inline Kicker::Kicker(const int pin) : PIN_(pin) {
-    pinMode(PIN_, OUTPUT);
-    digitalWrite(PIN_, LOW);
+inline Kicker::Kicker(SetupHandler& handler, const int pin) : PIN_(pin) {
+    handler.SetPinMode(PIN_, OUTPUT);
 }
 
 inline void Kicker::PushFront() const {
