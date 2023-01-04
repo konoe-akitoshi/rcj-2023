@@ -45,8 +45,6 @@ import time
 
 import serial
 
-#import serial
-
 # ホワイトバランス（動画の切り抜きのL*A*B*値を調整）
 def white_balance_loops(img, h, w):
 
@@ -80,7 +78,7 @@ def red_detect(img):
     hsv_min = np.array([150,127,0])
     hsv_max = np.array([179,255,255])
     mask2 = cv.inRange(hsv, hsv_min, hsv_max)
-    
+
     return mask1 + mask2
 
 # ブロブ解析
@@ -135,6 +133,7 @@ def main():
     print('WIDTH ',end='---')
     print(cap.set(cv.CAP_PROP_FRAME_WIDTH , Width))
     print('FPS',end='---')
+    print(cap.set(cv.CAP_PROP_FPS, 120), end='---')
     print(cap.get(cv.CAP_PROP_FPS))
 
 
@@ -165,16 +164,16 @@ def main():
     map_y = np.zeros((h, w), dtype=np.float32)
 
     #数学タイム用
-    Hh=int(h/2)
-    Hw=int(w/2)
+    Half_height=int(h/2)
+    Half_width=int(w/2)
     sc = 5
     
     #map_x,map_yを作ろう
     for i in range(h):  #Y座標
         for j in range(w):  #X座標
             
-            x = (j-Hw)  #原点を左上から中心に移動
-            y = (i-Hh)
+            x = (j-Half_width)  #原点を左上から中心に移動
+            y = (i-Half_height)
             
             if x == 0:  #0除算回避
                 x = 0.0001
@@ -185,12 +184,12 @@ def main():
             X = Rp/(math.sqrt(1+(pow(y,2)/pow(x,2))))/sc
             Y = (y/x)*X
 
-            if j > Hw:
-                map_x[i,j] = Hw-X
-                map_y[i,j] = Hh-Y
+            if j > Half_width:
+                map_x[i,j] = Half_width-X
+                map_y[i,j] = Half_height-Y
             else:
-                map_x[i,j] = Hw+X
-                map_y[i,j] = Hh+Y
+                map_x[i,j] = Half_width+X
+                map_y[i,j] = Half_height+Y
     
     
     # カラートラッキングに使うやつ
@@ -203,8 +202,8 @@ def main():
     yT = np.zeros((Sep_num,R_num), dtype=np.int16)
     for i in range(Sep_num):
         for j in range(R_num):
-            xT[i,j] = Hw+R_array[j]*math.sin(2*math.pi*i/Sep_num)
-            yT[i,j] = Hh-R_array[j]*math.cos(2*math.pi*i/Sep_num)
+            xT[i,j] = Half_width+R_array[j]*math.sin(2*math.pi*i/Sep_num)
+            yT[i,j] = Half_height-R_array[j]*math.cos(2*math.pi*i/Sep_num)
             
     #閾値
     lower_yellow=np.array([0,100,125])
@@ -234,7 +233,7 @@ def main():
         
         
         #ホワイトバランス
-        #frame = white_balance_loops(frame, h, w)
+        # frame = white_balance_loops(frame, h, w)
         frame = cv.remap(frame, map_x, map_y, cv.INTER_LINEAR)
 
         #新カラートラッキング
@@ -275,9 +274,9 @@ def main():
         if target["found"]:
             # uart = serial.Serial("/dev/ttyS0", 19200, timeout=1000)
 
-            # i_o=200
-            # i_y=201
-            # i_b=202
+            i_o=200
+            i_y=201
+            i_b=202
 
             # x_data_ball=203
             # y_data_ball=204
@@ -324,8 +323,8 @@ def main():
             
 
         # 画像全体に円表示
-        #cv.circle(frame,(Hw,Hh),h/3,(255,255,0),thickness=1, lineType=cv.LINE_AA)
-        #cv.circle(frame,(Hw,Hh),,(255,255,0),thickness=1, lineType=cv.LINE_AA)
+        #cv.circle(frame,(Half_width,Half_height),h/3,(255,255,0),thickness=1, lineType=cv.LINE_AA)
+        #cv.circle(frame,(Half_width,Half_height),,(255,255,0),thickness=1, lineType=cv.LINE_AA)
 
 
 
@@ -339,7 +338,7 @@ def main():
                     for j in range(R_num):
                         cv.circle(frame,(xT[i,j],yT[i,j]),0,(255,255,0),thickness=2, lineType=cv.LINE_AA)
         
-        cv.line(frame, (Hw, Hh), (xT[0,1],yT[0,1]), (0, 255, 255), thickness=1, lineType=cv.LINE_AA)
+        cv.line(frame, (Half_width, Half_height), (xT[0,1],yT[0,1]), (0, 255, 255), thickness=1, lineType=cv.LINE_AA)
         
         #表示
 #        cv.imshow('output',frame)
@@ -358,4 +357,6 @@ def main():
 
 #本体
 if __name__ == '__main__':
+    executor = ThreadPoolExecutor(max_workers=4)
+
     main()
