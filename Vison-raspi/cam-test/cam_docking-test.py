@@ -65,21 +65,30 @@ def white_balance_loops(img, h, w):
     return result
 
 # 赤色検知
-def red_detect(img):
+def color_detect(img):
     # HSV色空間に変換
     hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 
     # 赤色のHSVの値域1
-    hsv_min = np.array([0,127,0])
-    hsv_max = np.array([30,255,255])
-    mask1 = cv.inRange(hsv, hsv_min, hsv_max)
+    hsv_min_red = np.array([0,60,153])
+    hsv_max_red = np.array([25,110,230])
+    mask_red = cv.inRange(hsv, hsv_min_red, hsv_max_red)
+    
+    yield mask_red
 
-    # 赤色のHSVの値域2
-    hsv_min = np.array([150,127,0])
-    hsv_max = np.array([179,255,255])
-    mask2 = cv.inRange(hsv, hsv_min, hsv_max)
+    # 黄色のHSVの値域
+    hsv_min_yellow = np.array([24,102,204])
+    hsv_max_yellow = np.array([26,153,255])
+    mask_yellow = cv.inRange(hsv, hsv_min_yellow, hsv_max_yellow)
+    
+    yield mask_yellow
 
-    return mask1 + mask2
+    # 青色のHSVの値域
+    hsv_min_blue = np.array([98,175,190])
+    hsv_max_blue = np.array([101,230,230])
+    mask_blue = cv.inRange(hsv, hsv_min_blue, hsv_max_blue)
+
+    yield mask_blue
 
 # ブロブ解析
 def analysis_blob(binary_img):
@@ -126,16 +135,22 @@ def main():
 
     # 縦横の長さの変更
     Height=600
-    Width=600
+    Width=800
 
     print('HEIGHT',end='---')
     print(cap.set(cv.CAP_PROP_FRAME_HEIGHT, Height))
     print('WIDTH ',end='---')
     print(cap.set(cv.CAP_PROP_FRAME_WIDTH , Width))
     print('FPS',end='---')
-    print(cap.set(cv.CAP_PROP_FPS, 120), end='---')
+    print(cap.set(cv.CAP_PROP_FPS, 40), end='---')
     print(cap.get(cv.CAP_PROP_FPS))
 
+    #フレーム用意
+    ret, frame = cap.read()  #フレームの読み込み&次のフレームに移行 ret=bool(読み込めたか),frame=<class 'numpy.ndarray'>
+    if not ret:  #読み込み失敗orフレームの終わりの時
+        print('cap.read() error')
+    
+    # cv.imwrite("default0.jpg", frame)
 
     # カメラの個体値(お触り禁止)
     b = 42.7
@@ -153,15 +168,11 @@ def main():
     count=0
     start_time=0
 
-    #フレーム用意
-    ret, frame = cap.read()  #フレームの読み込み&次のフレームに移行 ret=bool(読み込めたか),frame=<class 'numpy.ndarray'>
-    if not ret:  #読み込み失敗orフレームの終わりの時
-        print('cap.read() error')
-    
     #下準備
     h, w = frame.shape[:2]  #height,widthをh,wにいれる
     map_x = np.zeros((h, w), dtype=np.float32)  #h*w次元配列を作る map_x,map_y=<class 'numpy.ndarray'>
     map_y = np.zeros((h, w), dtype=np.float32)
+
 
     #数学タイム用
     Half_height=int(h/2)
@@ -231,10 +242,14 @@ def main():
             print('cap.read() error')
             break
         
+        # cv.imwrite("default.jpg", frame)
         
         #ホワイトバランス
         # frame = white_balance_loops(frame, h, w)
         frame = cv.remap(frame, map_x, map_y, cv.INTER_LINEAR)
+        # print(frame.shape[:2])
+
+        cv.imwrite("remap.jpg", frame)
 
         #新カラートラッキング
         search = np.zeros((Sep_num), dtype=np.bool_) # 見つかったらTrue
@@ -265,10 +280,12 @@ def main():
         
         #旧カラートラッキング
         # 赤色検出
-        mask = red_detect(frame)
+        mask_red, mask_yellow, mask_blue = color_detect(frame)
+        
+        # ret = cv.imwrite("detect.jpg", mask)
 
         # マスク画像をブロブ解析（面積最大のブロブ情報を取得）
-        target = analysis_blob(mask)
+        target = analysis_blob(mask_red)
         # print(target["found"])
 
         if target["found"]:
@@ -357,6 +374,4 @@ def main():
 
 #本体
 if __name__ == '__main__':
-    executor = ThreadPoolExecutor(max_workers=4)
-
     main()
