@@ -64,7 +64,7 @@ def white_balance_loops(img, h, w):
 
     return result
 
-# 赤色検知
+# 色検知
 def color_detect(img):
     # HSV色空間に変換
     hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
@@ -120,6 +120,44 @@ def analysis_blob(binary_img):
         maxblob["found"] = False
     
     return maxblob
+
+# データ送信
+def send_data(target_data):
+    uart = serial.Serial("/dev/ttyS0", 19200, timeout=1000)
+
+    i_o=200
+    i_y=201
+    i_b=202
+
+    x_data = int(target["center"][0])
+    y_data = int(target["center"][1])
+    w_data = int(target["width"])
+    h_data = int(target["height"])
+    
+    uart.write(bytes([254]))
+    uart.write(bytes([i_o]))
+    uart.write(bytes([0]))
+    uart.write(bytes([0]))
+    uart.write(bytes([0]))
+    uart.write(bytes([x_data & 0b00000000000111111]))
+    uart.write(bytes([(x_data & 0b0000111111000000)>>6]))
+    uart.write(bytes([y_data & 0b00000000100111111]))
+    uart.write(bytes([(y_data & 0b0000111111000000)>>6]))
+    uart.write(bytes([w_data & 0b00000000000111111]))
+    uart.write(bytes([(w_data & 0b0000111111000000)>>6]))
+    uart.write(bytes([h_data & 0b00000000100111111]))
+    uart.write(bytes([(h_data & 0b0000111111000000)>>6]))
+
+    print(" ***** ", end="")
+    print(" Orange ball_No=%d" % i_o, end="")
+    print(" Orange ball_x=%d" % x_data, end="")
+    print(" Orange ball_y=%d" % y_data, end="")
+    print(" Orange ball_h=%d" % w_data, end="")
+    print(" Orange ball_w=%d" % h_data, end="")
+    print(" ***** ")
+
+    uart.close()
+
 
 #メイン
 def main():
@@ -249,95 +287,44 @@ def main():
         frame = cv.remap(frame, map_x, map_y, cv.INTER_LINEAR)
         # print(frame.shape[:2])
 
-        cv.imwrite("remap.jpg", frame)
-
-        #新カラートラッキング
-        search = np.zeros((Sep_num), dtype=np.bool_) # 見つかったらTrue
-        S_Count = 0 #カウント用
-        S_maxCount = 0 # 現在最大カウント
-        S_maxPos = -1 # 現在最大の場所(ゴールになりそうな場所)
-        #ゴールの位置探し
-        for i in range(Sep_num):
-            for j in range(R_num):#位置探し
-                if (lower_yellow[0]<=frame[yT[i,j],xT[i,j],0] and frame[yT[i,j],xT[i,j],0]<=upper_yellow[0] and
-                    lower_yellow[1]<=frame[yT[i,j],xT[i,j],1] and frame[yT[i,j],xT[i,j],1]<=upper_yellow[1] and
-                    lower_yellow[2]<=frame[yT[i,j],xT[i,j],2] and frame[yT[i,j],xT[i,j],2]<=upper_yellow[2]):
-                    search[i]=True
-            if search[i]:
-                S_Count=S_Count+1 # カウント
-            else:
-                if S_maxCount<S_Count: # 最大値更新
-                    S_maxCount=S_Count
-                    S_maxPos=i-1
-                S_Count=0
-        if S_maxCount<S_Count: # 最大値更新(端っこにあった時用)
-            S_maxCount=S_Count
-            S_maxPos=Sep_num
         
-        
-        
-        #ゴールの中央をみつけよう！！！！！
-        
-        #旧カラートラッキング
-        # 赤色検出
+        # 赤, 黄, 青色検出
         mask_red, mask_yellow, mask_blue = color_detect(frame)
         
-        # ret = cv.imwrite("detect.jpg", mask)
+        # cv.imwrite("remap.jpg", frame)
+
+        # cv.imwrite("detect_red.jpg", mask_red)
+        # cv.imwrite("detect_yellow.jpg", mask_yellow)
+        # cv.imwrite("detect_blue.jpg", mask_blue)
+
 
         # マスク画像をブロブ解析（面積最大のブロブ情報を取得）
-        target = analysis_blob(mask_red)
+        ball_data = analysis_blob(mask_red)
         # print(target["found"])
 
-        if target["found"]:
-            # uart = serial.Serial("/dev/ttyS0", 19200, timeout=1000)
-
-            i_o=200
-            i_y=201
-            i_b=202
-
-            # x_data_ball=203
-            # y_data_ball=204
-            # w_data_ball=205
-            # h_data_ball=206
-            # ball_area=207
-
-            # 面積最大ブロブの中心座標を取得
-            x_data_ball = int(target["center"][0])
-            y_data_ball = int(target["center"][1])
-            w_data_ball = int(target["width"])
-            h_data_ball = int(target["height"])
-
-            # # Send Data
-            # # Send Orange Ball Data
-            # uart.write(bytes([254]))
-            # uart.write(bytes([i_o]))
-            # uart.write(bytes([0]))
-            # uart.write(bytes([0]))
-            # uart.write(bytes([0]))
-            # uart.write(bytes([x_data_ball & 0b00000000000111111]))
-            # uart.write(bytes([(x_data_ball & 0b0000111111000000)>>6]))
-            # uart.write(bytes([y_data_ball & 0b00000000100111111]))
-            # uart.write(bytes([(y_data_ball & 0b0000111111000000)>>6]))
-            # uart.write(bytes([w_data_ball & 0b00000000000111111]))
-            # uart.write(bytes([(w_data_ball & 0b0000111111000000)>>6]))
-            # uart.write(bytes([h_data_ball & 0b00000000100111111]))
-            # uart.write(bytes([(h_data_ball & 0b0000111111000000)>>6]))
-
-            # print(" ***** ", end="")
-            # print(" Orange ball_No=%d" % i_o, end="")
-            # print(" Orange ball_x=%d" % x_data_ball, end="")
-            # print(" Orange ball_y=%d" % y_data_ball, end="")
-            # print(" Orange ball_h=%d" % w_data_ball, end="")
-            # print(" Orange ball_w=%d" % h_data_ball, end="")
-            # print(" ***** ")
-
-            # uart.close()
-
+        if ball_data["found"]:
+            pass # send_data をコメントアウトしてる時必要
+            # send_data(ball_data)
 
             # フレームに面積最大ブロブの中心周囲を円で描く
-            cv.circle(frame, (x_data_ball, y_data_ball), 30, (0, 200, 0),thickness=3, lineType=cv.LINE_AA)
+            # cv.circle(frame, (x_data_ball, y_data_ball), 30, (0, 200, 0),thickness=3, lineType=cv.LINE_AA)
 
-            
+
+        # 黄色ゴールのブロブ解析
+        yellow_goal_data = analysis_blob(mask_yellow)
+
+        if yellow_goal_data["found"]:
+            pass
+            # send_data(yellow_goal_data)
+
+
+        # 青色ゴールのブロブ解析
+        blue_goal_data = analysis_blob(mask_blue)
+
+        if blue_goal_data["found"]:
+            pass
+            # send_data(blue_goal_data)
+        
 
         # 画像全体に円表示
         #cv.circle(frame,(Half_width,Half_height),h/3,(255,255,0),thickness=1, lineType=cv.LINE_AA)
@@ -346,16 +333,16 @@ def main():
 
 
         #デバッグ用の円
-        for i in range(Sep_num):
-            if search[i]:
-                if S_maxPos-S_maxCount+1<=i and i<=S_maxPos:
-                    for j in range(R_num):
-                        cv.circle(frame,(xT[i,j],yT[i,j]),0,(0,0,255),thickness=2, lineType=cv.LINE_AA)
-                else:
-                    for j in range(R_num):
-                        cv.circle(frame,(xT[i,j],yT[i,j]),0,(255,255,0),thickness=2, lineType=cv.LINE_AA)
+        # for i in range(Sep_num):
+        #     if search[i]:
+        #         if S_maxPos-S_maxCount+1<=i and i<=S_maxPos:
+        #             for j in range(R_num):
+        #                 cv.circle(frame,(xT[i,j],yT[i,j]),0,(0,0,255),thickness=2, lineType=cv.LINE_AA)
+        #         else:
+        #             for j in range(R_num):
+        #                 cv.circle(frame,(xT[i,j],yT[i,j]),0,(255,255,0),thickness=2, lineType=cv.LINE_AA)
         
-        cv.line(frame, (Half_width, Half_height), (xT[0,1],yT[0,1]), (0, 255, 255), thickness=1, lineType=cv.LINE_AA)
+        # cv.line(frame, (Half_width, Half_height), (xT[0,1],yT[0,1]), (0, 255, 255), thickness=1, lineType=cv.LINE_AA)
         
         #表示
 #        cv.imshow('output',frame)
