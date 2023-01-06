@@ -70,25 +70,21 @@ def color_detect(img):
     hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 
     # 赤色のHSVの値域1
-    hsv_min_red = np.array([0,60,153])
-    hsv_max_red = np.array([25,110,230])
+    hsv_min_red = np.array([0, 60, 153])
+    hsv_max_red = np.array([25, 110, 230])
     mask_red = cv.inRange(hsv, hsv_min_red, hsv_max_red)
-    
-    yield mask_red
 
     # 黄色のHSVの値域
-    hsv_min_yellow = np.array([24,102,204])
-    hsv_max_yellow = np.array([26,153,255])
+    hsv_min_yellow = np.array([24, 102, 204])
+    hsv_max_yellow = np.array([26, 153, 255])
     mask_yellow = cv.inRange(hsv, hsv_min_yellow, hsv_max_yellow)
-    
-    yield mask_yellow
 
     # 青色のHSVの値域
-    hsv_min_blue = np.array([98,175,190])
-    hsv_max_blue = np.array([101,230,230])
+    hsv_min_blue = np.array([98, 175, 190])
+    hsv_max_blue = np.array([101, 230, 230])
     mask_blue = cv.inRange(hsv, hsv_min_blue, hsv_max_blue)
 
-    yield mask_blue
+    return mask_red, mask_yellow, mask_blue
 
 # ブロブ解析
 def analysis_blob(binary_img):
@@ -162,6 +158,28 @@ def send_data(target_data, target_type):
             uart.write(bytes([-1]))
 
     uart.close()
+
+
+# 
+def coordinate_test(ball_data, yellow_goal_data, blue_goal_data):
+
+    input()
+
+    if ball_data["found"]:
+        ball_xy = ball_data["center"]
+    else:
+        ball_data = [-1, -1]
+    print(f"ball_data: {ball_xy}")
+    if yellow_goal_data["found"]:
+        yellow_goal_xy = yellow_goal_data["center"]
+    else:
+        yellow_goal_xy = [-1, -1]
+    print(f"yellow_goal_data: {yellow_goal_xy}")
+    if blue_goal_data["found"]:
+        blue_goal_xy = blue_goal_data["center"]
+    else:
+        blue_goal_xy = [-1, -1]
+    print(f"blue_goal_data: {blue_goal_xy}")
 
 
 #メイン
@@ -302,10 +320,11 @@ def main():
         # frame = white_balance_loops(frame, h, w)
         frame = cv.remap(frame, map_x, map_y, cv.INTER_LINEAR)
         cv.imwrite("remap0.jpg", frame)
+
         frame = cv.blur(frame, (5, 5))
         cv.imwrite("remap1.jpg", frame)
-        frame = cv.resize(frame, dsize = (Width // 5, Height // 5))
-        # print(frame.shape[:2])
+
+        frame = cv.resize(frame, dsize = (w // 2, h // 2))
 
         
         # 赤, 黄, 青色検出
@@ -336,6 +355,9 @@ def main():
 
         # send_data(blue_goal_data, 252)
         
+
+        # Enter される度にボール、ゴールの座標をターミナルに出力
+        coordinate_test(ball_data, yellow_goal_data, blue_goal_data)
 
         # 画像全体に円表示
         #cv.circle(frame,(Half_width,Half_height),h/3,(255,255,0),thickness=1, lineType=cv.LINE_AA)
@@ -372,4 +394,5 @@ def main():
 
 #本体
 if __name__ == '__main__':
+
     main()
