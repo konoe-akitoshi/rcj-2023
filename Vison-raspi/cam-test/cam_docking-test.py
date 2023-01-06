@@ -122,39 +122,44 @@ def analysis_blob(binary_img):
     return maxblob
 
 # データ送信
-def send_data(target_data):
+def send_data(target_data, target_type):
     uart = serial.Serial("/dev/ttyS0", 19200, timeout=1000)
 
-    i_o=200
-    i_y=201
-    i_b=202
+    if target_data["found"]:
+        i_o=200
+        i_y=201
+        i_b=202
 
-    x_data = int(target["center"][0])
-    y_data = int(target["center"][1])
-    w_data = int(target["width"])
-    h_data = int(target["height"])
-    
-    uart.write(bytes([254]))
-    uart.write(bytes([i_o]))
-    uart.write(bytes([0]))
-    uart.write(bytes([0]))
-    uart.write(bytes([0]))
-    uart.write(bytes([x_data & 0b00000000000111111]))
-    uart.write(bytes([(x_data & 0b0000111111000000)>>6]))
-    uart.write(bytes([y_data & 0b00000000100111111]))
-    uart.write(bytes([(y_data & 0b0000111111000000)>>6]))
-    uart.write(bytes([w_data & 0b00000000000111111]))
-    uart.write(bytes([(w_data & 0b0000111111000000)>>6]))
-    uart.write(bytes([h_data & 0b00000000100111111]))
-    uart.write(bytes([(h_data & 0b0000111111000000)>>6]))
+        x_data = int(target["center"][0])
+        y_data = int(target["center"][1])
+        w_data = int(target["width"])
+        h_data = int(target["height"])
+        
+        uart.write(bytes([target_type]))
+        uart.write(bytes([i_o]))
+        uart.write(bytes([0]))
+        uart.write(bytes([0]))
+        uart.write(bytes([0]))
+        uart.write(bytes([x_data & 0b00000000000111111]))
+        uart.write(bytes([(x_data & 0b0000111111000000)>>6]))
+        uart.write(bytes([y_data & 0b00000000100111111]))
+        uart.write(bytes([(y_data & 0b0000111111000000)>>6]))
+        uart.write(bytes([w_data & 0b00000000000111111]))
+        uart.write(bytes([(w_data & 0b0000111111000000)>>6]))
+        uart.write(bytes([h_data & 0b00000000100111111]))
+        uart.write(bytes([(h_data & 0b0000111111000000)>>6]))
 
-    print(" ***** ", end="")
-    print(" Orange ball_No=%d" % i_o, end="")
-    print(" Orange ball_x=%d" % x_data, end="")
-    print(" Orange ball_y=%d" % y_data, end="")
-    print(" Orange ball_h=%d" % w_data, end="")
-    print(" Orange ball_w=%d" % h_data, end="")
-    print(" ***** ")
+        print(" ***** ", end="")
+        print(" Orange ball_No=%d" % i_o, end="")
+        print(" Orange ball_x=%d" % x_data, end="")
+        print(" Orange ball_y=%d" % y_data, end="")
+        print(" Orange ball_h=%d" % w_data, end="")
+        print(" Orange ball_w=%d" % h_data, end="")
+        print(" ***** ")
+
+    else:
+        for _ in range(12):
+            uart.write(bytes([-1]))
 
     uart.close()
 
@@ -302,28 +307,19 @@ def main():
         ball_data = analysis_blob(mask_red)
         # print(target["found"])
 
-        if ball_data["found"]:
-            pass # send_data をコメントアウトしてる時必要
-            # send_data(ball_data)
-
-            # フレームに面積最大ブロブの中心周囲を円で描く
-            # cv.circle(frame, (x_data_ball, y_data_ball), 30, (0, 200, 0),thickness=3, lineType=cv.LINE_AA)
+        # send_data(ball_data, 254)
 
 
         # 黄色ゴールのブロブ解析
         yellow_goal_data = analysis_blob(mask_yellow)
 
-        if yellow_goal_data["found"]:
-            pass
-            # send_data(yellow_goal_data)
+        # send_data(yellow_goal_data, 253)
 
 
         # 青色ゴールのブロブ解析
         blue_goal_data = analysis_blob(mask_blue)
 
-        if blue_goal_data["found"]:
-            pass
-            # send_data(blue_goal_data)
+        # send_data(blue_goal_data, 252)
         
 
         # 画像全体に円表示
@@ -345,12 +341,12 @@ def main():
         # cv.line(frame, (Half_width, Half_height), (xT[0,1],yT[0,1]), (0, 255, 255), thickness=1, lineType=cv.LINE_AA)
         
         #表示
-#        cv.imshow('output',frame)
+        # cv.imshow('output',frame)
         
         #緊急脱出
-#        key = cv.waitKey(1)
-#        if key == 27:  # ESC
-#            break
+        # key = cv.waitKey(1)
+        # if key == 27:  # ESC
+        #     break
         
     
     cap.release()  #動画を閉じる
