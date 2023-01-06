@@ -213,8 +213,13 @@ def main():
 
     #下準備
     h, w = frame.shape[:2]  #height,widthをh,wにいれる
+    gap = (w - h) // 2
+    frame = frame[0:h, gap:w-gap]
+    h, w = frame.shape[:2]
+
     map_x = np.zeros((h, w), dtype=np.float32)  #h*w次元配列を作る map_x,map_y=<class 'numpy.ndarray'>
     map_y = np.zeros((h, w), dtype=np.float32)
+
 
 
     #数学タイム用
@@ -285,22 +290,32 @@ def main():
             print('cap.read() error')
             break
         
+        h, w = frame.shape[:2]
+        gap = (w - h) // 2
+        frame = frame[0:h, gap:w-gap]
+        h, w = frame.shape[:2]
+
+
         # cv.imwrite("default.jpg", frame)
         
         #ホワイトバランス
         # frame = white_balance_loops(frame, h, w)
         frame = cv.remap(frame, map_x, map_y, cv.INTER_LINEAR)
+        cv.imwrite("remap0.jpg", frame)
+        frame = cv.blur(frame, (5, 5))
+        cv.imwrite("remap1.jpg", frame)
+        frame = cv.resize(frame, dsize = (Width // 5, Height // 5))
         # print(frame.shape[:2])
 
         
         # 赤, 黄, 青色検出
         mask_red, mask_yellow, mask_blue = color_detect(frame)
         
-        # cv.imwrite("remap.jpg", frame)
+        cv.imwrite("remap2.jpg", frame)
 
-        # cv.imwrite("detect_red.jpg", mask_red)
-        # cv.imwrite("detect_yellow.jpg", mask_yellow)
-        # cv.imwrite("detect_blue.jpg", mask_blue)
+        cv.imwrite("detect_red.jpg", mask_red)
+        cv.imwrite("detect_yellow.jpg", mask_yellow)
+        cv.imwrite("detect_blue.jpg", mask_blue)
 
 
         # マスク画像をブロブ解析（面積最大のブロブ情報を取得）
