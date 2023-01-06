@@ -2,7 +2,7 @@
 #define COMPONENTS_MOTOR_HPP
 
 #ifdef LOCAL_INCLUDE
-#include "../../local/arduino_deps.h"
+#include "../../local/arduino_deps.hpp"
 #endif
 
 #include "setup_handler.hpp"

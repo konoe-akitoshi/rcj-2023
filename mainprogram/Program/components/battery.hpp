@@ -2,7 +2,7 @@
 #define COMPONENTS_BATTERY_HPP
 
 #ifdef LOCAL_INCLUDE
-#include "../../local/arduino_deps.h"
+#include "../../local/arduino_deps.hpp"
 #endif
 
 namespace component

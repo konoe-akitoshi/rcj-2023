@@ -1,7 +1,7 @@
 #if defined(LOCAL_INCLUDE) && !defined(LOCAL_SERVO_HPP)
 #define LOCAL_SERVO_HPP
 
-#include "arduino_deps.h"
+#include "arduino_deps.hpp"
 
 // Servo.h (https://github.com/arduino-libraries/Servo/blob/master/src/Servo.h)
 class Servo

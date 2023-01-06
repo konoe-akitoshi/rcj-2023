@@ -2,7 +2,7 @@
 #define COMPONENTS_SETUP_HANDLER_HPP
 
 #ifdef LOCAL_INCLUDE
-#include "../../local/arduino_deps.h"
+#include "../../local/arduino_deps.hpp"
 #endif
 
 #include <functional>

@@ -6,7 +6,7 @@
 #define DEBUG_MODE 1
 
 #ifdef LOCAL_INCLUDE
-#include "../local/arduino_deps.h"
+#include "../local/arduino_deps.hpp"
 #include "../local/vl6180x.hpp"
 #else
 #include <VL6180X.h>

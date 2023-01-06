@@ -2,7 +2,7 @@
 #define TESTS_UTIL_READER_HPP
 
 #ifdef LOCAL_INCLUDE
-#include "../../local/arduino_deps.h"
+#include "../../local/arduino_deps.hpp"
 #endif
 
 namespace util

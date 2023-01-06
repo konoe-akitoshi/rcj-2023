@@ -3,7 +3,7 @@
 #define LOCAL_WIRE_HPP
 
 #ifdef LOCAL_INCLUDE
-#include "arduino_deps.h"
+#include "arduino_deps.hpp"
 #endif
 
 #define BUFFER_LENGTH 32

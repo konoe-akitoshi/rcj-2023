@@ -1,6 +1,6 @@
 #ifdef PREVENT_SORCING_FROM_ARDUINO
 #ifdef LOCAL_INCLUDE
-#include "../local/arduino_deps.h"
+#include "../local/arduino_deps.hpp"
 #define LED_BUILTIN 1
 #else
 #endif
