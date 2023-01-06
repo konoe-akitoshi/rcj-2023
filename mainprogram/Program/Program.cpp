@@ -60,15 +60,9 @@ const component::DigitalReader LineSensorD5(SetupHandler, PIN_LINE_SENSOR_D5, IN
 const component::DigitalReader AUX1(SetupHandler, PIN_AUX1, INPUT);
 const component::DigitalReader AUX2(SetupHandler, PIN_AUX2, INPUT);
 
-const component::Motor MotorCh1(SetupHandler, PIN_MOTOR1_FORWARD_BRAKE, PIN_MOTOR1_REVERSE_BRAKE, PIN_MOTOR1_PWM, 37000);
-const component::Motor MotorCh2(SetupHandler, PIN_MOTOR2_FORWARD_BRAKE, PIN_MOTOR2_REVERSE_BRAKE, PIN_MOTOR2_PWM, 37000);
-const component::Motor MotorCh3(SetupHandler, PIN_MOTOR3_FORWARD_BRAKE, PIN_MOTOR3_REVERSE_BRAKE, PIN_MOTOR3_PWM, 37000);
-const component::Motor MotorCh4(SetupHandler, PIN_MOTOR4_FORWARD_BRAKE, PIN_MOTOR4_REVERSE_BRAKE, PIN_MOTOR4_PWM, 37000);
-const component::MotorController MotorController(MotorCh1, MotorCh2, MotorCh3, MotorCh4);
-
+const component::MotorController MotorController(SetupHandler, 0x0A);
 const component::Dribbler Dribbler(SetupHandler, PIN_DRIBBLER_PWM);
 const component::Kicker Kicker(SetupHandler, PIN_KICKER);
-
 const component::XBee XBee(SetupHandler, 9600);
 component::OpenMV OpenMV(SetupHandler, 19200);
 component::Gyro Gyro(SetupHandler);

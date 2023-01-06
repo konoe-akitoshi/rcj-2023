@@ -10,13 +10,7 @@
 #include "utils/serial_reader.hpp"
 
 component::SetupHandler Handler;
-
-const component::MotorController MotorController(
-    component::Motor(Handler, PIN_MOTOR1_FORWARD_BRAKE, PIN_MOTOR1_REVERSE_BRAKE, PIN_MOTOR1_PWM, 37000),
-    component::Motor(Handler, PIN_MOTOR2_FORWARD_BRAKE, PIN_MOTOR2_REVERSE_BRAKE, PIN_MOTOR2_PWM, 37000),
-    component::Motor(Handler, PIN_MOTOR3_FORWARD_BRAKE, PIN_MOTOR3_REVERSE_BRAKE, PIN_MOTOR3_PWM, 37000),
-    component::Motor(Handler, PIN_MOTOR4_FORWARD_BRAKE, PIN_MOTOR4_REVERSE_BRAKE, PIN_MOTOR4_PWM, 37000));
-
+const component::MotorController MotorController(Handler, 0x0A);
 const util::SerialReader Reader;
 
 void setup() {
