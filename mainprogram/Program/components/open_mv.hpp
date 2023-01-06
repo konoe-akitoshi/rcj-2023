@@ -69,16 +69,16 @@ class OpenMV
   private:
     std::array<int, 39> raw_;
     inline int GetDataUnit_() const {
-        while (Serial3.available() == 0) {
+        while (Serial2.available() == 0) {
             ;  // wait for serial data
         }
-        return Serial3.read();
+        return Serial2.read();
     }
 };
 
 inline OpenMV::OpenMV(SetupHandler& handler, const int speed) {
     handler.SetCallback([speed]() {
-        Serial3.begin(speed);
+        Serial2.begin(speed);
     });
 }
 
