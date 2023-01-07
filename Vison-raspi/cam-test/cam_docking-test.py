@@ -45,13 +45,13 @@ def color_detect(img):
     hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 
     # 赤色の HSV の値域
-    hsv_min_red = np.array([-7, 25, 140])
-    hsv_max_red = np.array([15, 140, 217])
+    hsv_min_red = np.array([-5, 77, 153])
+    hsv_max_red = np.array([7, 153, 255])
     mask_red = cv.inRange(hsv, hsv_min_red, hsv_max_red)
 
     # 黄色の HSV の値域
-    hsv_min_yellow = np.array([24, 102, 204])
-    hsv_max_yellow = np.array([26, 153, 255])
+    hsv_min_yellow = np.array([24, 120, 204])
+    hsv_max_yellow = np.array([26, 204, 255])
     mask_yellow = cv.inRange(hsv, hsv_min_yellow, hsv_max_yellow)
 
     # 青色の HSV の値域
@@ -107,59 +107,57 @@ def send_data(target_data, target_type):
         w_data = int(target_data["width"])
         h_data = int(target_data["height"])
         
-        uart.write(bytes([target_type]))
-        uart.write(bytes([i_o]))
-        uart.write(bytes([0]))
-        uart.write(bytes([0]))
-        uart.write(bytes([0]))
-        uart.write(bytes([x_data & 0b00000000000111111]))
-        uart.write(bytes([(x_data & 0b0000111111000000)>>6]))
-        uart.write(bytes([y_data & 0b00000000100111111]))
-        uart.write(bytes([(y_data & 0b0000111111000000)>>6]))
-        uart.write(bytes([w_data & 0b00000000000111111]))
-        uart.write(bytes([(w_data & 0b0000111111000000)>>6]))
-        uart.write(bytes([h_data & 0b00000000100111111]))
-        uart.write(bytes([(h_data & 0b0000111111000000)>>6]))
-
-        print(" ***** ", end="")
-        print(" Orange ball_No=%d" % i_o, end="")
-        print(" Orange ball_x=%d" % x_data, end="")
-        print(" Orange ball_y=%d" % y_data, end="")
-        print(" Orange ball_h=%d" % w_data, end="")
-        print(" Orange ball_w=%d" % h_data, end="")
-        print(" ***** ")
+        uart.write(bytes(target_type))
+        uart.write(bytes(i_o))
+        uart.write(bytes(0))
+        uart.write(bytes(0))
+        uart.write(bytes(0))
+        uart.write(bytes(x_data & 0b00000000000111111))
+        uart.write(bytes((x_data & 0b0000111111000000)>>6))
+        uart.write(bytes(y_data & 0b00000000100111111))
+        uart.write(bytes((y_data & 0b0000111111000000)>>6))
+        uart.write(bytes(w_data & 0b00000000000111111))
+        uart.write(bytes((w_data & 0b0000111111000000)>>6))
+        uart.write(bytes(h_data & 0b00000000100111111))
+        uart.write(bytes((h_data & 0b0000111111000000)>>6))
 
     else:
         for _ in range(12):
-            uart.write(bytes([-1]))
+            uart.write(bytes(0))
 
 
 # Enter される度にボール、ゴールの座標をターミナルに出力
 def coordinate_test(ball_data, yellow_goal_data, blue_goal_data):
 
-    input()
-
     if ball_data["found"]:
         ball_xy = ball_data["center"]
+        ball_xy = [150 - val for val in ball_xy]
+        ball_xy[1] -= 23
     else:
         ball_xy = [-1, -1]
     print(f"ball_data: {ball_xy}")
 
     if yellow_goal_data["found"]:
         yellow_goal_xy = yellow_goal_data["center"]
+        yellow_goal_xy = [150 - val for val in yellow_goal_xy]
     else:
         yellow_goal_xy = [-1, -1]
     print(f"yellow_goal_data: {yellow_goal_xy}")
+    if yellow_goal_data["found"]:
+        print(yellow_goal_data["width"])
 
     if blue_goal_data["found"]:
         blue_goal_xy = blue_goal_data["center"]
+        blue_goal_xy = [150 - val for val in blue_goal_xy]
     else:
         blue_goal_xy = [-1, -1]
     print(f"blue_goal_data: {blue_goal_xy}")
 
+    input()
+
 
 # メイン
-def main(debug_flag = False, send_flag = True):
+def main(debug_flag, send_flag):
     print('LOADING...')
 
     # 動画の読み込み(バグったら Video I/O の確認) cap = <class 'cv2.VideoCapture'>
@@ -324,13 +322,13 @@ def main(debug_flag = False, send_flag = True):
 
 # 本体
 if __name__ == '__main__':
-    debug_flag = True
-    send_flag = False
+    debug_flag = False
+    send_flag = True
 
     if send_flag:
         uart = serial.Serial("/dev/ttyS0", 19200, timeout=1000)
 
-    main(debug_flag = True, send_flag = False)
+    main(debug_flag, send_flag)
 
     if send_flag:
         uart.close()
