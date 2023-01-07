@@ -12,6 +12,13 @@
 #define INPUT_PULLUP 0x2
 #define RISING 4
 
+#ifdef EXTENDED_PIN_MODE
+// Platforms who wnat to declare more than 256 pins need to define EXTENDED_PIN_MODE globally
+typedef uint32_t pin_size_t;
+#else
+typedef uint8_t pin_size_t;
+#endif
+
 #define PI 3.1415926535897932384626433832795
 #define abs(x) ((x) > 0 ? (x) : -(x))
 #define min(a, b) ((a) < (b) ? (a) : (b))
