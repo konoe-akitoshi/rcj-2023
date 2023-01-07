@@ -70,8 +70,8 @@ def color_detect(img):
     hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 
     # 赤色のHSVの値域1
-    hsv_min_red = np.array([0, 60, 153])
-    hsv_max_red = np.array([25, 110, 230])
+    hsv_min_red = np.array([-7, 25, 140])
+    hsv_max_red = np.array([15, 140, 217])
     mask_red = cv.inRange(hsv, hsv_min_red, hsv_max_red)
 
     # 黄色のHSVの値域
@@ -119,17 +119,16 @@ def analysis_blob(binary_img):
 
 # データ送信
 def send_data(target_data, target_type):
-    uart = serial.Serial("/dev/ttyS0", 19200, timeout=1000)
 
     if target_data["found"]:
         i_o=200
         i_y=201
         i_b=202
 
-        x_data = int(target["center"][0])
-        y_data = int(target["center"][1])
-        w_data = int(target["width"])
-        h_data = int(target["height"])
+        x_data = int(target_data["center"][0])
+        y_data = int(target_data["center"][1])
+        w_data = int(target_data["width"])
+        h_data = int(target_data["height"])
         
         uart.write(bytes([target_type]))
         uart.write(bytes([i_o]))
@@ -157,7 +156,6 @@ def send_data(target_data, target_type):
         for _ in range(12):
             uart.write(bytes([-1]))
 
-    uart.close()
 
 
 # 
@@ -168,7 +166,7 @@ def coordinate_test(ball_data, yellow_goal_data, blue_goal_data):
     if ball_data["found"]:
         ball_xy = ball_data["center"]
     else:
-        ball_data = [-1, -1]
+        ball_xy = [-1, -1]
     print(f"ball_data: {ball_xy}")
     if yellow_goal_data["found"]:
         yellow_goal_xy = yellow_goal_data["center"]
@@ -183,7 +181,7 @@ def coordinate_test(ball_data, yellow_goal_data, blue_goal_data):
 
 
 #メイン
-def main():
+def main(debug_flug = False):
     print('LOADING...')
     
     # ホワイトバランス用の画像読み込み
@@ -313,16 +311,20 @@ def main():
         frame = frame[0:h, gap:w-gap]
         h, w = frame.shape[:2]
 
-
-        # cv.imwrite("default.jpg", frame)
+        if debug_flug:
+            cv.imwrite("default.jpg", frame)
         
         #ホワイトバランス
         # frame = white_balance_loops(frame, h, w)
         frame = cv.remap(frame, map_x, map_y, cv.INTER_LINEAR)
-        cv.imwrite("remap0.jpg", frame)
+
+        if debug_flug:
+            cv.imwrite("remap0.jpg", frame)
 
         frame = cv.blur(frame, (5, 5))
-        cv.imwrite("remap1.jpg", frame)
+        
+        if debug_flug:
+            cv.imwrite("remap1.jpg", frame)
 
         frame = cv.resize(frame, dsize = (w // 2, h // 2))
 
@@ -330,11 +332,13 @@ def main():
         # 赤, 黄, 青色検出
         mask_red, mask_yellow, mask_blue = color_detect(frame)
         
-        cv.imwrite("remap2.jpg", frame)
 
-        cv.imwrite("detect_red.jpg", mask_red)
-        cv.imwrite("detect_yellow.jpg", mask_yellow)
-        cv.imwrite("detect_blue.jpg", mask_blue)
+        if debug_flug:
+            cv.imwrite("remap2.jpg", frame)
+
+            cv.imwrite("detect_red.jpg", mask_red)
+            cv.imwrite("detect_yellow.jpg", mask_yellow)
+            cv.imwrite("detect_blue.jpg", mask_blue)
 
 
         # マスク画像をブロブ解析（面積最大のブロブ情報を取得）
@@ -355,36 +359,10 @@ def main():
 
         # send_data(blue_goal_data, 252)
         
+        if debug_flug:
+            # Enter される度にボール、ゴールの座標をターミナルに出力
+            coordinate_test(ball_data, yellow_goal_data, blue_goal_data)
 
-        # Enter される度にボール、ゴールの座標をターミナルに出力
-        coordinate_test(ball_data, yellow_goal_data, blue_goal_data)
-
-        # 画像全体に円表示
-        #cv.circle(frame,(Half_width,Half_height),h/3,(255,255,0),thickness=1, lineType=cv.LINE_AA)
-        #cv.circle(frame,(Half_width,Half_height),,(255,255,0),thickness=1, lineType=cv.LINE_AA)
-
-
-
-        #デバッグ用の円
-        # for i in range(Sep_num):
-        #     if search[i]:
-        #         if S_maxPos-S_maxCount+1<=i and i<=S_maxPos:
-        #             for j in range(R_num):
-        #                 cv.circle(frame,(xT[i,j],yT[i,j]),0,(0,0,255),thickness=2, lineType=cv.LINE_AA)
-        #         else:
-        #             for j in range(R_num):
-        #                 cv.circle(frame,(xT[i,j],yT[i,j]),0,(255,255,0),thickness=2, lineType=cv.LINE_AA)
-        
-        # cv.line(frame, (Half_width, Half_height), (xT[0,1],yT[0,1]), (0, 255, 255), thickness=1, lineType=cv.LINE_AA)
-        
-        #表示
-        # cv.imshow('output',frame)
-        
-        #緊急脱出
-        # key = cv.waitKey(1)
-        # if key == 27:  # ESC
-        #     break
-        
     
     cap.release()  #動画を閉じる
     cv.destroyAllWindows()  #ウィンドウ全削除
@@ -394,5 +372,8 @@ def main():
 
 #本体
 if __name__ == '__main__':
+    uart = serial.Serial("/dev/ttyS0", 19200, timeout=1000)
 
-    main()
+    main(debug_flug = True)
+
+    uart.close()
