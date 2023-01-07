@@ -25,35 +25,37 @@ void back_Line3(const int power);
 void back_Line4(const int power);
 void forceOutOfBounds();
 
+constexpr int INTERRUPT_PIN = raspberry_pi_pico::PIN34_GP28;
+
 component::SetupHandler SetupHandler;
 
 // Low limit voltage 1.1*12 = 13.2
 // Mi-NH なら 13.0, Li-po なら 13.5 (Li-po は過放電するので注意！)
-const component::Battery Battery(PIN_BATTERY_VOLYAGE, 13.0);
+const component::Battery Battery(raspberry_pi_pico::PIN32_GP27, 13.0);
 
-const component::LedLight NativeLed(SetupHandler, PIN_NATIVE_LED);
-const component::LedLight LineSensorLed(SetupHandler, PIN_LINE_SENSOR_LED);
-const component::LedLight LedR(SetupHandler, PIN_LED_R);
-const component::LedLight LedY(SetupHandler, PIN_LED_Y);
-const component::LedLight LedG(SetupHandler, PIN_LED_G);
-const component::LedLight LedB(SetupHandler, PIN_LED_B);
-const component::LedLight SwitchLedG(SetupHandler, PIN_SWITCH_LED_G);
-const component::LedLight SwitchLedR(SetupHandler, PIN_SWITCH_LED_R);
+const component::LedLight LedR(SetupHandler, pcf8574::EX07);
+const component::LedLight LedY(SetupHandler, pcf8574::EX05);
+const component::LedLight LedG(SetupHandler, pcf8574::EX06);
+const component::LedLight LedB(SetupHandler, pcf8574::EX04);
+const component::LedLight SwitchLedR(SetupHandler, pcf8574::EX02);
+const component::LedLight SwitchLedG(SetupHandler, pcf8574::EX03);
+const component::LedLight LineSensorLed(SetupHandler, raspberry_pi_pico::PIN27_GP21);
 
-const component::DigitalReader StartSwitch(SetupHandler, PIN_START_SWITCH, INPUT_PULLUP);
-const component::DigitalReader GoalSwitch(SetupHandler, PIN_GOAL_SWITCH, INPUT_PULLUP);
+const component::DigitalReader StartSwitch(SetupHandler, raspberry_pi_pico::PIN04_GP02, INPUT_PULLUP);
+const component::DigitalReader GoalSwitch(SetupHandler, raspberry_pi_pico::PIN05_GP03, INPUT_PULLUP);
 
-const component::DigitalReader LineSensorD1(SetupHandler, PIN_LINE_SENSOR_D1, INPUT_PULLUP);
-const component::DigitalReader LineSensorD2(SetupHandler, PIN_LINE_SENSOR_D2, INPUT_PULLUP);
-const component::DigitalReader LineSensorD3(SetupHandler, PIN_LINE_SENSOR_D3, INPUT_PULLUP);
-const component::DigitalReader LineSensorD4(SetupHandler, PIN_LINE_SENSOR_D4, INPUT_PULLUP);
-const component::DigitalReader LineSensorD5(SetupHandler, PIN_LINE_SENSOR_D5, INPUT_PULLUP);
+const component::DigitalReader LineSensorD1(SetupHandler, raspberry_pi_pico::PIN21_GP16, INPUT_PULLUP);
+const component::DigitalReader LineSensorD2(SetupHandler, raspberry_pi_pico::PIN22_GP17, INPUT_PULLUP);
+const component::DigitalReader LineSensorD3(SetupHandler, raspberry_pi_pico::PIN24_GP18, INPUT_PULLUP);
+const component::DigitalReader LineSensorD4(SetupHandler, raspberry_pi_pico::PIN25_GP19, INPUT_PULLUP);
+const component::DigitalReader LineSensorD5(SetupHandler, raspberry_pi_pico::PIN26_GP20, INPUT_PULLUP);
 
-const component::DigitalReader AUX1(SetupHandler, PIN_AUX1, INPUT);
-const component::DigitalReader AUX2(SetupHandler, PIN_AUX2, INPUT);
-const component::MotorController MotorController(SetupHandler, 0x0A);
-const component::Dribbler Dribbler(SetupHandler, PIN_DRIBBLER_PWM);
-const component::Kicker Kicker(SetupHandler, PIN_KICKER);
+const component::DigitalReader AUX1(SetupHandler, pcf8574::EX00, INPUT);
+const component::DigitalReader AUX2(SetupHandler, pcf8574::EX01, INPUT);
+
+const component::MotorController MotorController(SetupHandler, raspberry_pi_pico::PIN06_GP04, raspberry_pi_pico::PIN07_GP05, 0x0A);
+const component::Kicker Kicker(SetupHandler, raspberry_pi_pico::PIN16_GP12);
+const component::Dribbler Dribbler(SetupHandler, raspberry_pi_pico::PIN17_GP13);
 const component::XBee XBee(SetupHandler, 9600);
 component::OpenMV OpenMV(SetupHandler, 19200);
 component::Gyro Gyro(SetupHandler);
@@ -95,10 +97,10 @@ void setup() {
     Serial.println("DONE setup ToF_front");
 
     // Caution D29 -> Interrupt
-    pinMode(PIN_INTERRUPT_29, INPUT_PULLUP);
-    attachInterrupt(PIN_INTERRUPT_29, interruptHandler, RISING);
+    pinMode(INTERRUPT_PIN, INPUT_PULLUP);
+    attachInterrupt(INTERRUPT_PIN, interruptHandler, RISING);
     Serial.print("DONE attach interrupt to pin(RISING): ");
-    Serial.println(PIN_INTERRUPT_29);
+    Serial.println(INTERRUPT_PIN);
 
     // Dribbler 動作テスト
     Dribbler.Start(100);
@@ -383,7 +385,7 @@ void interruptHandler() {
     }
 
     // Lineセンサが反応している間は繰り返す
-    while (digitalRead(PIN_INTERRUPT_29) == HIGH) {
+    while (digitalRead(INTERRUPT_PIN) == HIGH) {
         // lineを踏んだセンサーを調べ、Lineセンサと反対方向へ移動する
         if (LineSensorD1.IsHigh()) {
             back_Line1(30);
