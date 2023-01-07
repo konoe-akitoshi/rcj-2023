@@ -65,7 +65,6 @@ const component::MotorController MotorController(SetupHandler, raspberry_pi_pico
 const component::Kicker Kicker(SetupHandler, raspberry_pi_pico::PIN16_GP12);
 const component::Dribbler Dribbler(SetupHandler, raspberry_pi_pico::PIN17_GP13);
 const component::Gyro Gyro(SetupHandler, 115200);
-const component::XBee XBee(SetupHandler, 9600);
 component::OpenMV OpenMV(SetupHandler, 19200);
 
 VL6180X ToFSensor;
@@ -80,7 +79,7 @@ int ball_front;
 int rotation;
 // Vector2 velocity; // NEXT: impl
 float ball_dist;
-float pair_ball_dist = 255;
+float pair_ball_dist = 255; // NEXT: use Xbee
 
 enum class GoalType
 {
@@ -132,9 +131,6 @@ void setup() {
 void loop() {
     OpenMV.WaitData();
     rotation = Gyro.GetRotation();
-    if (XBee.HasData()) {
-        pair_ball_dist = XBee.ReadData();
-    }
 
     exist_ball = OpenMV.GetBallCount() != 0;
     ball_pos = OpenMV.GetBallPosition();
@@ -178,12 +174,6 @@ void loop() {
             blue_goal.x = 156 - blue_goal.x;
             blue_goal.y = blue_goal.y - 184;
         }
-    }
-
-    if (exist_ball) {
-        int fixed_x = abs(ball_pos.x) > 4095 ? 4095 : ball_pos.x;
-        int send_data = sqrt(fixed_x * fixed_x + ball_pos.y * ball_pos.y);
-        XBee.SendData(send_data);
     }
 
     ball_dist = Vector2::Norm(ball_pos);
