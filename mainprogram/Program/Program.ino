@@ -53,7 +53,7 @@ const component::DigitalReader LineSensorD5(SetupHandler, raspberry_pi_pico::PIN
 const component::DigitalReader AUX1(SetupHandler, pcf8574::EX00, INPUT);
 const component::DigitalReader AUX2(SetupHandler, pcf8574::EX01, INPUT);
 
-const component::MotorController MotorController(SetupHandler, raspberry_pi_pico::PIN06_GP04, raspberry_pi_pico::PIN07_GP05, 0x0A);
+const component::MotorController MotorController(SetupHandler, raspberry_pi_pico::PIN14_GP10, raspberry_pi_pico::PIN15_GP11, 0x0A);
 const component::Kicker Kicker(SetupHandler, raspberry_pi_pico::PIN16_GP12);
 const component::Dribbler Dribbler(SetupHandler, raspberry_pi_pico::PIN17_GP13);
 const component::XBee XBee(SetupHandler, 9600);

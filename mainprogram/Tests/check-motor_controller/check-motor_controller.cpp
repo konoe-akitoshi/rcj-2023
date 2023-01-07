@@ -10,7 +10,7 @@
 #include "utils/serial_reader.hpp"
 
 component::SetupHandler Handler;
-const component::MotorController MotorController(Handler, 0x0A);
+const component::MotorController MotorController(Handler, raspberry_pi_pico::PIN14_GP10, raspberry_pi_pico::PIN15_GP11, 0x0A);
 const util::SerialReader Reader;
 
 void setup() {

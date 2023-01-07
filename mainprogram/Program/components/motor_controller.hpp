@@ -17,7 +17,7 @@ class MotorController
     /**
      * @param address the address of the I2C slave for transmission processing
      */
-    explicit MotorController(SetupHandler& handler, const int address);
+    explicit MotorController(SetupHandler& handler, const int sda, const int scl, const int address);
 
     /**
      * Contorol 4 motors.
@@ -46,9 +46,11 @@ class MotorController
     void Transmit_(const uint8_t* motorPower, const int size) const;
 };
 
-inline MotorController::MotorController(SetupHandler& handler, const int address) : ADDRESS_(address) {
-    handler.SetCallback([] {
-        Wire.begin();
+inline MotorController::MotorController(SetupHandler& handler, const int sda, const int scl, const int address) : ADDRESS_(address) {
+    handler.SetCallback([=] {
+        Wire1.setSDA(sda);
+        Wire1.setSCL(scl);
+        Wire1.begin();
     });
 }
 
@@ -72,9 +74,9 @@ inline uint8_t MotorController::FormatPower_(const int power) const {
 }
 
 inline void MotorController::Transmit_(const uint8_t* motorPower, const int size) const {
-    Wire.beginTransmission(ADDRESS_);
-    Wire.write(motorPower, size);
-    Wire.endTransmission();
+    Wire1.beginTransmission(ADDRESS_);
+    Wire1.write(motorPower, size);
+    Wire1.endTransmission();
 }
 
 inline void MotorController::Drive(float azimuth, int power, int rotation) const {
