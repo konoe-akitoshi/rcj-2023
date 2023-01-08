@@ -36,12 +36,12 @@ Adafruit_PCF8574 PCF8574;
 // Mi-NH なら 13.0, Li-po なら 13.5 (Li-po は過放電するので注意！)
 const component::Battery Battery(raspberry_pi_pico::PIN32_GP27, 13.0);
 
-const component::LedLight LedR(SetupHandler, pcf8574::EX07);
-const component::LedLight LedY(SetupHandler, pcf8574::EX05);
-const component::LedLight LedG(SetupHandler, pcf8574::EX06);
-const component::LedLight LedB(SetupHandler, pcf8574::EX04);
-const component::LedLight SwitchLedR(SetupHandler, pcf8574::EX02);
-const component::LedLight SwitchLedG(SetupHandler, pcf8574::EX03);
+const component::LedLightPCF8574 LedR(SetupHandler, PCF8574, pcf8574::EX07);
+const component::LedLightPCF8574 LedY(SetupHandler, PCF8574, pcf8574::EX05);
+const component::LedLightPCF8574 LedG(SetupHandler, PCF8574, pcf8574::EX06);
+const component::LedLightPCF8574 LedB(SetupHandler, PCF8574, pcf8574::EX04);
+const component::LedLightPCF8574 SwitchLedR(SetupHandler, PCF8574, pcf8574::EX02);
+const component::LedLightPCF8574 SwitchLedG(SetupHandler, PCF8574, pcf8574::EX03);
 const component::LedLight LineSensorLed(SetupHandler, raspberry_pi_pico::PIN27_GP21);
 
 const component::DigitalReader StartSwitch(SetupHandler, raspberry_pi_pico::PIN04_GP02, INPUT_PULLUP);
