@@ -2,6 +2,7 @@
 
 #include "components/open_cv.hpp"
 #include "components/setup_handler.hpp"
+#include "utils/printer.hpp"
 
 component::SetupHandler Handler;
 component::OpenCV OpenCV(Handler, 19200);
@@ -9,27 +10,6 @@ component::OpenCV OpenCV(Handler, 19200);
 void setup() {
     Handler.Setup();
     Serial.begin(9600);
-}
-
-void PrintInt(const char* name, const int i) {
-    Serial.print(name);
-    Serial.print(": ");
-    Serial.println(i);
-}
-
-void PrintBool(const char* name, const bool b) {
-    Serial.print(name);
-    Serial.print(": ");
-    Serial.println(b ? "true" : "false");
-}
-
-void PrintVector(const char* name, const Vector2 vec) {
-    Serial.print(name);
-    Serial.print(": (");
-    Serial.print(vec.x);
-    Serial.print(", ");
-    Serial.print(vec.y);
-    Serial.println(")");
 }
 
 void loop() {
@@ -44,16 +24,16 @@ void loop() {
     const auto blue_goal_pos = OpenCV.GetBlueGoalPosition();
     const auto blue_goal_wdh = OpenCV.GetBlueGoalWidth();
 
-    PrintBool("ball_ext", ball_ext);
-    PrintVector("ball_pos", ball_pos);
+    util::PrintBool("ball_ext", ball_ext);
+    util::PrintVector("ball_pos", ball_pos);
 
-    PrintBool("yello_goal_ext", yello_goal_ext);
-    PrintVector("yello_goal_pos", yello_goal_pos);
-    PrintInt("yello_goal_wdh", yello_goal_wdh);
+    util::PrintBool("yello_goal_ext", yello_goal_ext);
+    util::PrintVector("yello_goal_pos", yello_goal_pos);
+    util::PrintInt("yello_goal_wdh", yello_goal_wdh);
 
-    PrintBool("blue_goal_ext", blue_goal_ext);
-    PrintVector("blue_goal_pos", blue_goal_pos);
-    PrintInt("blue_goal_wdh", blue_goal_wdh);
+    util::PrintBool("blue_goal_ext", blue_goal_ext);
+    util::PrintVector("blue_goal_pos", blue_goal_pos);
+    util::PrintInt("blue_goal_wdh", blue_goal_wdh);
 
     Serial.println("");
 }
