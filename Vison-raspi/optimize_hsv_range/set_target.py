@@ -5,8 +5,9 @@ import os
 
 def main(sample_quantity = 10):
 
-  def print_coordinate(event, x, y, flag, param):
-    global h, w, r
+  def click_function(event, x, y, flag, param):
+    h, w = 300, 300
+    
     if event == cv2.EVENT_LBUTTONDOWN:
       
       for dx in range(-r, r+1):
@@ -30,7 +31,7 @@ def main(sample_quantity = 10):
     origin = np.copy(img)
     
     cv2.namedWindow(f"sample{sample_num}")
-    cv2.setMouseCallback(f"sample{sample_num}", print_coordinate)
+    cv2.setMouseCallback(f"sample{sample_num}", click_function)
 
     h, w = 300, 300
     stat = [[-1] * w for _ in range(h)]
@@ -57,7 +58,7 @@ def main(sample_quantity = 10):
 
 if __name__ == "__main__":
   
-  if os.path.isdir("target_mark"):
+  if not os.path.isdir("target_mark"):
     os.mkdir("target_mark")
   
   main()
