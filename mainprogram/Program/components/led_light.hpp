@@ -9,7 +9,6 @@
 
 namespace component
 {
-
 class LedLight
 {
   public:
@@ -34,6 +33,7 @@ class LedLight
 
 inline LedLight::LedLight(SetupHandler& handler, const int pin) : PIN_(pin) {
     handler.SetPinMode(PIN_, OUTPUT);
+    handler.SetDigitalPinDefault(PIN_, LOW);
 }
 
 inline void LedLight::TernOn() const {
@@ -43,7 +43,6 @@ inline void LedLight::TernOn() const {
 inline void LedLight::TernOff() const {
     digitalWrite(PIN_, LOW);
 }
-
 }  // namespace component
 
 #endif
