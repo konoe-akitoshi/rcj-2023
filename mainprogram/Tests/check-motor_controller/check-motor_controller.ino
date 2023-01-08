@@ -14,7 +14,6 @@ void setup() {
 
 void loop() {
     float az = Reader.ReadFloat();
-    // NEXT: Serial.printlnがないとコンパイルエラーになる。原因を調査する
     Serial.println(az);
-    MotorController.Drive(az, 30, 0);
+    MotorController.Drive(az, 20, 0);
 }
