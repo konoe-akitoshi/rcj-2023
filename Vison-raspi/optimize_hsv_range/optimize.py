@@ -16,7 +16,7 @@ def generate_random():
   low = np.array([random.randint(-90, 179), rand255(), rand255()])
   high = np.array([low[0]+random.randint(1, 40), rand255(), rand255()])
 
-  return np.array([low + high])
+  return np.array([low, high])
 
 
 # range をちゃんとやる
@@ -25,7 +25,7 @@ def correct_range(hsv_range):
   h_low = hsv_range[0][0] % 180
   h_high = hsv_range[1][0] % 180
 
-  if (h_high - h_low) % 180 > 90: # range が 90 以下であってほしい
+  if (h_high - h_low) % 180 > 90: # h の range が 90 以下であってほしい
     h_low, h_high = h_high, h_low
   
   if h_low > h_high:
@@ -53,20 +53,19 @@ def correct_range(hsv_range):
 
 
 def color_detect(img, hsv_range):
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    
-    hsv_min, hsv_max = hsv_range
-    mask = cv2.inRange(hsv, hsv_min, hsv_max)
+  hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+  
+  hsv_min, hsv_max = hsv_range
+  mask = cv2.inRange(hsv, hsv_min, hsv_max)
 
-    return mask
+  return mask
 
 
-def calc_score(hsv_range):
-  global h, w
+def calc_score(hsv_range, sample_quantity, h = 300, w = 300):
   res = 0
   
-  for sample_num in range(1): # 10 に直す！
-    img = cv2.imread(f"photo_sample/sample{sample_num}.jpg")  
+  for sample_num in range(sample_quantity):
+    img = cv2.imread(f"photo_sample/sample{sample_num}.jpg")
     mask = color_detect(img, hsv_range)
     
     with open(f"target_mark/marks{sample_num}.txt", mode = "r") as f:
@@ -76,12 +75,12 @@ def calc_score(hsv_range):
     for i in range(h):
       for j in range(w):
         if mask[i][j]:
-          res += pxl_mark[i][j]
+          res += max(-1, pxl_mark[i][j]*10) # ここの重みは適宜調整する必要がありそう
   
   return res
 
 
-def main():
+def main(sample_quantity = 10):
   h, w = 300, 300
   
   cnd_ranges = [generate_random() for _ in range(25)]
@@ -91,7 +90,7 @@ def main():
   while time.time() - start_time < 50:
     nxt_cnd = [generate_random() for _ in range(int(10-time.time()))]
     
-    cnd_ranges.sort(key = lambda x: calc_score(x), reverse = True)
+    cnd_ranges.sort(key = lambda x: calc_score(x, sample_quantity, h, w), reverse = True)
     
     par = cnd_ranges[:5]
     
@@ -110,7 +109,7 @@ def main():
             chd[i][j] += random.randint(-3, 3)
       
       else: # 優秀な親を 3 つ選び、掛け合わせる
-        chd = np.zeros(2, 3)
+        chd = np.zeros((2, 3))
         for j in range(3):
           tmp = random.choice(par)
           for i in range(2):
@@ -124,11 +123,3 @@ def main():
   res = par[0]
   
   return res
-
-
-if __name__ == '__main__':
-  res = main()
-  
-  with open("hsv_range.txt", mode = "w") as f:
-    for row in res:
-      f.write(", ".join([str(v) for v in row]) + "\n")
