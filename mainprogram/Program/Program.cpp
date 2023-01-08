@@ -13,6 +13,7 @@
 #include <Adafruit_PCF8574.h>
 #include <VL6180X.h>
 #endif
+#include <array>
 #include "components/battery.hpp"
 #include "components/digital_reader.hpp"
 #include "components/dribbler.hpp"
@@ -55,11 +56,13 @@ const component::LedLight LineSensorLed(SetupHandler, raspberry_pi_pico::PIN27_G
 const component::DigitalReader StartSwitch(SetupHandler, raspberry_pi_pico::PIN04_GP02, INPUT_PULLUP);
 const component::DigitalReader GoalSwitch(SetupHandler, raspberry_pi_pico::PIN05_GP03, INPUT_PULLUP);
 
-const component::DigitalReader LineSensorD1(SetupHandler, raspberry_pi_pico::PIN21_GP16, INPUT_PULLUP);
-const component::DigitalReader LineSensorD2(SetupHandler, raspberry_pi_pico::PIN22_GP17, INPUT_PULLUP);
-const component::DigitalReader LineSensorD3(SetupHandler, raspberry_pi_pico::PIN24_GP18, INPUT_PULLUP);
-const component::DigitalReader LineSensorD4(SetupHandler, raspberry_pi_pico::PIN25_GP19, INPUT_PULLUP);
-const component::DigitalReader LineSensorD5(SetupHandler, raspberry_pi_pico::PIN26_GP20, INPUT_PULLUP);
+std::array<component::DigitalReader, 5> LineSensors = {
+    component::DigitalReader(SetupHandler, raspberry_pi_pico::PIN21_GP16, INPUT_PULLUP),
+    component::DigitalReader(SetupHandler, raspberry_pi_pico::PIN22_GP17, INPUT_PULLUP),
+    component::DigitalReader(SetupHandler, raspberry_pi_pico::PIN24_GP18, INPUT_PULLUP),
+    component::DigitalReader(SetupHandler, raspberry_pi_pico::PIN25_GP19, INPUT_PULLUP),
+    component::DigitalReader(SetupHandler, raspberry_pi_pico::PIN26_GP20, INPUT_PULLUP)
+};
 
 const component::DigitalReaderPCF8575 AUX1(SetupHandler, PCF8574, pcf8574::EX00, INPUT);
 const component::DigitalReaderPCF8575 AUX2(SetupHandler, PCF8574, pcf8574::EX01, INPUT);
@@ -385,7 +388,6 @@ void attacker() {
     MotorController.Drive(az, pw, -rotation);
 }
 
-// TODO: back_Line. の動く方向が壊れてるのでなおす
 void interruptHandler() {
     if (StartSwitch.IsHigh()) {  // スイッチがOFFなら何もしない。
         return;
@@ -394,81 +396,41 @@ void interruptHandler() {
     // Lineセンサが反応している間は繰り返す
     while (digitalRead(INTERRUPT_PIN) == HIGH) {
         // lineを踏んだセンサーを調べ、Lineセンサと反対方向へ移動する
-        if (LineSensorD1.IsHigh()) {
-            back_Line1(30);
-        } else if (LineSensorD2.IsHigh()) {
-            back_Line2(30);
-        } else if (LineSensorD3.IsHigh()) {
-            back_Line3(30);
-        } else if (LineSensorD4.IsHigh()) {
-            back_Line4(30);
+        float az = 0;
+        int front = 0;
+        if (LineSensors[0].IsHigh()) {
+            az = PI / 2;
+            front = 0;
+        } else if (LineSensors[1].IsHigh()) {
+            az = 0;
+            front = 1;
+        } else if (LineSensors[2].IsHigh()) {
+            az = -1 * PI / 2;
+            front = 2;
+        } else if (LineSensors[3].IsHigh()) {
+            az = PI;
+            front = 3;
         } else {
             LedR.TernOn();
+            continue;
+        }
+        const int back = (front + 2) % 4;
+        const int left = (front + 3) % 4;
+        const int right = (front + 1) % 4;
+        while(LineSensors[front].IsHigh() || LineSensors[4].IsHigh() || LineSensors[back].IsHigh()) {
+            if (LineSensors[left].IsHigh()) {
+                az += -3 * PI / 4;
+            } else if (LineSensors[right].IsHigh()) {
+                az += 3 * PI / 4;
+            } else {
+                az += PI;
+            }
+            MotorController.Drive(az, 30, 0);
         }
     }
 
-    MotorController.StopAll();  // ラインから外れたらモーターstop
+    MotorController.StopAll();
     return;
-}
-
-void back_Line1(const int power) {  // Lineセンサ1が反応しなくなるまで後ろに進む
-    float azimuth;
-    while (LineSensorD1.IsHigh() || LineSensorD5.IsHigh() || LineSensorD3.IsHigh()) {
-        if (LineSensorD4.IsHigh()) {
-            azimuth = PI * 3.0 / 4.0;  // 後ろ方向(1+4)をradianに変換
-        } else if (LineSensorD2.IsHigh()) {
-            azimuth = PI * 5.0 / 4.0;  // 後ろ方向(1+2)をradianに変換
-        } else {
-            azimuth = PI * 4.0 / 4.0;  // 後ろ方向(3)をradianに変換
-        }
-        MotorController.Drive(azimuth, power, 0);
-    }
-    MotorController.StopAll();
-}
-
-void back_Line2(const int power) {  // Lineセンサ2が反応しなくなるまで左に進む
-    float azimuth;
-    while (LineSensorD2.IsHigh() || LineSensorD5.IsHigh() || LineSensorD4.IsHigh()) {
-        if (LineSensorD1.IsHigh()) {
-            azimuth = PI * 5.0 / 4.0;  // 後ろ方向(2+1)を radian に変換
-        } else if (LineSensorD3.IsHigh()) {
-            azimuth = PI * 7.0 / 4.0;  // 後ろ方向(2+3)を radian に変換
-        } else {
-            azimuth = PI * 6.0 / 4.0;  // 後ろ方向(4)を radian に変換
-        }
-        MotorController.Drive(azimuth, power, 0);
-    }
-    MotorController.StopAll();
-}
-
-void back_Line3(const int power) {  // Lineセンサ3 が反応しなくなるまで前に進む
-    float azimuth;
-    while (LineSensorD3.IsHigh() || LineSensorD5.IsHigh() || LineSensorD1.IsHigh()) {
-        if (LineSensorD4.IsHigh()) {
-            azimuth = PI * 1.0 / 4.0;  // 後ろ方向(3+4)を radian に変換
-        } else if (LineSensorD2.IsHigh()) {
-            azimuth = PI * 7.0 / 4.0;  // 後ろ方向(3+2)を radian に変換
-        } else {
-            azimuth = PI * 0.0 / 4.0;  // 後ろ方向(1)を radian に変換
-        }
-        MotorController.Drive(azimuth, power, 0);
-    }
-    MotorController.StopAll();
-}
-
-void back_Line4(const int power) {  // Lineセンサ4 が反応しなくなるまで右に進む
-    float azimuth;
-    while (LineSensorD4.IsHigh() || LineSensorD5.IsHigh() || LineSensorD2.IsHigh()) {
-        if (LineSensorD3.IsHigh()) {
-            azimuth = PI * 1.0 / 4.0;  // 後ろ方向(4+3)を radian に変換
-        } else if (LineSensorD1.IsHigh()) {
-            azimuth = PI * 3.0 / 4.0;  // 後ろ方向(4+1)を radian に変換
-        } else {
-            azimuth = PI * 2.0 / 4.0;  // 後ろ方向(2)を radian に変換
-        }
-        MotorController.Drive(azimuth, power, 0);
-    }
-    MotorController.StopAll();
 }
 
 void forceOutOfBounds() {
