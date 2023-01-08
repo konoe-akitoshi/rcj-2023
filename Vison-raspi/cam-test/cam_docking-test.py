@@ -45,8 +45,8 @@ def color_detect(img):
     hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 
     # 赤色の HSV の値域
-    hsv_min_red = np.array([-5, 77, 153])
-    hsv_max_red = np.array([7, 153, 255])
+    hsv_min_red = np.array([-10, 85, 153])
+    hsv_max_red = np.array([10, 153, 255])
     mask_red = cv.inRange(hsv, hsv_min_red, hsv_max_red)
 
     # 黄色の HSV の値域
@@ -105,25 +105,25 @@ def send_data(target_data, target_type):
         x_data = int(target_data["center"][0])
         y_data = int(target_data["center"][1])
         w_data = int(target_data["width"])
-        h_data = int(target_data["height"])
         
-        uart.write(bytes(target_type))
-        uart.write(bytes(i_o))
-        uart.write(bytes(0))
-        uart.write(bytes(0))
-        uart.write(bytes(0))
-        uart.write(bytes(x_data & 0b00000000000111111))
-        uart.write(bytes((x_data & 0b0000111111000000)>>6))
-        uart.write(bytes(y_data & 0b00000000100111111))
-        uart.write(bytes((y_data & 0b0000111111000000)>>6))
-        uart.write(bytes(w_data & 0b00000000000111111))
-        uart.write(bytes((w_data & 0b0000111111000000)>>6))
-        uart.write(bytes(h_data & 0b00000000100111111))
-        uart.write(bytes((h_data & 0b0000111111000000)>>6))
+        exist = 1
+        
+        uart.write(target_type.to_bytes(1, "big"))
+        uart.write(exist.to_bytes(1, "big"))
+        uart.write(min(200, x_data).to_bytes(1, "big"))
+        uart.write(max(0, x_data-200).to_bytes(1, "big"))
+        uart.write(min(200, y_data).to_bytes(1, "big"))
+        uart.write(max(0, y_data-200).to_bytes(1, "big"))
+        uart.write(min(200, w_data).to_bytes(1, "big"))
+        uart.write(max(0, w_data-200).to_bytes(1, "big"))
 
     else:
-        for _ in range(12):
-            uart.write(bytes(0))
+        if target_type != 254:
+            target_type = 0
+        uart.write(target_type.to_bytes(1, "big"))
+        zero = 0
+        for _ in range(7):
+            uart.write(zero.to_bytes(1, "big"))
 
 
 # Enter される度にボール、ゴールの座標をターミナルに出力
@@ -132,7 +132,7 @@ def coordinate_test(ball_data, yellow_goal_data, blue_goal_data):
     if ball_data["found"]:
         ball_xy = ball_data["center"]
         ball_xy = [150 - val for val in ball_xy]
-        ball_xy[1] -= 23
+        ball_xy[1] -= 30
     else:
         ball_xy = [-1, -1]
     print(f"ball_data: {ball_xy}")
@@ -322,7 +322,7 @@ def main(debug_flag, send_flag):
 
 # 本体
 if __name__ == '__main__':
-    debug_flag = False
+    debug_flag = True
     send_flag = True
 
     if send_flag:
