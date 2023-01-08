@@ -23,7 +23,7 @@ inline Gyro::Gyro(SetupHandler& handler, const int speed) {
 }
 
 inline int Gyro::GetRotation() const {
-    static int prev = 255;
+    static int prev = 0;
     if (Serial1.available() == 0) {
         return prev;
     }

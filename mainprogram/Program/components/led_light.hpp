@@ -59,6 +59,7 @@ class LedLightPCF8574
 
 inline LedLight::LedLight(SetupHandler& handler, const int pin) : PIN_(pin) {
     handler.SetPinMode(PIN_, OUTPUT);
+    handler.SetDigitalPinDefault(PIN_, LOW);
 }
 
 inline void LedLight::TernOn() const {
@@ -73,6 +74,7 @@ inline LedLightPCF8574::LedLightPCF8574(SetupHandler& handler, Adafruit_PCF8574&
     : pcf8574_(pcf8574), PIN_(pin) {
     handler.SetCallback([this]() {
         pcf8574_.pinMode(PIN_, OUTPUT);
+        pcf8574_.digitalWrite(PIN_, LOW);
     });
 }
 

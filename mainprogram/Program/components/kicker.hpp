@@ -33,6 +33,7 @@ class Kicker
 
 inline Kicker::Kicker(SetupHandler& handler, const int pin) : PIN_(pin) {
     handler.SetPinMode(PIN_, OUTPUT);
+    handler.SetDigitalPinDefault(PIN_, LOW);
 }
 
 inline void Kicker::PushFront() const {

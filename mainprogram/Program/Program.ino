@@ -93,6 +93,7 @@ void setup() {
         Serial.println("ERROR not find PCF8574");
         while (true);
     }
+    Serial.println("DONE setup PCF8574");
 
     SetupHandler.Setup();
     Serial.println("DONE setup components");
@@ -104,7 +105,7 @@ void setup() {
     ToFSensor.setAddress(0x52);  // 好きなアドレスに設定
     ToFSensor.setTimeout(100);
     delay(10);
-    Serial.println("DONE setup ToF_front");
+    Serial.println("DONE setup ToFSensor");
 
     // Caution D29 -> Interrupt
     pinMode(INTERRUPT_PIN, INPUT_PULLUP);
@@ -201,16 +202,15 @@ void loop() {
     Serial.println(atan2(blue_goal.x, -blue_goal.y));
 #endif
 
-    SwitchLedR.TernOn();
-    SwitchLedG.TernOn();
-
     // Start Switch が Low でスタート、それ以外はロボット停止
     if (StartSwitch.IsHigh()) {
         MotorController.FreeAll();
         Dribbler.Stop();
         LineSensorLed.TernOff();
+        SwitchLedG.TernOff();
         return;
     }
+    SwitchLedG.TernOn();
 
     if (Battery.IsEmergency()) {
         Serial.print("!! Battery Low !!  Voltage: ");
