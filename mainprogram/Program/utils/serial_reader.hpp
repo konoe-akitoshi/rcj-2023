@@ -1,5 +1,5 @@
-#ifndef TESTS_UTIL_READER_HPP
-#define TESTS_UTIL_READER_HPP
+#ifndef UTILS_READER_HPP
+#define UTILS_READER_HPP
 
 #ifdef LOCAL_INCLUDE
 #include "../../local/arduino_deps.hpp"

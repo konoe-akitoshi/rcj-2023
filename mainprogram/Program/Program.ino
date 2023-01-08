@@ -18,13 +18,13 @@
 #include "pin.hpp"
 #include "types/vector2.hpp"
 
+#if DEBUG_MODE
+#include "utils/printer.hpp"
+#endif
+
 void keeper();
 void attacker();
 void interruptHandler();
-void back_Line1(const int power);
-void back_Line2(const int power);
-void back_Line3(const int power);
-void back_Line4(const int power);
 void forceOutOfBounds();
 
 constexpr int INTERRUPT_PIN = raspberry_pi_pico::PIN34_GP28;
@@ -87,7 +87,10 @@ enum class GoalType
 } target_goal_type;
 
 void setup() {
-    Serial.begin(9600);
+    while (Serial) {
+        Serial.begin(9600);
+        delay(100);
+    }
     Serial.println("DONE open Serial(9600)");
 
     const bool pcf8574_status = PCF8574.begin(0x27, &Wire);
@@ -171,22 +174,13 @@ void loop() {
     ball_front = ToFSensor.readRangeSingleMillimeters();
 
 #if DEBUG_MODE
-    Serial.print("ball_pos: ");
-    Serial.print(ball_pos.x);
-    Serial.print(", ");
-    Serial.print(ball_pos.y);
-    Serial.print(" / tof_front: ");
-    Serial.print(ball_front);
-    Serial.print(" / yellow_goal: ");
-    Serial.print(yellow_goal.x);
-    Serial.print(", ");
-    Serial.print(yellow_goal.y);
-    Serial.print(" / blue_goal: ");
-    Serial.print(blue_goal.x);
-    Serial.print(", ");
-    Serial.print(blue_goal.y);
-    Serial.print(" / tan: ");
-    Serial.println(atan2(blue_goal.x, -blue_goal.y));
+    util::PrintVector("ball_pos", ball_pos, false);
+    Serial.print(" / ");
+    util::PrintInt("ball_front", ball_front, false);
+    Serial.print(" / ");
+    util::PrintVector("yellow_goal", yellow_goal);
+    Serial.print(" / ");
+    util::PrintVector("blue_goal", blue_goal);
 #endif
 
     // Start Switch が Low でスタート、それ以外はロボット停止
@@ -292,8 +286,7 @@ void attacker() {
     // NEXT: velocity導入されたら、それを使うようにする
     const auto ball_dist_diff = ball_dist - pre_ball_dist;
 #if DEBUG_MODE
-    Serial.print("[attacker] pre_ball_dist: ");
-    Serial.println(pre_ball_dist);
+    util::PrintFloat("[attacker] ball_dist_diff: ", ball_dist_diff);
 #endif
 
     if (exist_ball == false) {

@@ -43,11 +43,16 @@ extern uint32_t millis();
 class SerialClass
 {
   public:
-    void begin(const uint32_t speed);
-    int available(void);
-    int read(void);
-    size_t write(const uint8_t c);
-    size_t write(const char* str);
+    SerialClass();
+    void begin(unsigned long baud);
+    void begin(unsigned long baud, uint16_t config);
+    void end();
+    int read();
+    int available();
+    void flush();
+    size_t write(uint8_t c);
+    size_t write(const uint8_t *p, size_t len);
+    operator bool();
     void print(const char* msg);
     void print(const int msg);
     void println(const char* msg);
