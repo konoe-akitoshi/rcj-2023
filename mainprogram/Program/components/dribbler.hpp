@@ -33,8 +33,10 @@ class Dribbler
 
 inline Dribbler::Dribbler(SetupHandler& handler, const int pin_pwm) : PIN_(pin_pwm) {
     handler.SetPinMode(PIN_, OUTPUT);
-    // ↓なんかコメントアウトされてた、よくわからないのでコメントアウトしておく。
-    // analogWriteFrequency(DR1PWM, 37000);
+    handler.SetCallback([]() {
+        // NOTE: プログラム全体のPWMの周波数を変えるみたい。複数のPWM周波数を使うときはその度に変更すること
+        analogWriteFreq(37000);
+    });
 }
 
 inline void Dribbler::Start(const int power) const {
