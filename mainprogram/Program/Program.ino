@@ -2,6 +2,7 @@
 // リリース: 0
 #define DEBUG_MODE 1
 
+#include <Adafruit_PCF8574.h>
 #include <VL6180X.h>
 #include "components/battery.hpp"
 #include "components/digital_reader.hpp"
@@ -28,6 +29,7 @@ void forceOutOfBounds();
 constexpr int INTERRUPT_PIN = raspberry_pi_pico::PIN34_GP28;
 
 component::SetupHandler SetupHandler;
+Adafruit_PCF8574 PCF8574;
 
 // Low limit voltage 1.1*12 = 13.2
 // Mi-NH なら 13.0, Li-po なら 13.5 (Li-po は過放電するので注意！)
@@ -50,8 +52,8 @@ const component::DigitalReader LineSensorD3(SetupHandler, raspberry_pi_pico::PIN
 const component::DigitalReader LineSensorD4(SetupHandler, raspberry_pi_pico::PIN25_GP19, INPUT_PULLUP);
 const component::DigitalReader LineSensorD5(SetupHandler, raspberry_pi_pico::PIN26_GP20, INPUT_PULLUP);
 
-const component::DigitalReader AUX1(SetupHandler, pcf8574::EX00, INPUT);
-const component::DigitalReader AUX2(SetupHandler, pcf8574::EX01, INPUT);
+const component::DigitalReaderPCF8575 AUX1(SetupHandler, PCF8574, pcf8574::EX00, INPUT);
+const component::DigitalReaderPCF8575 AUX2(SetupHandler, PCF8574, pcf8574::EX01, INPUT);
 
 const component::MotorController MotorController(SetupHandler, raspberry_pi_pico::PIN14_GP10, raspberry_pi_pico::PIN15_GP11, 0x0A);
 const component::Kicker Kicker(SetupHandler, raspberry_pi_pico::PIN16_GP12);
@@ -82,6 +84,12 @@ enum class GoalType
 void setup() {
     Serial.begin(9600);
     Serial.println("DONE open Serial(9600)");
+
+    const bool pcf8574_status = PCF8574.begin(0x27, &Wire);
+    if (pcf8574_status == false) {
+        Serial.println("ERROR not find PCF8574");
+        while (true);
+    }
 
     SetupHandler.Setup();
     Serial.println("DONE setup components");
