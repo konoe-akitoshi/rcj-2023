@@ -21,7 +21,7 @@
 #include "components/kicker.hpp"
 #include "components/led_light.hpp"
 #include "components/motor_controller.hpp"
-#include "components/open_mv.hpp"
+#include "components/open_cv.hpp"
 #include "components/setup_handler.hpp"
 #include "components/xbee.hpp"
 #include "pin.hpp"
@@ -71,7 +71,7 @@ const component::MotorController MotorController(SetupHandler, raspberry_pi_pico
 const component::Kicker Kicker(SetupHandler, raspberry_pi_pico::PIN16_GP12);
 const component::Dribbler Dribbler(SetupHandler, raspberry_pi_pico::PIN17_GP13);
 const component::Gyro Gyro(SetupHandler, 115200);
-component::OpenMV OpenMV(SetupHandler, 19200);
+component::OpenCV OpenCV(SetupHandler, 19200);
 
 VL6180X ToFSensor;
 
@@ -142,15 +142,15 @@ void setup() {
 }
 
 void loop() {
-    OpenMV.WaitData();
+    OpenCV.WaitData();
     rotation = Gyro.GetRotation();
 
-    exist_ball = OpenMV.GetBallCount() != 0;
-    ball_pos = OpenMV.GetBallPosition();
-    exist_blue_goal = OpenMV.GetBlueGoalCount() != 0;
-    blue_goal = OpenMV.GetBlueGoalPosition();
-    exist_yellow_goal = OpenMV.GetYellowGoalCount() != 0;
-    yellow_goal = OpenMV.GetYellowGoalPosition();
+    exist_ball = OpenCV.GetBallExistence();
+    ball_pos = OpenCV.GetBallPosition();
+    exist_blue_goal = OpenCV.GetBlueGoalExistence();
+    blue_goal = OpenCV.GetBlueGoalPosition();
+    exist_yellow_goal = OpenCV.GetYellowGoalExistence();
+    yellow_goal = OpenCV.GetYellowGoalPosition();
 
     target_goal_type = GoalSwitch.IsHigh() ? GoalType::Blue : GoalType::Yellow;
 
