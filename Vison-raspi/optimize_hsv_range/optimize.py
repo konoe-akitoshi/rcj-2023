@@ -3,6 +3,7 @@ import numpy as np
 
 import random
 import time
+import os
 
 
 # たくさん出てくるので
@@ -123,3 +124,29 @@ def main(sample_quantity = 10):
   res = par[0]
   
   return res
+
+
+if __name__ == '__main__':
+  
+  if not (os.path.isdir("optimized_blob")):
+    os.mkdir("optimized_blob")
+  
+  res = main(6)
+  print(calc_score(res, 6))
+  
+  for sample_num in range(6):
+    
+    img = cv2.imread(f"photo_sample/sample{sample_num}.jpg")
+    
+    mask = color_detect(img, res)
+    
+    cv2.imwrite(f"optimized_blob/result{sample_num}.jpg", mask)
+  
+  
+  hand = np.array([[-10, 85, 153], [10, 153, 255]])
+  
+  print(calc_score(hand, 6))
+  
+  with open("hsv_range.txt", mode = "w") as f:
+    for row in res:
+      f.write(", ".join([str(v) for v in row]) + "\n")
