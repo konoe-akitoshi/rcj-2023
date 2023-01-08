@@ -72,6 +72,8 @@ Vector2 yellow_goal;
 bool exist_ball;
 bool exist_yellow_goal;
 bool exist_blue_goal;
+int blue_goal_width;
+int yellow_goal_width;
 int ball_front;
 int rotation;
 // Vector2 velocity; // NEXT: impl
@@ -140,8 +142,10 @@ void loop() {
     ball_pos = OpenCV.GetBallPosition();
     exist_blue_goal = OpenCV.GetBlueGoalExistence();
     blue_goal = OpenCV.GetBlueGoalPosition();
+    blue_goal_width = OpenCV.GetBlueGoalWidth();
     exist_yellow_goal = OpenCV.GetYellowGoalExistence();
     yellow_goal = OpenCV.GetYellowGoalPosition();
+    yellow_goal_width = OpenCV.GetYellowGoalWidth();
 
     target_goal_type = GoalSwitch.IsHigh() ? GoalType::Blue : GoalType::Yellow;
 
@@ -153,31 +157,14 @@ void loop() {
     //    |         |          |         |
     //    |_________|          |_________|
     //             +y              -y
-    //  (なんか変換方法おかしい気がするので、実機と合わせて確認しながら調整する)
-    //  (多分、物体によって画像認識の誤差があるので個別調整が必要。だけどGoalTypeによって値が違うのが謎)
-    //  (送られてくる座標の取り方が間違ってるかも、いずれにしても変換後は変わらない)
-    //  (それと、おそらくrotationも考慮して変換後の向きを調整しないといけない)
     if (exist_ball) {
-        ball_pos = Vector2(156, 67) - ball_pos;
+        ball_pos = Vector2(150, 127) - ball_pos;
     }
-    if (target_goal_type == GoalType::Blue) {
-        if (exist_yellow_goal) {
-            yellow_goal.x = 154 - yellow_goal.x;
-            yellow_goal.y = yellow_goal.y - 184;
-        }
-        if (exist_blue_goal) {
-            blue_goal.x = 151 - blue_goal.x;
-            blue_goal.y = blue_goal.y - 58;
-        }
-    } else {  // GoalType::Yellow
-        if (exist_yellow_goal) {
-            yellow_goal.x = 151 - yellow_goal.x;
-            yellow_goal.y = yellow_goal.y - 63;
-        }
-        if (exist_blue_goal) {
-            blue_goal.x = 156 - blue_goal.x;
-            blue_goal.y = blue_goal.y - 184;
-        }
+    if (exist_yellow_goal) {
+        yellow_goal = Vector2(150, 127) - yellow_goal;
+    }
+    if (exist_blue_goal) {
+        blue_goal = Vector2(150, 127) - blue_goal;
     }
 
     ball_dist = Vector2::Norm(ball_pos);
@@ -230,7 +217,7 @@ void loop() {
 
     LineSensorLed.TernOn();
 
-    if (exist_ball == false) {
+    if (exist_ball == false && ball_front == 255) {
         MotorController.StopAll();
         return;
     }
@@ -256,7 +243,7 @@ void keeper() {
     const auto goal = target_goal_type == GoalType::Blue ? yellow_goal : blue_goal;
     const auto exist_goal = target_goal_type == GoalType::Blue ? exist_yellow_goal : exist_blue_goal;
 
-    if (exist_goal == false) {
+    if (exist_goal == false || exist_ball == false) {
         // ゴールから離れているのでゴールまで後進する
         MotorController.Drive(3 * PI / 2, 100, -rotation);
         return;
@@ -291,7 +278,7 @@ void keeper() {
 
     // あとはゴール前でボールがゴールに入らないように守る
     // だたし、1次元的な動きのみはルール違反になるので、ボールとの距離をみて少し前後にも動くようにする
-    const auto dir = Vector2(ball_pos.x, goal.y + 5 + max(0, 0.5 * (ball_dist - 20)));
+    const auto dir = Vector2(ball_pos.x, 5 + max(0, 0.5 * (ball_dist - 100)));
     MotorController.Drive(Vector2::Angle(dir), 100, -rotation);
 }
 
@@ -299,6 +286,7 @@ void attacker() {
     static float pre_ball_dist = 0;
 
     const auto goal = target_goal_type == GoalType::Blue ? blue_goal : yellow_goal;
+    const auto goal_width = target_goal_type == GoalType::Blue ? blue_goal_width : yellow_goal_width;
     const auto exist_goal = target_goal_type == GoalType::Blue ? exist_blue_goal : exist_yellow_goal;
 
     // NEXT: velocity導入されたら、それを使うようにする
@@ -307,6 +295,12 @@ void attacker() {
     Serial.print("[attacker] pre_ball_dist: ");
     Serial.println(pre_ball_dist);
 #endif
+
+    if (exist_ball == false) {
+        // ボールが見えていないがこの時 ball_front < 255 なので、前方に直進する
+        MotorController.Drive(PI / 2, 30, -rotation);
+        return;
+    }
 
     if (ball_pos.y > 10 || abs(ball_pos.x) > 30) {
         // ボールから離れてるので、近づく
@@ -354,7 +348,9 @@ void attacker() {
         return;
     }
 
-    if (goal.y <= 33 && abs(goal.x) < 17) {
+    const float goal_center1 = float(goal.x - goal_width) / 2;
+    const float goal_center2 = float(goal.x + goal_width) / 2;
+    if (goal.y < 120 && goal_center1 * goal_center2 < 0 && min(abs(goal_center1), abs(goal_center2)) > 25) {
         // ゴールにボールを蹴れる距離にいるので、ボールを蹴る
         Dribbler.Stop();
         Kicker.PushFront();
@@ -364,10 +360,10 @@ void attacker() {
         return;
     }
 
-    if (goal.y < 5) {
+    if (goal.y < 80) {
         // ゴール横にいるので、ゴール前の角に移動するように動く
         // 機体がゴール前の角にいる時の goal の座標を target とすると、進む方向のベクトル dir は dir = goal - target で求まる
-        const auto target = goal.x < 0 ? Vector2(-10, 5) : Vector2(10, 5);
+        const auto target = goal.x < 0 ? Vector2(-50, 95) : Vector2(50, 95);
         const auto dir = goal - target;
         MotorController.Drive(Vector2::Angle(dir), 100, -rotation);
         return;
