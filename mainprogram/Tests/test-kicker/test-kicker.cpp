@@ -7,7 +7,7 @@
 
 component::SetupHandler Handler;
 const util::SerialReader Reader;
-const component::Kicker Kicker(Handler, raspberry_pi_pico::PIN16_GP12);
+const component::Kicker Kicker(Handler, PIN_KICKER);
 
 void setup() {
     Serial.begin(9600);
