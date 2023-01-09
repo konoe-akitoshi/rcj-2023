@@ -14,7 +14,7 @@ def rand255():
 # range を random に生成
 def generate_random():
 
-  low = np.array([random.randint(-90, 179), rand255(), rand255()])
+  low = np.array([random.randint(-30, 30), rand255(), rand255()])
   high = np.array([low[0]+random.randint(1, 40), rand255(), rand255()])
 
   return np.array([low, high])
@@ -131,21 +131,21 @@ if __name__ == '__main__':
   if not (os.path.isdir("optimized_blob")):
     os.mkdir("optimized_blob")
   
-  res = main(6)
-  print(calc_score(res, 6))
+  res = main()
+  # print(calc_score(res, 6))
   
-  for sample_num in range(6):
+  # for sample_num in range(6):
     
-    img = cv2.imread(f"photo_sample/sample{sample_num}.jpg")
+  #   img = cv2.imread(f"photo_sample/sample{sample_num}.jpg")
     
-    mask = color_detect(img, res)
+  #   mask = color_detect(img, res)
     
-    cv2.imwrite(f"optimized_blob/result{sample_num}.jpg", mask)
+  #   cv2.imwrite(f"optimized_blob/result{sample_num}.jpg", mask)
   
   
   hand = np.array([[-10, 85, 153], [10, 153, 255]])
   
-  print(calc_score(hand, 6))
+  # print(calc_score(hand, 6))
   
   with open("hsv_range.txt", mode = "w") as f:
     for row in res:
