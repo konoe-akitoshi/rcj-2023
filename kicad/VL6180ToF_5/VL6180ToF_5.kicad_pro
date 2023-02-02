@@ -380,7 +380,7 @@
       "idf": "",
       "netlist": "",
       "specctra_dsn": "VL6180ToF_5.dsn",
-      "step": "",
+      "step": "VL6180ToF_5.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""

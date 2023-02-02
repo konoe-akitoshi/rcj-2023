@@ -416,7 +416,7 @@
       "idf": "",
       "netlist": "../../../../../Program Files/KiCad/6.0/",
       "specctra_dsn": "main.dsn",
-      "step": "",
+      "step": "main.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""
