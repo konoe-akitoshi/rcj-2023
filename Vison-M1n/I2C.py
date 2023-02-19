@@ -11,6 +11,7 @@ def on_receive(data):
 
 
 def on_transmit():
+    global count
     count = count + 1
     print("on_transmit, send:", count)
     return "12345"[:(count) % 5 + 1]
