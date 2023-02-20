@@ -1,8 +1,10 @@
 #ifndef MODULE_CORE_DRIBBLER_HPP
 #define MODULE_CORE_DRIBBLER_HPP
 
-#ifdef LOCAL_INCLUDE
-#include "../../../local/arduino_deps.hpp"
+#ifdef WITHOUT_ARDUINO_ENVIRONMENT
+#include "deps/arduino.hpp"
+#else
+#include <Arduino.h>
 #endif
 
 namespace module

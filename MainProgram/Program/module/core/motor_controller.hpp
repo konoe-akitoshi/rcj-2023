@@ -1,8 +1,8 @@
 #ifndef MODULE_CORE_MOTOR_CONTOROLER2_HPP
 #define MODULE_CORE_MOTOR_CONTOROLER2_HPP
 
-#ifdef LOCAL_INCLUDE
-#include "../../../local/wire.hpp"
+#ifdef WITHOUT_ARDUINO_ENVIRONMENT
+#include "deps/wire.hpp"
 #else
 #include <Wire.h>
 #endif

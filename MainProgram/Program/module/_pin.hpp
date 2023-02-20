@@ -1,5 +1,5 @@
-#ifndef _PIN_HPP
-#define _PIN_HPP
+#ifndef MODULE__PIN_HPP
+#define MODULE__PIN_HPP
 
 namespace raspberry_pi_pico
 {
@@ -29,7 +29,7 @@ constexpr int PIN29_GP22 = 22;
 constexpr int PIN31_GP26 = 26;
 constexpr int PIN32_GP27 = 27;
 constexpr int PIN34_GP28 = 28;
-}  // namespace pin_raspberry_pi_pico
+}  // namespace raspberry_pi_pico
 
 namespace pcf8574
 {

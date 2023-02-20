@@ -1,12 +1,14 @@
-#ifndef MODULE_CORE_OPEN_VM_HPP
-#define MODULE_CORE_OPEN_VM_HPP
-
-#ifdef LOCAL_INCLUDE
-#include "../../../local/arduino_deps.hpp"
-#endif
+#ifndef MODULE_CORE_OPEN_CV_HPP
+#define MODULE_CORE_OPEN_CV_HPP
 
 #include <array>
 #include "../vector2.hpp"
+
+#ifdef WITHOUT_ARDUINO_ENVIRONMENT
+#include "deps/arduino.hpp"
+#else
+#include <Arduino.h>
+#endif
 
 namespace module
 {
@@ -131,7 +133,6 @@ class OpenCV
         return Serial2.read();
     }
 };
-
 }  // namespace module
 
 #endif

@@ -2,11 +2,12 @@
 // リリース: 0
 #define DEBUG_MODE 1
 
-#ifdef LOCAL_INCLUDE
-#include "../local/vl6180x.hpp"
+#ifdef WITHOUT_ARDUINO_ENVIRONMENT
+#include "module/core/deps/vl6180x.hpp"
 #else
 #include <VL6180X.h>
 #endif
+
 #include <array>
 #include "module/_pin.hpp"
 #include "module/battery.hpp"

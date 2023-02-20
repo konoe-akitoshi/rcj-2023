@@ -4,12 +4,6 @@
 #include "core/led_light.hpp"
 #include "_pin.hpp"
 
-#ifdef LOCAL_INCLUDE
-#include "../../local/Adafruit_PCF8574.hpp"
-#else
-#include <Adafruit_PCF8574.h>
-#endif
-
 Adafruit_PCF8574 PCF8574;
 
 const module::LedLightPCF8574 LedR(PCF8574, pcf8574::EX07, LOW, HIGH);

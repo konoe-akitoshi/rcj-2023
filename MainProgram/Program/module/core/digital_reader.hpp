@@ -1,9 +1,9 @@
 #ifndef MODULE_CORE_DIGITAL_READER_HPP
 #define MODULE_CORE_DIGITAL_READER_HPP
 
-#ifdef LOCAL_INCLUDE
-#include "../../../local/Adafruit_PCF8574.hpp"
-#include "../../../local/arduino_deps.hpp"
+#ifdef WITHOUT_ARDUINO_ENVIRONMENT
+#include "deps/Adafruit_PCF8574.hpp"
+#include "deps/arduino.hpp"
 #else
 #include <Adafruit_PCF8574.h>
 #endif
