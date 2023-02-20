@@ -12,19 +12,24 @@ void setup() {
 }
 
 void loop() {
-  uint8_t addr = 0x24;
+  uint8_t addr1 = 0x24;
+  uint8_t addr2 = 0x25;
   uint8_t data1;
   uint8_t data2;
 
-  Wire.requestFrom(addr, 1);
-  // Serial.println("I2C...n");
-
+  Wire.requestFrom(addr1, 1);
   while (Wire.available()) {  // 要求より短いデータが来る可能性あり
-    // Serial.println("I2C...");
     data1 = Wire.read();
-    // data2 = Wire.read();
+    Serial.print("data1 = ");
     Serial.print(data1);
-    // Serial.print(data2);
+    Serial.println();
+  }
+
+  Wire.requestFrom(addr2, 1);
+  while (Wire.available()) {  // 要求より短いデータが来る可能性あり
+    data2 = Wire.read();
+    Serial.print("data2 = ");
+    Serial.print(data2);
     Serial.println();
   }
 
