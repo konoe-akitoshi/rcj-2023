@@ -1,4 +1,4 @@
-20683426128492184
+20694146595053499
 0.main.robot
 AE-BNO055
 
@@ -188,6 +188,13 @@ LED handsolder
 0
 2
 2
+0.main.robot
+M1n
+
+
+0
+0
+0
 0.main.robot
 MDBT40
 
@@ -58316,6 +58323,27 @@ Yellow 5381 Series LED
 0
 2
 2
+M1n
+121991190
+1-2199119-0-4
+Connector
+0
+69
+69
+M1n
+M1n-break
+
+
+0
+0
+0
+M1n
+SMTWE2025MTJ
+
+C2928178
+0
+4
+1
 Module
 A20_OLINUXINO_LIME2
 A20 Olinuxino LIME2, 1.2GHz, 512-1024MB RAM, Micro-SD, NAND or eMMC, 1000Mbit Ethernet
@@ -86855,3 +86883,10 @@ SOIC SO
 0
 8
 8
+rp2040_stamp
+RP2040_Stamp_SMD
+
+
+0
+40
+40
