@@ -37,6 +37,10 @@ public:
     size_t requestFrom(uint8_t address, size_t quantity);
     size_t write(uint8_t data);
     size_t write(const uint8_t * data, size_t quantity);
+    int available(void);
+    int read(void);
+    int peek(void);
+    void flush(void);
     void onReceive(void(*)(int));
     void onRequest(void(*)(void));
     inline size_t write(unsigned long n);

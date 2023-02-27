@@ -15,7 +15,7 @@ class MotorController
     /**
      * @param address the address of the I2C slave for transmission processing
      */
-    explicit MotorController(const int sda, const int scl, const int address)
+    explicit constexpr MotorController(const int sda, const int scl, const int address)
         : SDA_(sda), SCL_(scl), ADDRESS_(address) {
     }
 
@@ -78,33 +78,27 @@ class MotorController
             x[i] /= x_max;
         }
 
-        // NOTE: 受け取り側が6で受け取るようになってるので、配列のサイズは6にすること
-        uint8_t motorPower[6] = {0, 0, 0, 0, 0, 0};
+        uint8_t motorPower[4] = {0};
         for (int i = 0; i < 4; ++i) {
             motorPower[i] = FormatPower_(x[i] * power);
         }
-        Transmit_(motorPower, 6);
+        Transmit_(motorPower, 4);
     }
 
     /**
      * Stop all motors.
      */
     void StopAll(void) const {
-        // NOTE: 受け取り側が6で受け取るようになってるので、配列のサイズは6にすること
-        uint8_t motorPower[6];
-        for (int i = 0; i < 6; ++i) {
-            motorPower[i] = 0b10000000;
-        }
-        Transmit_(motorPower, 6);
+        static constexpr uint8_t motorPower[4] = {0b10000000, 0b10000000, 0b10000000, 0b10000000};
+        Transmit_(motorPower, 4);
     }
 
     /**
      * Free all motors.
      */
     void FreeAll() const {
-        // NOTE: 受け取り側が6で受け取るようになってるので、配列のサイズは6にすること
-        uint8_t motorPower[6] = {0, 0, 0, 0, 0, 0};
-        Transmit_(motorPower, 6);
+        static constexpr uint8_t motorPower[4] = {0, 0, 0, 0};
+        Transmit_(motorPower, 4);
     }
 
   private:
