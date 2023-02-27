@@ -16,7 +16,7 @@ class Battery
      * @param pin pin number.
      * @param limit the limit of voltage (unit is V)
      */
-    explicit Battery(const int pin, const float limit) : PIN_(pin), LIMIT_(limit) {
+    explicit constexpr Battery(const int pin, const float limit) : PIN_(pin), LIMIT_(limit) {
     }
 
     /**

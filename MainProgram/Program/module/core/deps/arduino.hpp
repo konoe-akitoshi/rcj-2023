@@ -24,6 +24,8 @@ typedef uint8_t pin_size_t;
 #define min(a, b) ((a) < (b) ? (a) : (b))
 #define max(a, b) ((a) > (b) ? (a) : (b))
 
+long random(long howbig);
+
 /* IO */
 extern void pinMode(uint8_t pin, uint8_t mode);
 extern void digitalWrite(uint8_t pin, uint8_t val);
@@ -37,6 +39,19 @@ void detachInterrupt(uint32_t pin);
 
 extern void delay(uint32_t dwMs);
 extern uint32_t millis();
+
+#define digitalPinToPort(pin)       (0)
+#define digitalPinToBitMask(pin)    (1UL << (pin))
+#define digitalPinToTimer(pin)      (0)
+#define digitalPinToInterrupt(pin)  (pin)
+#define NOT_AN_INTERRUPT            (-1)
+#define portOutputRegister(port)    ((volatile uint32_t*) sio_hw->gpio_out)
+#define portInputRegister(port)     ((volatile uint32_t*) sio_hw->gpio_in)
+#define portModeRegister(port)      ((volatile uint32_t*) sio_hw->gpio_oe)
+#define digitalWriteFast(pin, val)  (val ? sio_hw->gpio_set = (1 << pin) : sio_hw->gpio_clr = (1 << pin))
+#define digitalReadFast(pin)        ((1 << pin) & sio_hw->gpio_in)
+#define sei() interrupts()
+#define cli() noInterrupts()
 
 /* class */
 // 存在しないクラス、適当に作った。

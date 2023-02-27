@@ -33,8 +33,6 @@ void attacker();
 void interruptHandler();
 void forceOutOfBounds();
 
-constexpr int INTERRUPT_PIN = raspberry_pi_pico::PIN34_GP28;
-
 VL6180X ToFSensor;
 
 Vector2 ball_pos;
@@ -83,7 +81,7 @@ void setup() {
     SETUP_MODULE(SwitchLedG);
     SETUP_MODULE(StartSwitch);
     SETUP_MODULE(LineSensorLed);
-    LineSensors_Seup();
+    SETUP_MODULE(LineSensors);
 
     Serial.println("DONE setup all modules");
 
@@ -96,10 +94,10 @@ void setup() {
     delay(10);
     Serial.println("DONE setup ToFSensor");
 
-    pinMode(INTERRUPT_PIN, INPUT_PULLUP);
-    attachInterrupt(INTERRUPT_PIN, interruptHandler, RISING);
+    const int interrupt_pin = LineSensors.GetInterruptPin();
+    attachInterrupt(interrupt_pin, interruptHandler, RISING);
     Serial.print("DONE attach interrupt to pin(RISING): ");
-    Serial.println(INTERRUPT_PIN);
+    Serial.println(interrupt_pin);
 
     // Dribbler 動作テスト
     Dribbler.Start(100);
@@ -333,38 +331,23 @@ void attacker() {
 }
 
 void interruptHandler() {
-    if (StartSwitch.IsHigh()) {  // スイッチがOFFなら何もしない。
+    if (StartSwitch.IsHigh()) {
+        // スイッチがOFFなら何もしない。
         return;
     }
 
-    // Lineセンサが反応している間は繰り返す
-    while (digitalRead(INTERRUPT_PIN) == HIGH) {
-        // lineを踏んだセンサーを調べ、Lineセンサと反対方向へ移動する
-        float az = 0;
-        int front = 0;
-        if (LineSensors[0].IsHigh()) {
-            az = PI / 2;
-            front = 0;
-        } else if (LineSensors[1].IsHigh()) {
-            az = 0;
-            front = 1;
-        } else if (LineSensors[2].IsHigh()) {
-            az = -1 * PI / 2;
-            front = 2;
-        } else if (LineSensors[3].IsHigh()) {
-            az = PI;
-            front = 3;
-        } else {
-            LedR.TernOn();
+    while (LineSensors.IsLineDetected()) {
+        // ラインと反対方向へ移動する
+        const auto data = LineSensors.CalculateLineAzimut();
+        float az = data.first;
+        if (az > 10) {
             continue;
         }
-        const int back = (front + 2) % 4;
-        const int left = (front + 3) % 4;
-        const int right = (front + 1) % 4;
-        while (LineSensors[front].IsHigh() || LineSensors[4].IsHigh() || LineSensors[back].IsHigh()) {
-            if (LineSensors[left].IsHigh()) {
+        const auto index = data.second;
+        while (LineSensors[index.front].IsHigh() || LineSensors[index.center].IsHigh() || LineSensors[index.back].IsHigh()) {
+            if (LineSensors[index.left].IsHigh()) {
                 az += -3 * PI / 4;
-            } else if (LineSensors[right].IsHigh()) {
+            } else if (LineSensors[index.right].IsHigh()) {
                 az += 3 * PI / 4;
             } else {
                 az += PI;
