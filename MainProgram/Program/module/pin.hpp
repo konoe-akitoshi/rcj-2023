@@ -1,5 +1,5 @@
-#ifndef MODULE__PIN_HPP
-#define MODULE__PIN_HPP
+#ifndef MODULE_PIN_HPP
+#define MODULE_PIN_HPP
 
 namespace raspberry_pi_pico
 {

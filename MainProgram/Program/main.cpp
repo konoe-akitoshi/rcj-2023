@@ -9,7 +9,7 @@
 #endif
 
 #include <array>
-#include "module/_pin.hpp"
+#include "module/pin.hpp"
 #include "module/battery.hpp"
 #include "module/dribbler.hpp"
 #include "module/gyro.hpp"

@@ -3,6 +3,6 @@
 
 #include "core/gyro.hpp"
 
-const module::Gyro Gyro(115200);
+constexpr module::Gyro Gyro(115200);
 
 #endif

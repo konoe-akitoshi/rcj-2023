@@ -15,7 +15,7 @@ class Dribbler
     /**
      * @param pin_pwm PWM pin number.
      */
-    explicit Dribbler(const int pin_pwm) : PIN_PWM_(pin_pwm) {
+    explicit constexpr Dribbler(const int pin_pwm) : PIN_PWM_(pin_pwm) {
     }
 
     void Setup(void) const {

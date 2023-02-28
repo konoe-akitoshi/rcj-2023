@@ -1,7 +1,7 @@
 #ifndef MODULE_LINE_SENSOR_HPP
 #define MODULE_LINE_SENSOR_HPP
 
-#include "_pin.hpp"
+#include "pin.hpp"
 #include "core/line_sensors.hpp"
 
 constexpr module::LineSensors LineSensors(
