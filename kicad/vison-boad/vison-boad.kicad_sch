@@ -4352,7 +4352,7 @@
     (in_bom yes) (on_board yes)
     (uuid 432125bd-57fb-4d04-a3f3-c4c3c8c4d863)
     (property "Reference" "SW2" (id 0) (at 129.54 102.87 0))
-    (property "Value" "RST" (id 1) (at 129.54 103.0224 0)
+    (property "Value" "RESET" (id 1) (at 129.54 103.0224 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Footprint" "Button_Switch_SMD:Panasonic_EVQPUJ_EVQPUA" (id 2) (at 129.54 106.68 0)
@@ -5763,7 +5763,7 @@
       (reference "SW1") (unit 1) (value "BOOTSET") (footprint "Button_Switch_SMD:Panasonic_EVQPUJ_EVQPUA")
     )
     (path "/432125bd-57fb-4d04-a3f3-c4c3c8c4d863"
-      (reference "SW2") (unit 1) (value "RST") (footprint "Button_Switch_SMD:Panasonic_EVQPUJ_EVQPUA")
+      (reference "SW2") (unit 1) (value "RESET") (footprint "Button_Switch_SMD:Panasonic_EVQPUJ_EVQPUA")
     )
     (path "/d36c93f4-34a2-4864-ad4d-c61de23a7361"
       (reference "SW3") (unit 1) (value "M1n_RST") (footprint "Button_Switch_SMD:Panasonic_EVQPUJ_EVQPUA")
