@@ -4,6 +4,13 @@
 
   (paper "A4")
 
+  (title_block
+    (title "Camera module")
+    (date "2023-03-01")
+    (rev "Ver.1.0")
+    (company "A.SAeki")
+  )
+
   (lib_symbols
     (symbol "Connector:USB_C_Receptacle_USB2.0" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
       (property "Reference" "J" (id 0) (at -10.16 19.05 0)
@@ -5181,7 +5188,7 @@
     (property "Reference" "R4" (id 0) (at 97.79 50.8 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "1K" (id 1) (at 102.87 50.8 90)
+    (property "Value" "470" (id 1) (at 102.87 50.8 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder" (id 2) (at 100.33 52.07 0)
@@ -5742,7 +5749,7 @@
       (reference "R3") (unit 1) (value "5.1K") (footprint "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder")
     )
     (path "/c25c9ce7-aa84-4985-9486-2fb9375118ca"
-      (reference "R4") (unit 1) (value "1K") (footprint "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder")
+      (reference "R4") (unit 1) (value "470") (footprint "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder")
     )
     (path "/74ee2b75-3460-40e7-ad31-bc8a33f285b6"
       (reference "R5") (unit 1) (value "10k") (footprint "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder")
