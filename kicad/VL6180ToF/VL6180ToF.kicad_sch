@@ -6,7 +6,7 @@
 
   (title_block
     (title "VL6180_ToF")
-    (date "2022-11-07")
+    (date "2023-03-01")
     (rev "V1.0")
     (company "A.Saeki")
   )
@@ -1066,6 +1066,9 @@
     (pin "1" (uuid 93d4af18-6782-49d3-b6b4-711f1ecb8c58))
     (pin "2" (uuid 7cf9c947-d9ac-4bf0-a161-00b84b2e500d))
     (pin "6" (uuid c246bfbd-944e-4ad1-b6fe-fe84cc27dfd1))
+    (pin "3" (uuid 5dcf2525-9074-46db-bf84-8ebc5041f506))
+    (pin "4" (uuid 7967d9b1-152e-44b1-b279-f75e03fc94be))
+    (pin "5" (uuid 86fa653e-40ec-4543-b152-7deda4ba3198))
   )
 
   (symbol (lib_id "VL6180ToF_20221107-rescue:Q_DUAL_NMOS_S1G1D2S2G2D1-Device") (at 107.95 129.54 90) (mirror x) (unit 2)
@@ -1079,6 +1082,9 @@
     (property "Datasheet" "~" (id 3) (at 107.95 134.62 0)
       (effects (font (size 1.27 1.27)) hide)
     )
+    (pin "1" (uuid 481b7202-0296-4c26-b142-0ce4d68889b7))
+    (pin "2" (uuid 9ea79ea0-119c-4ddb-a6c8-bb43838cb68e))
+    (pin "6" (uuid 054d2959-c599-4e61-9d78-9d57d4242c29))
     (pin "3" (uuid 9a8a98b0-ba05-42fb-b2d9-373695e50839))
     (pin "4" (uuid d772fcb1-97ec-4c4b-ad0c-3d0a811ee882))
     (pin "5" (uuid d4efa045-4f4f-4e5d-8c5c-28399fd41696))
