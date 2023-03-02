@@ -1741,7 +1741,7 @@
     (uuid 309bea1d-c82d-47c5-8e89-2f171f0dac3f)
     (property "Reference" "SW4" (id 0) (at 153.67 116.5692 0))
     (property "Value" "RESET" (id 1) (at 153.67 119.1061 0))
-    (property "Footprint" "0.main.robot:TVAF06-A020B-R" (id 2) (at 153.67 118.11 0)
+    (property "Footprint" "0.main.robot:THAU13-AB-R" (id 2) (at 153.67 118.11 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 153.67 118.11 0)

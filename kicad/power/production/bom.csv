@@ -1,0 +1,7 @@
+Designator,Footprint,Quantity,Value,LCSC Part #
+D1,LED_SMLE13WBC8W1,1,LED,
+F1,FUSE_35222,1,Fuse 15A,
+J1,AMASS_XT60-M_1x02_P7.20mm_Vertical,1,Power IN,
+J2,PinHeader_2x05_P2.54mm_Vertical,1,Power OUT,
+R1,0603,1,3k,
+SW1,SW_SPST_POWER,1,SW_SPST,

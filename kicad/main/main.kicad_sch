@@ -4827,7 +4827,7 @@
   (symbol (lib_id "Device:R_Small") (at 166.37 114.3 90) (unit 1)
     (in_bom yes) (on_board yes)
     (uuid 0cabb643-a707-4797-a2c9-800dfbd5b6e0)
-    (property "Reference" "R?" (id 0) (at 163.83 113.03 90)
+    (property "Reference" "R43" (id 0) (at 163.83 113.03 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "470" (id 1) (at 168.91 113.03 90)
@@ -5095,7 +5095,7 @@
   (symbol (lib_id "power:GND") (at 172.72 115.57 0) (unit 1)
     (in_bom yes) (on_board yes)
     (uuid 1fa32b86-23a9-4821-8971-828d501e3aba)
-    (property "Reference" "#PWR?" (id 0) (at 172.72 121.92 0)
+    (property "Reference" "#PWR065" (id 0) (at 172.72 121.92 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (id 1) (at 172.72 119.38 0))
@@ -5685,7 +5685,7 @@
     (property "Value" "Serial1/IMU" (id 1) (at 239.522 137.1346 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "0.main.robot:JSTB4B-ZR" (id 2) (at 237.49 134.62 0)
+    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" (id 2) (at 237.49 134.62 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 237.49 134.62 0)
@@ -6036,7 +6036,7 @@
   (symbol (lib_id "Device:D_Small") (at 156.21 114.3 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes)
     (uuid 8ec63555-7cdc-4bf3-ae27-56e92cc8a99f)
-    (property "Reference" "D?" (id 0) (at 156.21 111.76 0))
+    (property "Reference" "D18" (id 0) (at 156.21 111.76 0))
     (property "Value" "LED_PWR" (id 1) (at 156.21 116.84 0))
     (property "Footprint" "0.main.robot:LED_SMLE13WBC8W1" (id 2) (at 156.21 114.3 90)
       (effects (font (size 1.27 1.27)) hide)
@@ -6285,7 +6285,7 @@
     (property "Value" "BOOTSET" (id 1) (at 198.12 205.8924 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Footprint" "Button_Switch_SMD:Panasonic_EVQPUJ_EVQPUA" (id 2) (at 198.12 209.55 0)
+    (property "Footprint" "0.main.robot:THAU13-AB-R" (id 2) (at 198.12 209.55 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 198.12 209.55 0)
@@ -6584,7 +6584,7 @@
   (symbol (lib_id "power:+3.3V") (at 149.86 113.03 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid d888b6b5-2e13-4f4b-ab01-6ff9b57471ea)
-    (property "Reference" "#PWR?" (id 0) (at 149.86 116.84 0)
+    (property "Reference" "#PWR064" (id 0) (at 149.86 116.84 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (id 1) (at 149.86 109.4542 0))
@@ -7109,11 +7109,11 @@
     (path "/70fde810-700d-485a-8c97-2da167292bf1/f47b7048-9a75-4e8f-9b61-f4ccdf528540"
       (reference "#PWR063") (unit 1) (value "GND") (footprint "")
     )
-    (path "/1fa32b86-23a9-4821-8971-828d501e3aba"
-      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
-    )
     (path "/d888b6b5-2e13-4f4b-ab01-6ff9b57471ea"
-      (reference "#PWR?") (unit 1) (value "+3.3V") (footprint "")
+      (reference "#PWR064") (unit 1) (value "+3.3V") (footprint "")
+    )
+    (path "/1fa32b86-23a9-4821-8971-828d501e3aba"
+      (reference "#PWR065") (unit 1) (value "GND") (footprint "")
     )
     (path "/16d45733-181d-4e84-890c-996ba99a2a5b"
       (reference "C1") (unit 1) (value "10u") (footprint "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder")
@@ -7206,7 +7206,7 @@
       (reference "D17") (unit 1) (value "LED(OSWT1608)") (footprint "0.main.robot:LED_SMLE13WBC8W1")
     )
     (path "/8ec63555-7cdc-4bf3-ae27-56e92cc8a99f"
-      (reference "D?") (unit 1) (value "LED_PWR") (footprint "0.main.robot:LED_SMLE13WBC8W1")
+      (reference "D18") (unit 1) (value "LED_PWR") (footprint "0.main.robot:LED_SMLE13WBC8W1")
     )
     (path "/262a0d4b-3c87-49ab-815d-dea6b7ca370a"
       (reference "J1") (unit 1) (value "USB_C_Receptacle_USB2.0") (footprint "Connector_USB:USB_C_Receptacle_XKB_U262-16XN-4BVC11")
@@ -7227,7 +7227,7 @@
       (reference "J6") (unit 1) (value "Serial0/XBee") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical")
     )
     (path "/64918e7a-0abb-4f6f-9852-97bcf130e83b"
-      (reference "J7") (unit 1) (value "Serial1/IMU") (footprint "0.main.robot:JSTB4B-ZR")
+      (reference "J7") (unit 1) (value "Serial1/IMU") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical")
     )
     (path "/05c35a87-473b-4928-9233-cb895723bf3b"
       (reference "J8") (unit 1) (value "to cam") (footprint "0.main.robot:JSTB6B-ZR")
@@ -7407,7 +7407,7 @@
       (reference "R42") (unit 1) (value "470") (footprint "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder")
     )
     (path "/0cabb643-a707-4797-a2c9-800dfbd5b6e0"
-      (reference "R?") (unit 1) (value "470") (footprint "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder")
+      (reference "R43") (unit 1) (value "470") (footprint "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder")
     )
     (path "/54dc5971-37b9-46a7-8049-349fe99f9b14/e15ab46d-42eb-474f-881c-556db992e495"
       (reference "RV1") (unit 1) (value "20K") (footprint "0.main.robot:Trim-GF063P")
@@ -7425,7 +7425,7 @@
       (reference "RV5") (unit 1) (value "20K") (footprint "0.main.robot:Trim-GF063P")
     )
     (path "/b2e282c1-a5e8-4e36-99f2-47e1029dac07"
-      (reference "SW1") (unit 1) (value "BOOTSET") (footprint "Button_Switch_SMD:Panasonic_EVQPUJ_EVQPUA")
+      (reference "SW1") (unit 1) (value "BOOTSET") (footprint "0.main.robot:THAU13-AB-R")
     )
     (path "/0e1c0f6f-9b3d-4dd0-b1e3-45fdfc5a7186"
       (reference "SW2") (unit 1) (value "IMU SET") (footprint "Button_Switch_THT:SW_Tactile_Straight_KSA0Axx1LFTR")
@@ -7434,7 +7434,7 @@
       (reference "SW3") (unit 1) (value "Reset") (footprint "0.main.robot:THAU13-AB-R")
     )
     (path "/54dc5971-37b9-46a7-8049-349fe99f9b14/309bea1d-c82d-47c5-8e89-2f171f0dac3f"
-      (reference "SW4") (unit 1) (value "RESET") (footprint "0.main.robot:TVAF06-A020B-R")
+      (reference "SW4") (unit 1) (value "RESET") (footprint "0.main.robot:THAU13-AB-R")
     )
     (path "/70fde810-700d-485a-8c97-2da167292bf1/00000000-0000-0000-0000-00005f3ebb0e"
       (reference "SW5") (unit 1) (value "GOAL") (footprint "0.main.robot:MFS101D-14-Z")
