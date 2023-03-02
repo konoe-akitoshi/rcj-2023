@@ -444,7 +444,7 @@
       "idf": "",
       "netlist": "",
       "specctra_dsn": "vison-boad.dsn",
-      "step": "",
+      "step": "vison-boad.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""
