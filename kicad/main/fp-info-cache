@@ -1,4 +1,4 @@
-20694146595053499
+20695824363174040
 0.main.robot
 AE-BNO055
 
@@ -87,6 +87,13 @@ Integrated Circuit
 FUSE_20mm
 
 
+0
+4
+2
+0.main.robot
+FUSE_35222
+3522-2
+Connector
 0
 4
 2
@@ -58335,8 +58342,8 @@ M1n-break
 
 
 0
-0
-0
+40
+40
 M1n
 SMTWE2025MTJ
 
