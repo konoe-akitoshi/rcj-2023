@@ -1,4 +1,4 @@
-20694146606235670
+20695824362407366
 0.main.robot
 AE-BNO055
 
@@ -90,6 +90,13 @@ FUSE_20mm
 0
 4
 2
+0.main.robot
+FUSE_35222
+3522-2
+Connector
+0
+4
+4
 0.main.robot
 IDC-Header_2x04_P2.54mm_Vertical
 Through hole straight IDC box header, 2x04, 2.54mm pitch, double rows
