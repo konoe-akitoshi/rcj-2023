@@ -1,0 +1,218 @@
+
+(rules PCB vison-boad
+  (snap_angle 
+    fortyfive_degree
+  )
+  (autoroute_settings
+    (fanout off)
+    (autoroute on)
+    (postroute on)
+    (vias on)
+    (via_costs 50)
+    (plane_via_costs 5)
+    (start_ripup_costs 100)
+    (start_pass_no 210)
+    (layer_rule F.Cu
+      (active on)
+      (preferred_direction vertical)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 2.2)
+    )
+    (layer_rule B.Cu
+      (active on)
+      (preferred_direction horizontal)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 1.8)
+    )
+  )
+  (rule
+    (width 250.0)
+    (clear 200.0)
+    (clear 125.0 (type smd_to_turn_gap))
+    (clear 250.0 (type default-PWR))
+    (clear 250.0 (type default-USB))
+    (clear 50.0 (type smd-smd))
+    (clear 250.0 (type smd-PWR))
+    (clear 250.0 (type smd-USB))
+    (clear 250.0 (type "kicad_default"-PWR))
+    (clear 250.0 (type "kicad_default"-USB))
+    (clear 150.0 (type "-"-"-"))
+    (clear 250.0 (type "-"-PWR))
+    (clear 250.0 (type "-"-USB))
+    (clear 250.0 (type PWR-PWR))
+    (clear 250.0 (type PWR-USB))
+    (clear 250.0 (type USB-USB))
+  )
+  (padstack "Via[0-1]_800:400_um"
+    (shape
+      (circle F.Cu 800.0 0.0 0.0)
+    )
+    (shape
+      (circle B.Cu 800.0 0.0 0.0)
+    )
+    (attach off)
+  )
+  (padstack "Via[0-1]_1500:1000_um"
+    (shape
+      (circle F.Cu 1500.0 0.0 0.0)
+    )
+    (shape
+      (circle B.Cu 1500.0 0.0 0.0)
+    )
+    (attach off)
+  )
+  (padstack "Via[0-1]_1000:500_um"
+    (shape
+      (circle F.Cu 1000.0 0.0 0.0)
+    )
+    (shape
+      (circle B.Cu 1000.0 0.0 0.0)
+    )
+    (attach off)
+  )
+  (via 
+    "Via[0-1]_800:400_um" "Via[0-1]_800:400_um" default
+  )
+  (via 
+    "Via[0-1]_1500:1000_um" "Via[0-1]_1500:1000_um" default
+  )
+  (via 
+    "Via[0-1]_1000:500_um" "Via[0-1]_1000:500_um" default
+  )
+  (via 
+    "Via[0-1]_800:400_um-kicad_default" "Via[0-1]_800:400_um" "kicad_default"
+  )
+  (via 
+    "Via[0-1]_1500:1000_um-kicad_default" "Via[0-1]_1500:1000_um" "kicad_default"
+  )
+  (via 
+    "Via[0-1]_1000:500_um-kicad_default" "Via[0-1]_1000:500_um" "kicad_default"
+  )
+  (via 
+    "Via[0-1]_800:400_um--" "Via[0-1]_800:400_um" "-"
+  )
+  (via 
+    "Via[0-1]_1500:1000_um--" "Via[0-1]_1500:1000_um" "-"
+  )
+  (via 
+    "Via[0-1]_1000:500_um--" "Via[0-1]_1000:500_um" "-"
+  )
+  (via 
+    "Via[0-1]_800:400_um-PWR" "Via[0-1]_800:400_um" PWR
+  )
+  (via 
+    "Via[0-1]_1500:1000_um-PWR" "Via[0-1]_1500:1000_um" PWR
+  )
+  (via 
+    "Via[0-1]_1000:500_um-PWR" "Via[0-1]_1000:500_um" PWR
+  )
+  (via 
+    "Via[0-1]_800:400_um-USB" "Via[0-1]_800:400_um" USB
+  )
+  (via 
+    "Via[0-1]_1500:1000_um-USB" "Via[0-1]_1500:1000_um" USB
+  )
+  (via 
+    "Via[0-1]_1000:500_um-USB" "Via[0-1]_1000:500_um" USB
+  )
+  (via_rule
+    default "Via[0-1]_800:400_um"
+  )
+  (via_rule
+    "kicad_default" "Via[0-1]_800:400_um-kicad_default"
+  )
+  (via_rule
+    "-" "Via[0-1]_800:400_um--"
+  )
+  (via_rule
+    PWR "Via[0-1]_1500:1000_um-PWR"
+  )
+  (via_rule
+    USB "Via[0-1]_1000:500_um-USB"
+  )
+  (class default
+    +3.3V "Net-(D4-Pad2)" "unconnected-(J2-Pad1)" "unconnected-(J2-Pad5)" "unconnected-(J2-Pad7)" "Net-(J3-Pad3)" "unconnected-(U2-Pad1)" "unconnected-(U2-Pad2)"
+    "unconnected-(U2-Pad3)" "unconnected-(U2-Pad4)" "unconnected-(U2-Pad5)" "unconnected-(U2-Pad6)" "unconnected-(U2-Pad7)" "unconnected-(U1-Pad1)" "unconnected-(U1-Pad2)" "unconnected-(U1-Pad3)"
+    "unconnected-(U1-Pad4)" "Net-(D1-Pad1)" VBUS "unconnected-(U1-Pad11)" "unconnected-(U1-Pad12)" "unconnected-(U1-Pad15)" "unconnected-(U1-Pad16)" "unconnected-(U1-Pad17)"
+    "unconnected-(U1-Pad18)" "unconnected-(U1-Pad19)" "unconnected-(U1-Pad20)" "unconnected-(U1-Pad21)" "unconnected-(U1-Pad23)" "unconnected-(U1-Pad24)" "unconnected-(U1-Pad25)" "Net-(R7-Pad2)"
+    "unconnected-(U1-Pad27)" "unconnected-(U1-Pad28)" "unconnected-(U1-Pad29)" "unconnected-(U1-Pad30)" "unconnected-(U1-Pad32)" "unconnected-(J1-PadA8)" "unconnected-(J1-PadB8)" "unconnected-(U1-Pad37)"
+    "unconnected-(U1-Pad38)" "unconnected-(J2-Pad3)" "unconnected-(J2-Pad6)" "/RX_0" "/TX_0" "unconnected-(J2-Pad11)" "unconnected-(J2-Pad12)" "unconnected-(J2-Pad13)"
+    "unconnected-(J2-Pad14)" "unconnected-(J2-Pad15)" "unconnected-(J2-Pad16)" "unconnected-(J2-Pad17)" "unconnected-(J2-Pad18)" "unconnected-(J2-Pad19)" "unconnected-(J2-Pad20)" "unconnected-(J2-Pad21)"
+    "unconnected-(J2-Pad22)" "unconnected-(J2-Pad23)" "unconnected-(J2-Pad24)" "unconnected-(J2-Pad25)" "unconnected-(J2-Pad26)" "unconnected-(J2-Pad29)" "unconnected-(J2-Pad30)" "unconnected-(J2-Pad31)"
+    "unconnected-(J2-Pad32)" "unconnected-(J2-Pad33)" "unconnected-(J2-Pad34)" "unconnected-(J2-Pad35)" "unconnected-(J2-Pad36)" "unconnected-(J2-Pad37)" "unconnected-(J2-Pad38)" "unconnected-(J2-Pad39)"
+    "unconnected-(J2-Pad40)" "unconnected-(U2-Pad8)" "unconnected-(U2-Pad10)" "unconnected-(U2-Pad11)" "unconnected-(U2-Pad12)" "M1n_RST" "unconnected-(U2-Pad14)" "unconnected-(U2-Pad15)"
+    "unconnected-(U2-Pad16)" "/TX_1" "unconnected-(U2-Pad18)" "/RX_1" "NEO PIXEL" /RESET /BOOTSET "unconnected-(U2-Pad19)"
+    "unconnected-(U2-Pad22)" "unconnected-(U2-Pad23)" "unconnected-(U2-Pad24)" "unconnected-(U2-Pad25)" "unconnected-(U2-Pad26)" "unconnected-(U2-Pad27)" "unconnected-(U2-Pad28)" "unconnected-(U2-Pad29)"
+    "unconnected-(U2-Pad30)" "unconnected-(U2-Pad31)" "unconnected-(U2-Pad32)" "unconnected-(U2-Pad33)" "unconnected-(U2-Pad34)" "unconnected-(U2-Pad35)" "unconnected-(U2-Pad36)" "unconnected-(U2-Pad37)"
+    "unconnected-(U2-Pad38)" "unconnected-(U2-Pad39)" "unconnected-(U2-Pad40)" "unconnected-(U3-Pad1)" "unconnected-(U3-Pad2)" "unconnected-(U3-Pad3)" "unconnected-(U3-Pad4)" "unconnected-(U3-Pad5)"
+    "unconnected-(U3-Pad6)" "unconnected-(U3-Pad7)" "unconnected-(U3-Pad8)" "unconnected-(U3-Pad10)" "unconnected-(U3-Pad11)" "unconnected-(U3-Pad12)" "unconnected-(U3-Pad14)" "unconnected-(U3-Pad15)"
+    "unconnected-(U3-Pad16)" "unconnected-(U3-Pad18)" "unconnected-(U3-Pad19)" "unconnected-(U3-Pad22)" "unconnected-(U3-Pad23)" "unconnected-(U3-Pad24)" "unconnected-(U3-Pad25)" "unconnected-(U3-Pad26)"
+    "unconnected-(U3-Pad27)" "unconnected-(U3-Pad28)" "unconnected-(U3-Pad29)" "unconnected-(U3-Pad30)" "unconnected-(U3-Pad31)" "unconnected-(U3-Pad32)" "unconnected-(U3-Pad33)" "unconnected-(U3-Pad34)"
+    "unconnected-(U3-Pad35)" "unconnected-(U3-Pad36)" "unconnected-(U3-Pad37)" "unconnected-(U3-Pad38)" "unconnected-(U3-Pad39)" "unconnected-(U3-Pad40)" "unconnected-(U4-Pad1)" "unconnected-(U4-Pad2)"
+    "unconnected-(U4-Pad3)" "unconnected-(U4-Pad4)" "unconnected-(U4-Pad5)" "unconnected-(U4-Pad6)" "unconnected-(U4-Pad7)" "unconnected-(U4-Pad8)" "unconnected-(U4-Pad10)" "unconnected-(U4-Pad11)"
+    "unconnected-(U4-Pad12)" "unconnected-(U4-Pad14)" "unconnected-(U4-Pad15)" "unconnected-(U4-Pad16)" "unconnected-(U4-Pad18)" "unconnected-(U4-Pad19)" "unconnected-(U4-Pad22)" "unconnected-(U4-Pad23)"
+    "unconnected-(U4-Pad24)" "unconnected-(U4-Pad25)" "unconnected-(U4-Pad26)" "unconnected-(U4-Pad27)" "unconnected-(U4-Pad28)" "unconnected-(U4-Pad29)" "unconnected-(U4-Pad30)" "unconnected-(U4-Pad31)"
+    "unconnected-(U4-Pad32)" "unconnected-(U4-Pad33)" "unconnected-(U4-Pad34)" "unconnected-(U4-Pad35)" "unconnected-(U4-Pad36)" "unconnected-(U4-Pad37)" "unconnected-(U4-Pad38)" "unconnected-(U4-Pad39)"
+    "unconnected-(U4-Pad40)" "unconnected-(U5-Pad1)" "unconnected-(U5-Pad2)" "unconnected-(U5-Pad3)" "unconnected-(U5-Pad4)" "unconnected-(U5-Pad5)" "unconnected-(U5-Pad6)" "unconnected-(U5-Pad7)"
+    "unconnected-(U5-Pad8)" "unconnected-(U5-Pad10)" "unconnected-(U5-Pad11)" "unconnected-(U5-Pad12)" "unconnected-(U5-Pad14)" "unconnected-(U5-Pad15)" "unconnected-(U5-Pad16)" "unconnected-(U5-Pad18)"
+    "unconnected-(U5-Pad19)" "unconnected-(U5-Pad22)" "unconnected-(U5-Pad23)" "unconnected-(U5-Pad24)" "unconnected-(U5-Pad25)" "unconnected-(U5-Pad26)" "unconnected-(U5-Pad27)" "unconnected-(U5-Pad28)"
+    "unconnected-(U5-Pad29)" "unconnected-(U5-Pad30)" "unconnected-(U5-Pad31)" "unconnected-(U5-Pad32)" "unconnected-(U5-Pad33)" "unconnected-(U5-Pad34)" "unconnected-(U5-Pad35)" "unconnected-(U5-Pad36)"
+    "unconnected-(U5-Pad37)" "unconnected-(U5-Pad38)" "unconnected-(U5-Pad39)" "unconnected-(U5-Pad40)" "unconnected-(U6-Pad1)" "unconnected-(U6-Pad2)" "unconnected-(U6-Pad3)" "unconnected-(U6-Pad4)"
+    "unconnected-(U6-Pad5)" "unconnected-(U6-Pad6)" "unconnected-(U6-Pad7)" "unconnected-(U6-Pad8)" "unconnected-(U6-Pad10)" "unconnected-(U6-Pad11)" "unconnected-(U6-Pad12)" "unconnected-(U6-Pad14)"
+    "unconnected-(U6-Pad15)" "unconnected-(U6-Pad16)" "unconnected-(U6-Pad18)" "unconnected-(U6-Pad19)" "unconnected-(U6-Pad22)" "unconnected-(U6-Pad23)" "unconnected-(U6-Pad24)" "unconnected-(U6-Pad25)"
+    "unconnected-(U6-Pad26)" "unconnected-(U6-Pad27)" "unconnected-(U6-Pad28)" "unconnected-(U6-Pad29)" "unconnected-(U6-Pad30)" "unconnected-(U6-Pad31)" "unconnected-(U6-Pad32)" "unconnected-(U6-Pad33)"
+    "unconnected-(U6-Pad34)" "unconnected-(U6-Pad35)" "unconnected-(U6-Pad36)" "unconnected-(U6-Pad37)" "unconnected-(U6-Pad38)" "unconnected-(U6-Pad39)" "unconnected-(U6-Pad40)" "Net-(D3-Pad1)"
+    "I2C_1.SDA" "I2C_1.SCL" "unconnected-(J5-Pad1)" "I2C_0.SCL" "I2C_0.SDA"
+    (clearance_class default)
+    (via_rule default)
+    (rule
+      (width 250.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class "kicad_default"
+    (clearance_class "kicad_default")
+    (via_rule "kicad_default")
+    (rule
+      (width 250.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class "-"
+    "Net-(J1-PadA5)" "Net-(J1-PadB5)"
+    (clearance_class "-")
+    (via_rule "-")
+    (rule
+      (width 250.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class PWR
+    GND +5V
+    (clearance_class PWR)
+    (via_rule PWR)
+    (rule
+      (width 1000.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class USB
+    USB.D+ "USB.D-"
+    (clearance_class USB)
+    (via_rule USB)
+    (rule
+      (width 500.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+)
