@@ -382,7 +382,7 @@
       },
       {
         "bus_width": 12.0,
-        "clearance": 0.0,
+        "clearance": 0.4,
         "diff_pair_gap": 0.25,
         "diff_pair_via_gap": 0.25,
         "diff_pair_width": 0.2,
@@ -390,7 +390,9 @@
         "microvia_diameter": 0.3,
         "microvia_drill": 0.1,
         "name": "2mm",
-        "nets": [],
+        "nets": [
+          "+15V"
+        ],
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 2.0,

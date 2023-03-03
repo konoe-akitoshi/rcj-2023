@@ -7302,16 +7302,16 @@
       (reference "J13") (unit 1) (value "ICSP") (footprint "0.main.robot:JSTB6B-ZR")
     )
     (path "/17adc8c0-c792-4780-aab1-71d31733c779/8cd9078a-a2b8-45ce-827b-10bab3aa754f"
-      (reference "J14") (unit 1) (value "MD1") (footprint "0.main.robot:JSTB4B-ZR")
+      (reference "J14") (unit 1) (value "MD1") (footprint "0.main.robot:JSTS4B-ZRLFSN")
     )
     (path "/17adc8c0-c792-4780-aab1-71d31733c779/69c04665-1924-486a-affe-3cbf8b588c9e"
-      (reference "J15") (unit 1) (value "MD2") (footprint "0.main.robot:JSTB4B-ZR")
+      (reference "J15") (unit 1) (value "MD2") (footprint "0.main.robot:JSTS4B-ZRLFSN")
     )
     (path "/17adc8c0-c792-4780-aab1-71d31733c779/1963d5d1-60a2-4571-aa34-280fa75513c1"
-      (reference "J16") (unit 1) (value "MD3") (footprint "0.main.robot:JSTB4B-ZR")
+      (reference "J16") (unit 1) (value "MD3") (footprint "0.main.robot:JSTS4B-ZRLFSN")
     )
     (path "/17adc8c0-c792-4780-aab1-71d31733c779/bad71827-8910-487a-9379-da4091f2bfb3"
-      (reference "J17") (unit 1) (value "MD4") (footprint "0.main.robot:JSTB4B-ZR")
+      (reference "J17") (unit 1) (value "MD4") (footprint "0.main.robot:JSTS4B-ZRLFSN")
     )
     (path "/54dc5971-37b9-46a7-8049-349fe99f9b14/8d685afa-8cfe-4b6f-9a38-b5aeae4bb7cc"
       (reference "J18") (unit 1) (value "I2C/OLED") (footprint "0.main.robot:JSTB4B-ZR")
