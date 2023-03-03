@@ -11,12 +11,12 @@
     (via_costs 50)
     (plane_via_costs 5)
     (start_ripup_costs 100)
-    (start_pass_no 153)
+    (start_pass_no 525)
     (layer_rule F.Cu
       (active on)
       (preferred_direction horizontal)
       (preferred_direction_trace_costs 1.0)
-      (against_preferred_direction_trace_costs 2.6)
+      (against_preferred_direction_trace_costs 2.7)
     )
     (layer_rule B.Cu
       (active on)
@@ -27,8 +27,13 @@
   )
   (rule
     (width 250.0)
-    (clear 200.0)
+    (clear 200.2)
     (clear 125.0 (type smd_to_turn_gap))
+    (clear 400.2 (type default_2mm))
+    (clear 50.0 (type smd_smd))
+    (clear 400.2 (type smd_2mm))
+    (clear 400.2 (type "kicad_default"_2mm))
+    (clear 400.2 (type 2mm_2mm))
   )
   (padstack "Via[0-1]_800:400_um"
     (shape
@@ -39,35 +44,14 @@
     )
     (attach off)
   )
-  (padstack "Via[0-1]_1500:1000_um"
-    (shape
-      (circle F.Cu 1500.0 0.0 0.0)
-    )
-    (shape
-      (circle B.Cu 1500.0 0.0 0.0)
-    )
-    (attach off)
-  )
-  (via 
-    "Via[0-1]_800:400_um-2mm" "Via[0-1]_800:400_um" 2mm
-  )
-  (via 
-    "Via[0-1]_1500:1000_um-2mm" "Via[0-1]_1500:1000_um" 2mm
-  )
   (via 
     "Via[0-1]_800:400_um" "Via[0-1]_800:400_um" default
-  )
-  (via 
-    "Via[0-1]_1500:1000_um" "Via[0-1]_1500:1000_um" default
   )
   (via 
     "Via[0-1]_800:400_um-kicad_default" "Via[0-1]_800:400_um" "kicad_default"
   )
   (via 
-    "Via[0-1]_1500:1000_um-kicad_default" "Via[0-1]_1500:1000_um" "kicad_default"
-  )
-  (via_rule
-    2mm "Via[0-1]_800:400_um-2mm"
+    "Via[0-1]_800:400_um-2mm" "Via[0-1]_800:400_um" 2mm
   )
   (via_rule
     default "Via[0-1]_800:400_um"
@@ -75,18 +59,29 @@
   (via_rule
     "kicad_default" "Via[0-1]_800:400_um-kicad_default"
   )
+  (via_rule
+    2mm "Via[0-1]_800:400_um-2mm"
+  )
   (class default
-    "Net-(C6-Pad1)" "Net-(C9-Pad1)" "Net-(D1-Pad1)" VBUS "Net-(D3-Pad2)" "Net-(D5-Pad2)" "Net-(D8-Pad2)" "Net-(D10-Pad2)"
-    "Net-(J1-PadA5)" USB.D+ "USB.D-" "unconnected-(J1-PadA8)" "Net-(J1-PadB5)" "unconnected-(J1-PadB8)" "I2C_1.SCL" "I2C_1.SDA"
-    "Net-(J6-Pad1)" "Net-(J7-Pad1)" "unconnected-(J7-Pad2)" "Net-(J7-Pad3)" "Net-(J7-Pad4)" "I2C_0.SCL" "I2C_0.SDA" "Net-(J10-Pad1)"
-    "Net-(J10-Pad2)" "Net-(J10-Pad3)" "Net-(J13-Pad1)" "Net-(J13-Pad3)" "Net-(J13-Pad4)" "Net-(J17-Pad2)" "Net-(J20-Pad3)" "Net-(Q1-Pad1)"
-    "Net-(R3-Pad2)" "Net-(R4-Pad2)" "Net-(R6-Pad1)" "Net-(R9-Pad1)" "Net-(R10-Pad2)" "Net-(R11-Pad1)" "Net-(R15-Pad1)" "Net-(R20-Pad1)"
-    "Net-(R24-Pad1)" "Net-(R26-Pad1)" "Net-(R29-Pad1)" "Net-(R31-Pad2)" "Net-(R32-Pad1)" "Net-(R33-Pad2)" "Net-(R34-Pad2)" "Net-(R35-Pad2)"
-    "Net-(R38-Pad1)" "Net-(R39-Pad1)" /BOOTSET "IMU SET" "unconnected-(U1-Pad7)" "LINE_D_1" "LINE_D_2" "LINE_D_3"
-    "LINE_D_4" "LINE_D_5" "unconnected-(U1-Pad22)" "unconnected-(U1-Pad25)" "unconnected-(U1-Pad27)" "LINE_D_6" "unconnected-(U1-Pad30)" "unconnected-(U1-Pad32)"
-    "unconnected-(U1-Pad37)" "unconnected-(U1-Pad38)" "unconnected-(U8-Pad1)" "unconnected-(U8-Pad3)" "unconnected-(U8-Pad8)" "unconnected-(U8-Pad12)" "unconnected-(U8-Pad13)" "unconnected-(U8-Pad14)"
-    "unconnected-(U8-Pad18)" /RESET "Net-(J12-Pad1)" "Net-(J12-Pad2)" "Net-(J12-Pad3)" "Net-(J12-Pad4)" "Net-(J12-Pad5)" "Net-(J12-Pad6)"
-    "Net-(J15-Pad1)" "Net-(J15-Pad2)" "Net-(J15-Pad4)" "Net-(J19-Pad3)" "Net-(D18-Pad1)" +3.3V
+    "SW1_6" +5V "SW1_3" +3.3VA Vbatt "Net-(J16-Pad1)" "Net-(C11-Pad1)" "Net-(D7-Pad2)"
+    "Net-(C6-Pad1)" "Net-(D12-Pad2)" "Net-(D13-Pad1)" "Net-(J17-Pad1)" "Net-(J17-Pad4)" "Net-(D14-Pad1)" "Net-(D17-Pad2)" "Net-(D15-Pad1)"
+    "Net-(C9-Pad1)" "Net-(D16-Pad1)" "Net-(J6-Pad3)" Vcc1 "Net-(J16-Pad2)" "Net-(J20-Pad1)" "Net-(Q1-Pad3)" "Net-(J16-Pad4)"
+    "Net-(J20-Pad4)" "Net-(D1-Pad1)" VBUS "SW1_5" "SW1_2" "SW1_1" "Net-(D3-Pad2)" "SW1_4"
+    "Net-(D5-Pad2)" "Net-(D8-Pad2)" /LineTrimmer/SCL /LineTrimmer/SDA Line5 "Net-(R13-Pad1)" "Net-(D10-Pad2)" "Net-(R14-Pad1)"
+    "Net-(R10-Pad1)" "Net-(J1-PadA5)" USB.D+ "USB.D-" "unconnected-(J1-PadA8)" "Net-(R36-Pad1)" "Net-(J1-PadB5)" "Net-(R37-Pad1)"
+    "Net-(U5-Pad7)" "Net-(U5-Pad8)" "unconnected-(U5-Pad9)" "unconnected-(U5-Pad20)" "Net-(U2-Pad11)" "Net-(U2-Pad12)" "Net-(U2-Pad13)" "Net-(U2-Pad14)"
+    "unconnected-(U3-Pad12)" "unconnected-(U4-Pad8)" "unconnected-(U4-Pad9)" "unconnected-(U4-Pad10)" "unconnected-(U4-Pad11)" "unconnected-(U4-Pad12)" "unconnected-(U5-Pad25)" "unconnected-(U5-Pad26)"
+    "unconnected-(U5-Pad30)" "unconnected-(U5-Pad31)" "unconnected-(J1-PadB8)" "I2C_1.SCL" "Net-(U6-Pad7)" "Net-(U6-Pad8)" "I2C_1.SDA" "unconnected-(U6-Pad11)"
+    "unconnected-(U6-Pad12)" "unconnected-(U6-Pad13)" "unconnected-(U6-Pad14)" "unconnected-(U6-Pad20)" "Net-(J6-Pad1)" "Net-(J7-Pad1)" "unconnected-(J7-Pad2)" "Net-(J7-Pad3)"
+    "Net-(J7-Pad4)" "I2C_0.SCL" "I2C_0.SDA" "Net-(J10-Pad1)" "Net-(J10-Pad2)" "Net-(J10-Pad3)" "Net-(J13-Pad1)" "Net-(J13-Pad3)"
+    "Net-(J13-Pad4)" "Net-(J17-Pad2)" "Net-(J20-Pad3)" "Net-(Q1-Pad1)" "Net-(R3-Pad2)" "Net-(R4-Pad2)" "Net-(R6-Pad1)" "Net-(R9-Pad1)"
+    "Net-(R10-Pad2)" "Net-(R11-Pad1)" "Net-(R15-Pad1)" "Net-(R20-Pad1)" "Net-(R24-Pad1)" "Net-(R26-Pad1)" "Net-(R29-Pad1)" "Net-(R31-Pad2)"
+    "Net-(R32-Pad1)" "Net-(R33-Pad2)" "Net-(R34-Pad2)" "Net-(R35-Pad2)" "Net-(R38-Pad1)" "Net-(R39-Pad1)" /BOOTSET "IMU SET"
+    "unconnected-(U1-Pad7)" "LINE_D_1" "LINE_D_2" "LINE_D_3" "LINE_D_4" "LINE_D_5" "unconnected-(U1-Pad22)" "unconnected-(U1-Pad25)"
+    "unconnected-(U1-Pad27)" "LINE_D_6" "unconnected-(U1-Pad30)" "unconnected-(U1-Pad32)" "unconnected-(U1-Pad37)" "unconnected-(U1-Pad38)" "unconnected-(U8-Pad1)" "unconnected-(U8-Pad3)"
+    "unconnected-(U8-Pad8)" "unconnected-(U8-Pad12)" "unconnected-(U8-Pad13)" "unconnected-(U8-Pad14)" "unconnected-(U8-Pad18)" /RESET "Net-(J12-Pad1)" "Net-(J12-Pad2)"
+    "Net-(J12-Pad3)" "Net-(J12-Pad4)" "Net-(J12-Pad5)" "Net-(J12-Pad6)" "Net-(J15-Pad1)" "Net-(J15-Pad2)" "Net-(J15-Pad4)" "Net-(J19-Pad1)"
+    "Net-(J19-Pad3)" "Net-(J19-Pad4)" "Net-(J20-Pad2)" "Net-(D18-Pad1)" +3.3V "Net-(D13-Pad2)"
     (clearance_class default)
     (via_rule default)
     (rule
@@ -98,7 +93,7 @@
   )
   (class "kicad_default"
     (clearance_class "kicad_default")
-    (via_rule "kicad_default")
+    (via_rule kicad_default)
     (rule
       (width 250.0)
     )
@@ -107,39 +102,11 @@
     )
   )
   (class 2mm
+    +15V
     (clearance_class 2mm)
     (via_rule 2mm)
     (rule
       (width 2000.0)
-    )
-    (circuit 
-      (use_layer F.Cu B.Cu)
-    )
-  )
-  (class class1
-    "SW1_6" +5V "SW1_3" +15V +3.3VA Vbatt "Net-(J16-Pad1)" "Net-(C11-Pad1)"
-    "Net-(D7-Pad2)" "Net-(D12-Pad2)" "Net-(D13-Pad1)" "Net-(J17-Pad1)" "Net-(J17-Pad4)" "Net-(D14-Pad1)" "Net-(D17-Pad2)" "Net-(D15-Pad1)"
-    "Net-(D16-Pad1)" "Net-(J6-Pad3)" Vcc1 "Net-(J16-Pad2)" "Net-(J20-Pad1)" "Net-(Q1-Pad3)" "Net-(J16-Pad4)" "Net-(J20-Pad4)"
-    "SW1_5" "SW1_2" "SW1_1" "SW1_4" /LineTrimmer/SCL /LineTrimmer/SDA Line5 "Net-(R13-Pad1)"
-    "Net-(R14-Pad1)" "Net-(R10-Pad1)" "Net-(R36-Pad1)" "Net-(R37-Pad1)" "Net-(U5-Pad7)" "Net-(U5-Pad8)" "unconnected-(U5-Pad9)" "unconnected-(U5-Pad20)"
-    "Net-(U2-Pad11)" "Net-(U2-Pad12)" "Net-(U2-Pad13)" "Net-(U2-Pad14)" "unconnected-(U3-Pad12)" "unconnected-(U4-Pad8)" "unconnected-(U4-Pad9)" "unconnected-(U4-Pad10)"
-    "unconnected-(U4-Pad11)" "unconnected-(U4-Pad12)" "unconnected-(U5-Pad25)" "unconnected-(U5-Pad26)" "unconnected-(U5-Pad30)" "unconnected-(U5-Pad31)" "Net-(U6-Pad7)" "Net-(U6-Pad8)"
-    "unconnected-(U6-Pad11)" "unconnected-(U6-Pad12)" "unconnected-(U6-Pad13)" "unconnected-(U6-Pad14)" "unconnected-(U6-Pad20)" "Net-(J19-Pad1)" "Net-(J19-Pad4)" "Net-(J20-Pad2)"
-    "Net-(D13-Pad2)"
-    (clearance_class default)
-    (via_rule default)
-    (rule
-      (width 150.0)
-    )
-    (circuit 
-      (use_layer F.Cu B.Cu)
-    )
-  )
-  (class class2
-    (clearance_class default)
-    (via_rule default)
-    (rule
-      (width 150.0)
     )
     (circuit 
       (use_layer F.Cu B.Cu)
