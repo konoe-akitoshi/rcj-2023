@@ -1032,6 +1032,11 @@
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
     )
+    (model "C:/Users/first/Documents/rcj-2023/kicad/kicad_lib/0.main.robot.pretty/Step/B-12CCPQ(Q=R,M,Y,RM).step"
+      (offset (xyz 2.5 -2.5 2.6))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
+    )
   )
 
   (footprint "0.main.robot:LED_SMLE13WBC8W1" locked (layer "F.Cu")
