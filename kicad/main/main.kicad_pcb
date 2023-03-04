@@ -2280,6 +2280,11 @@
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
     )
+    (model "C:/Users/first/Documents/rcj-2023/kicad/kicad_lib/0.main.robot.pretty/Step/TVDP01-G73AB.wrl"
+      (offset (xyz 0 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
+    )
   )
 
   (footprint "0.main.robot:JSTS4B-ZRLFSN" locked (layer "F.Cu")
