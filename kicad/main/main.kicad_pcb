@@ -1294,6 +1294,11 @@
       (scale (xyz 1 1 1))
       (rotate (xyz -90 0 0))
     )
+    (model "C:/Users/first/Documents/rcj-2023/kicad/kicad_lib/0.main.robot.pretty/Step/B6B-ZR.STEP"
+      (offset (xyz -3.75 -1.3 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 0))
+    )
   )
 
   (footprint "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder" locked placed (layer "F.Cu")
@@ -3969,6 +3974,11 @@
       (scale (xyz 1 1 1))
       (rotate (xyz -90 0 -180))
     )
+    (model "C:/Users/first/Documents/rcj-2023/kicad/kicad_lib/0.main.robot.pretty/Step/B8B-ZR.STEP"
+      (offset (xyz 5.23 1.25 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 90 -180 0))
+    )
   )
 
   (footprint "0.main.robot:LED_SMLE13WBC8W1" locked (layer "F.Cu")
@@ -4235,6 +4245,11 @@
       (scale (xyz 1 1 1))
       (rotate (xyz -90 0 0))
     )
+    (model "C:/Users/first/Documents/rcj-2023/kicad/kicad_lib/0.main.robot.pretty/Step/B6B-ZR.STEP"
+      (offset (xyz -3.75 -1.3 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 90 -180 180))
+    )
   )
 
   (footprint "0.main.robot:JSTB6B-ZR" locked (layer "F.Cu")
@@ -4284,6 +4299,11 @@
       (net 1 "SW1_6") (pinfunction "Pin_6") (pintype "passive") (tstamp b0e98683-f943-437d-93b2-787602445d89))
     (model "C:/Users/hidekazu/Dropbox/RoboCup/kicad_lib/0.main.robot.pretty/Step/B6B-ZR.STEP"
       (offset (xyz -3.7 -1.3 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 0))
+    )
+    (model "C:/Users/first/Documents/rcj-2023/kicad/kicad_lib/0.main.robot.pretty/Step/B6B-ZR.STEP"
+      (offset (xyz -3.75 -1.3 0))
       (scale (xyz 1 1 1))
       (rotate (xyz -90 0 0))
     )
