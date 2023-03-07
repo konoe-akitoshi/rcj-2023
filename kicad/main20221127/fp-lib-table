@@ -1,3 +1,0 @@
-(fp_lib_table
-  (lib (name "rp2040-dev-board")(type "KiCad")(uri "${KIPRJMOD}/rp2040-dev-board.pretty")(options "")(descr ""))
-)
