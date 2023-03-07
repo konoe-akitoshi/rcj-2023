@@ -82,7 +82,7 @@ class MotorController
         for (int i = 0; i < 4; ++i) {
             motorPower[i] = FormatPower_(x[i] * power);
         }
-        Transmit_(motorPower, 4);
+        Transmit_(motorPower);
     }
 
     /**
@@ -90,7 +90,7 @@ class MotorController
      */
     void StopAll(void) const {
         static constexpr uint8_t motorPower[4] = {0b10000000, 0b10000000, 0b10000000, 0b10000000};
-        Transmit_(motorPower, 4);
+        Transmit_(motorPower);
     }
 
     /**
@@ -98,7 +98,7 @@ class MotorController
      */
     void FreeAll() const {
         static constexpr uint8_t motorPower[4] = {0, 0, 0, 0};
-        Transmit_(motorPower, 4);
+        Transmit_(motorPower);
     }
 
   private:
@@ -125,9 +125,9 @@ class MotorController
         return ret;
     }
 
-    void Transmit_(const uint8_t* motorPower, const int size) const {
+    void Transmit_(const uint8_t (&motorPower)[4]) const {
         Wire1.beginTransmission(ADDRESS_);
-        Wire1.write(motorPower, size);
+        Wire1.write(motorPower, 4);
         Wire1.endTransmission();
     }
 };

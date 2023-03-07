@@ -29,7 +29,7 @@ constexpr int HEARTBEAT = 6;
 inline void writeMotorPower(const int index, const byte data) {
     if (data == 0) {
         // Free
-        analogWrite(MOTOR_PIN[index].ENABLE, 0);
+        digitalWrite(MOTOR_PIN[index].ENABLE, HIGH);
         digitalWrite(MOTOR_PIN[index].INPUT1, LOW);
         digitalWrite(MOTOR_PIN[index].INPUT2, LOW);
         return;
