@@ -20,11 +20,12 @@ void setup() {
 void loop() {
     Serial.println();
     bool find_ball = false;
+
     for (int i = 0; i < ADDRESS_COUNT; ++i) {
         Wire.requestFrom(I2C_ADDRESS[i], 1);
         bool timeout = false;
         for (int time = 0; !Wire.available(); ++time) {
-            if (time < 10) {
+            if (time < 5) {
                 delay(1);
             } else {
                 timeout = true;
@@ -36,12 +37,14 @@ void loop() {
         Serial.print(i);
         Serial.print("] = ");
         if (timeout) {
-            Serial.println("timeout");
+            Serial.println("Timeout");
         } else {
             uint8_t find = Wire.read();
+            find_ball |= find ? true : false;
             Serial.println(find ? "True" : "False");
         }
     }
     Serial.println(find_ball ? "Exist ball" : "Not found");
+
     delay(500);
 }

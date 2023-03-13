@@ -19,6 +19,27 @@ class Coordinate:
         self.h = h
 
 
+orange_ball = Coordinate(0, 0, 0, 0)
+
+
+def main():
+    global orange_ball
+    setup_sensor(True)
+    clock = time.clock()
+
+    while True:
+        clock.tick()
+        image = sensor.snapshot()
+
+        orange_ball = track_color(
+            image=image,
+            color_threshold=ORAMGE_COLOR_THRESHOLD,
+            pixels_threshold=10,
+            area_threshold=10,
+            draw_color=(255, 0, 0)
+        )
+
+
 def setup_sensor(dual_buff):
     """Setup sensor
     dual_buff: Double buffering is allowed, which will increase the frame rate,
@@ -49,19 +70,17 @@ def track_color(image,
         Coordinate
     """
     blobs = image.find_blobs(
-        ORAMGE_COLOR_THRESHOLD,
-        thresholds=color_threshold,
+        color_threshold,
         pixels_threshold=pixels_threshold,
         area_threshold=area_threshold
     )
     if (blobs is None) or (len(blobs) == 0):
         return Coordinate(-1, -1, -1, -1)
-    sorted_blobs = sorted(blobs, key=lambda x: x.area())
     if draw_color is not None:
-        for b in sorted_blobs:
+        for b in blobs:
             image.draw_rectangle(b.rect(), color=draw_color)
             image.draw_cross(b.cx(), b.cy())
-    max_blob = sorted_blobs[-1]
+    max_blob = max(blobs, key=lambda x: x.area())
     return Coordinate(
         x=max_blob.cx(),
         y=max_blob.cy(),
@@ -75,6 +94,7 @@ def on_receive(received_data):
 
 
 def on_transmit():
+    global orange_ball
     res = 0
     if orange_ball.x != -1:
         res = 1
@@ -100,17 +120,4 @@ i2c = I2C(
 
 
 if __name__ == "__main__":
-    setup_sensor(True)
-    clock = time.clock()
-
-    while True:
-        clock.tick()
-        image = sensor.snapshot()
-
-        orange_ball = track_color(
-            image=image,
-            color_threshold=ORAMGE_COLOR_THRESHOLD,
-            pixels_threshold=10,
-            area_threshold=10,
-            draw_color=(255, 0, 0)
-        )
+    main()
