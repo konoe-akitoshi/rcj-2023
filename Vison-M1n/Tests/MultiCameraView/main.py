@@ -89,8 +89,8 @@ def on_event(event):
 i2c = I2C(
     I2C.I2C0,
     mode=I2C.MODE_SLAVE,
-    scl=20,
-    sda=21,
+    scl=8,
+    sda=15,
     addr=0x23,
     addr_size=7,
     on_receive=on_receive,
