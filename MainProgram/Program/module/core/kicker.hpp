@@ -18,7 +18,7 @@ class Kicker
     explicit constexpr Kicker(const int pin) : PIN_(pin) {
     }
 
-    void Setup(void) const {
+    void setup(void) const {
         pinMode(PIN_, OUTPUT);
         digitalWrite(PIN_, LOW);
     }
@@ -26,14 +26,14 @@ class Kicker
     /**
      * Push kicker to front.
      */
-    void PushFront() const {
+    void pushFront() const {
         digitalWrite(PIN_, HIGH);
     }
 
     /**
      * Pull kicker to the first place.
      */
-    void PullBack() const {
+    void pullBack() const {
         digitalWrite(PIN_, LOW);
     }
 

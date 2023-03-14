@@ -60,15 +60,15 @@ struct Vector2
         return *this;
     }
 
-    static constexpr float SquareNorm(const Vector2& vec) {
+    static constexpr float squareNorm(const Vector2& vec) {
         return vec.x * vec.x + vec.y * vec.y;
     }
 
-    static constexpr float Norm(const Vector2& vec) {
+    static constexpr float norm(const Vector2& vec) {
         return sqrt(vec.x * vec.x + vec.y * vec.y);
     }
 
-    static constexpr float Angle(const Vector2& vec) {
+    static constexpr float angle(const Vector2& vec) {
         return atan2(100 * vec.y, 100 * vec.x);
     }
 };

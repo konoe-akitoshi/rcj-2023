@@ -19,7 +19,7 @@ class MotorController
         : SDA_(sda), SCL_(scl), ADDRESS_(address) {
     }
 
-    void Setup(void) const {
+    void setup(void) const {
         Wire1.setSDA(SDA_);
         Wire1.setSCL(SCL_);
         Wire1.begin();
@@ -34,7 +34,7 @@ class MotorController
      * @param power [-100, 100]
      * @param rotation [-100, 100] (positive is clockwise, negative is counter-clockwise)
      */
-    void Drive(float azimuth, int power, int rotation) const {
+    void drive(float azimuth, int power, int rotation) const {
         // それぞれのモーターは次のように配置されている
         // 各モーターのパワーの比率を x[0] ~ x[3] に計算する
         //  motor1 right-top motor. forward-direction: ↖︎
@@ -80,25 +80,25 @@ class MotorController
 
         uint8_t motorPower[4] = {0};
         for (int i = 0; i < 4; ++i) {
-            motorPower[i] = FormatPower_(x[i] * power);
+            motorPower[i] = formatPower_(x[i] * power);
         }
-        Transmit_(motorPower);
+        transmit_(motorPower);
     }
 
     /**
      * Stop all motors.
      */
-    void StopAll(void) const {
+    void stopAll(void) const {
         static constexpr uint8_t motorPower[4] = {0b10000000, 0b10000000, 0b10000000, 0b10000000};
-        Transmit_(motorPower);
+        transmit_(motorPower);
     }
 
     /**
      * Free all motors.
      */
-    void FreeAll() const {
+    void freeAll() const {
         static constexpr uint8_t motorPower[4] = {0, 0, 0, 0};
-        Transmit_(motorPower);
+        transmit_(motorPower);
     }
 
   private:
@@ -106,7 +106,7 @@ class MotorController
     const int SCL_;
     const int ADDRESS_;
 
-    uint8_t FormatPower_(const int power) const {
+    uint8_t formatPower_(const int power) const {
         const int p = min(abs(power), 100);
 
         // bit 8: モーターの回転方向 (0: 正転, 1: 逆転)
@@ -125,7 +125,7 @@ class MotorController
         return ret;
     }
 
-    void Transmit_(const uint8_t (&motorPower)[4]) const {
+    void transmit_(const uint8_t (&motorPower)[4]) const {
         Wire1.beginTransmission(ADDRESS_);
         Wire1.write(motorPower, 4);
         Wire1.endTransmission();

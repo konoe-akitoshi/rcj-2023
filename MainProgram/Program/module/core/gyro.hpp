@@ -15,14 +15,14 @@ class Gyro
     explicit constexpr Gyro(const int speed) : SPEED_(speed) {
     }
 
-    void Setup(void) const {
+    void setup(void) const {
         do {
             Serial1.begin(SPEED_);
             delay(100);
         } while (Serial1 == false);
     }
 
-    int GetRotation(void) const {
+    int getRotation(void) const {
         static int prev = 0;
         if (Serial1.available() == 0) {
             return prev;

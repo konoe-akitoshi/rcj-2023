@@ -23,7 +23,7 @@ class DigitalReader
     /**
      * Set up the digital-reader.
      */
-    void Setup(void) const {
+    void setup(void) const {
         pinMode(PIN_, MODE_);
     }
 
@@ -32,7 +32,7 @@ class DigitalReader
      *
      * @returns ture: pin value is HIGH.
      */
-    bool IsHigh(void) const {
+    bool isHigh(void) const {
         return digitalRead(PIN_) == HIGH;
     }
 
@@ -41,7 +41,7 @@ class DigitalReader
      *
      * @returns ture: pin value is LOW.
      */
-    bool IsLow(void) const {
+    bool isLow(void) const {
         return digitalRead(PIN_) == LOW;
     }
 
@@ -57,7 +57,7 @@ class DigitalReaderPCF8575
         : pcf8574_(pcf8574), PIN_(pin), MODE_(mode) {
     }
 
-    void Setup(void) const {
+    void setup(void) const {
         pcf8574_.pinMode(PIN_, MODE_);
     }
 
@@ -66,7 +66,7 @@ class DigitalReaderPCF8575
      *
      * @returns ture: pin value is HIGH.
      */
-    bool IsHigh(void) const {
+    bool isHigh(void) const {
         return pcf8574_.digitalRead(PIN_) == HIGH;
     }
 
@@ -75,7 +75,7 @@ class DigitalReaderPCF8575
      *
      * @returns ture: pin value is LOW.
      */
-    bool IsLow() const {
+    bool isLow() const {
         return pcf8574_.digitalRead(PIN_) == LOW;
     }
 

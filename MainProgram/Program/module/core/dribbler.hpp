@@ -18,7 +18,7 @@ class Dribbler
     explicit constexpr Dribbler(const int pin_pwm) : PIN_PWM_(pin_pwm) {
     }
 
-    void Setup(void) const {
+    void setup(void) const {
         pinMode(PIN_PWM_, OUTPUT);
         // NOTE: プログラム全体のPWMの周波数を変えるみたい。複数のPWM周波数を使うときはその度に変更すること
         analogWriteFreq(37000);
@@ -27,9 +27,9 @@ class Dribbler
     /**
      * Start dribbler with specified power. If power is zero or negative, it meens Stop().
      */
-    void Start(const int power) const {
+    void start(const int power) const {
         if (power <= 0) {
-            Stop();
+            stop();
             return;
         }
         int p = min(power, 100);
@@ -40,7 +40,7 @@ class Dribbler
     /**
      * Stop dribbler.
      */
-    void Stop(void) const {
+    void stop(void) const {
         analogWrite(PIN_PWM_, 0);
     }
 

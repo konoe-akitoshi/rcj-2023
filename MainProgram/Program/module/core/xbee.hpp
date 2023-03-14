@@ -18,7 +18,7 @@ class XBee
     explicit constexpr XBee(const int speed) : SPEED_(speed) {
     }
 
-    void Setup(void) {
+    void setup(void) {
         do {
             Serial1.begin(SPEED_);
             delay(100);
@@ -30,7 +30,7 @@ class XBee
      *
      * @return true: exist data in the serial port.
      */
-    bool HasData() const {
+    bool hasData() const {
         return Serial1.available() > 0;
     }
 
@@ -38,7 +38,7 @@ class XBee
      * Read the top of the data which is reached at the serial port.
      * If there are no data at the port, returns -1.
      */
-    int ReadData() const {
+    int readData() const {
         int ret = 0;
         while (Serial1.available() > 0) {
             ret = Serial1.read();
@@ -51,7 +51,7 @@ class XBee
      *
      * @param data the transfer data
      */
-    void SendData(const int data) const {
+    void sendData(const int data) const {
         Serial.write(data);
     }
 

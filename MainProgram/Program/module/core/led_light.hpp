@@ -23,7 +23,7 @@ class LedLight
         : PIN_(pin), MODE_ON_(on), MODE_OFF_(off) {
     }
 
-    void Setup(void) const {
+    void setup(void) const {
         pinMode(PIN_, OUTPUT);
         digitalWrite(PIN_, MODE_OFF_);
     }
@@ -31,14 +31,14 @@ class LedLight
     /**
      * Tern on the LED light.
      */
-    void TernOn() const {
+    void ternOn() const {
         digitalWrite(PIN_, MODE_ON_);
     }
 
     /**
      * Tern off the LED light.
      */
-    void TernOff() const {
+    void ternOff() const {
         digitalWrite(PIN_, MODE_OFF_);
     }
 
@@ -60,7 +60,7 @@ class LedLightPCF8574
         : pcf8574_(pcf8574), PIN_(pin), MODE_ON_(on), MODE_OFF_(off) {
     }
 
-    void Setup(void) const {
+    void setup(void) const {
         pcf8574_.pinMode(PIN_, OUTPUT);
         pcf8574_.digitalWrite(PIN_, MODE_OFF_);
     }
@@ -68,14 +68,14 @@ class LedLightPCF8574
     /**
      * Tern on the LED light.
      */
-    void TernOn() const {
+    void ternOn() const {
         pcf8574_.digitalWrite(PIN_, MODE_ON_);
     }
 
     /**
      * Tern off the LED light.
      */
-    void TernOff() const {
+    void ternOff() const {
         pcf8574_.digitalWrite(PIN_, MODE_OFF_);
     }
 

@@ -15,7 +15,7 @@ void setup() {
     Serial.begin(9600);
 }
 
-void Transmit() {
+void transmit() {
     Wire1.beginTransmission(I2C_ADDRESS);
     Wire1.write(power, DATA_LENGTH);
     Wire1.endTransmission();
@@ -57,7 +57,7 @@ void loop() {
             Serial.println("Brake");
             break;
     }
-    Transmit();
+    transmit();
 
     delay(3000);
     count += 1;

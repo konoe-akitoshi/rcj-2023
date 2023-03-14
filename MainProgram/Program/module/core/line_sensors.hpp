@@ -46,18 +46,18 @@ class LineSensors
               module::DigitalReader(center_sensor_pin, INPUT_PULLUP),
           } {}
 
-    void Setup() const {
+    void setup() const {
         pinMode(INTERRUPT_PIN_, INPUT_PULLUP);
         for (int i = 0; i < 5; ++i) {
-            Sensors_[i].Setup();
+            Sensors_[i].setup();
         }
     }
 
-    int GetInterruptPin() const {
+    int getInterruptPin() const {
         return digitalPinToInterrupt(INTERRUPT_PIN_);
     }
 
-    bool IsLineDetected() const {
+    bool isLineDetected() const {
         // bool ret = false;
         // for (int _ = 0; _ < 10; ++_) {
         //     ret |= (digitalRead(INTERRUPT_PIN_) == HIGH);
@@ -67,19 +67,19 @@ class LineSensors
         return digitalRead(INTERRUPT_PIN_) == HIGH;
     }
 
-    std::pair<float, LineSensorsDirectionIndex> CalculateLineAzimut() const {
+    std::pair<float, LineSensorsDirectionIndex> calculateLineAzimut() const {
         float az = 0;
         int front = -1;
-        if (Sensors_[0].IsHigh()) {
+        if (Sensors_[0].isHigh()) {
             az = PI / 2;
             front = 0;
-        } else if (Sensors_[1].IsHigh()) {
+        } else if (Sensors_[1].isHigh()) {
             az = 0;
             front = 1;
-        } else if (Sensors_[2].IsHigh()) {
+        } else if (Sensors_[2].isHigh()) {
             az = -1 * PI / 2;
             front = 2;
-        } else if (Sensors_[3].IsHigh()) {
+        } else if (Sensors_[3].isHigh()) {
             az = PI;
             front = 3;
         }
@@ -88,9 +88,9 @@ class LineSensors
         }
         const int left = (front + 3) % 4;
         const int right = (front + 1) % 4;
-        if (Sensors_[left].IsHigh()) {
+        if (Sensors_[left].isHigh()) {
             az += -3 * PI / 4;
-        } else if (Sensors_[right].IsHigh()) {
+        } else if (Sensors_[right].isHigh()) {
             az += 3 * PI / 4;
         } else {
             az += PI;

@@ -15,7 +15,7 @@ void setup() {
     Serial.begin(9600);
 }
 
-void Transmit() {
+void transmit() {
     Wire1.beginTransmission(I2C_ADDRESS);
     Wire1.write(power, DATA_LENGTH);
     Wire1.endTransmission();
@@ -63,7 +63,7 @@ void loop() {
             Serial.println("Right");
             break;
     }
-    Transmit();
+    transmit();
 
     delay(1500);
     count += 1;

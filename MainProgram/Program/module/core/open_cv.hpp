@@ -21,7 +21,7 @@ class OpenCV
     explicit constexpr OpenCV(const int speed) : SPEED_(speed), raw_() {
     }
 
-    void Setup(void) const {
+    void setup(void) const {
         do {
             Serial2.begin(SPEED_);
             delay(100);
@@ -31,15 +31,15 @@ class OpenCV
     /**
      * Wait for data from Vison-OpenMV.
      */
-    void WaitData() {
+    void waitData() {
         while (true) {
-            raw_[0] = GetDataUnit_();
+            raw_[0] = getDataUnit_();
             if (raw_[0] == 254) {
                 break;
             }
         }
         for (int i = 1; i < DATA_SIZE_; ++i) {
-            raw_[i] = GetDataUnit_();
+            raw_[i] = getDataUnit_();
         }
     }
 
@@ -48,7 +48,7 @@ class OpenCV
      *
      * @return true if the ball exists.
      */
-    int GetBallExistence() const {
+    int getBallExistence() const {
         return raw_[1];
     }
 
@@ -57,7 +57,7 @@ class OpenCV
      *
      * @return true if the yellow goal exists.
      */
-    int GetYellowGoalExistence() const {
+    int getYellowGoalExistence() const {
         return raw_[9];
     }
 
@@ -66,7 +66,7 @@ class OpenCV
      *
      * @return true if the blue goal exists.
      */
-    int GetBlueGoalExistence() const {
+    int getBlueGoalExistence() const {
         return raw_[17];
     }
 
@@ -75,7 +75,7 @@ class OpenCV
      *
      * @return the coordinate of the ball.
      */
-    Vector2 GetBallPosition() const {
+    Vector2 getBallPosition() const {
         const int x = raw_[2] + raw_[3];
         const int y = raw_[4] + raw_[5];
         return {x, y};
@@ -86,7 +86,7 @@ class OpenCV
      *
      * @return the coordinate of yellow goal.
      */
-    Vector2 GetYellowGoalPosition() const {
+    Vector2 getYellowGoalPosition() const {
         const int x = raw_[10] + raw_[11];
         const int y = raw_[12] + raw_[13];
         return {x, y};
@@ -97,7 +97,7 @@ class OpenCV
      *
      * @return the coordinate of blue goal.
      */
-    Vector2 GetBlueGoalPosition() const {
+    Vector2 getBlueGoalPosition() const {
         const int x = raw_[18] + raw_[19];
         const int y = raw_[20] + raw_[21];
         return {x, y};
@@ -108,7 +108,7 @@ class OpenCV
      *
      * @return the width of yellow goal.
      */
-    int GetYellowGoalWidth() const {
+    int getYellowGoalWidth() const {
         return raw_[14] + raw_[15];
     }
 
@@ -117,7 +117,7 @@ class OpenCV
      *
      * @return the width of blue goal.
      */
-    int GetBlueGoalWidth() const {
+    int getBlueGoalWidth() const {
         return raw_[22] + raw_[23];
     }
 
@@ -126,7 +126,7 @@ class OpenCV
     const int SPEED_;
     std::array<int, DATA_SIZE_> raw_;
 
-    inline int GetDataUnit_() const {
+    inline int getDataUnit_() const {
         while (Serial2.available() == 0) {
             ;  // wait for serial data
         }

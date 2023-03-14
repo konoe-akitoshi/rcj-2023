@@ -24,7 +24,7 @@ class Battery
      *
      * @return true: the battery voltage is low.
      */
-    bool IsEmergency() const {
+    bool isEmergency() const {
         int limit = LIMIT_ / kCOUNT_;
         int voltage = analogRead(PIN_);
         return voltage < limit;
@@ -35,7 +35,7 @@ class Battery
      *
      * @return the voltage of the battery (unit: V).
      */
-    float Voltage() const {
+    float voltage() const {
         int read_voltage = analogRead(PIN_);
         return read_voltage * kCOUNT_;
     }
