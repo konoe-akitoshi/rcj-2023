@@ -4,6 +4,9 @@ import os
 import glob
 import shutil
 
+# NOTE: if you use `deque` in MicroPython, you must use `ucollections.deque`
+from collections import deque
+
 # サークルグリットの点の数
 CIRCLEGRID = (12, 8)
 
@@ -18,8 +21,9 @@ CRITERIA = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
 def main():
     clean("./undistorted/")
-    clean("./undistorted_hand/")
     clean("./corners/")
+    clean("./undistorted_hand/")
+    clean("./undistorted_reverse/")
 
     targets = Targets("./images/*.jpg")
     h, w = targets.size()
@@ -62,25 +66,8 @@ def main():
         (w, h),        # 歪み補正後の画像サイズ
         5              # = CV_32FC1
     )
-
-    hand_mapx = np.zeros((w, h), dtype=np.float32)
-    hand_mapy = np.zeros((w, h), dtype=np.float32)
-    cx, cy = mtx[0][2], mtx[1][2]
-    fx, fy = mtx[0][0], mtx[1][1]
-    cx2, cy2 = newcameramtx[0][2], newcameramtx[1][2]
-    fx2, fy2 = newcameramtx[0][0], newcameramtx[1][1]
-    k1, k2, p1, p2, k3 = dist[0]
-    for u in range(w):
-        for v in range(h):
-            x = (u - cx2) / fx2
-            y = (v - cy2) / fy2
-            rr = x ** 2 + y ** 2
-            K = 1 + k1*rr + k2*(rr**2) + k3*(rr**3)
-
-            x2 = x*K + 2*p1*x*y + p2*(rr+2*(x**2))
-            y2 = y*K + p1*(rr+2*(y**2)) + 2*p2*x*y
-            hand_mapx[u][v] = x2*fx + cx
-            hand_mapy[u][v] = y2*fy + cy
+    hand_mapx, hand_mapy = create_remap(h, w, mtx, newcameramtx, dist)
+    next_x, next_y = create_reverse_map(h, w, mtx, newcameramtx, dist)
 
     for image in targets.images:
         dst = cv2.remap(image.image, mapx, mapy, cv2.INTER_LINEAR)
@@ -88,6 +75,14 @@ def main():
 
         dst = cv2.remap(image.image, hand_mapx, hand_mapy, cv2.INTER_LINEAR)
         cv2.imwrite("./undistorted_hand/" + image.name, dst)
+
+        dst = np.zeros((h, w, 3))
+        dst += [255, 0, 0][::-1]  # fill red
+        for i in range(h):
+            for j in range(w):
+                x, y = next_x[i][j], next_y[i][j]
+                dst[x][y] = image.image[i, j]
+        cv2.imwrite("./undistorted_reverse/" + image.name, dst)
 
 
 class ImageData:
@@ -124,6 +119,78 @@ def clean(path):
     if os.path.exists(path):
         shutil.rmtree(path)
     os.makedirs(path)
+
+
+def create_remap(h, w, mtx, newcameramtx, dist):
+    cx, cy = mtx[0][2], mtx[1][2]
+    fx, fy = mtx[0][0], mtx[1][1]
+    cx2, cy2 = newcameramtx[0][2], newcameramtx[1][2]
+    fx2, fy2 = newcameramtx[0][0], newcameramtx[1][1]
+    k1, k2, p1, p2, k3 = dist[0]
+
+    mapx = np.zeros((w, h), dtype=np.float32)
+    mapy = np.zeros((w, h), dtype=np.float32)
+    for u in range(w):
+        for v in range(h):
+            x = (u - cx2) / fx2
+            y = (v - cy2) / fy2
+            rr = x ** 2 + y ** 2
+            K = 1 + k1*rr + k2*(rr**2) + k3*(rr**3)
+
+            x2 = x*K + 2*p1*x*y + p2*(rr+2*(x**2))
+            y2 = y*K + p1*(rr+2*(y**2)) + 2*p2*x*y
+            mapx[u][v] = x2*fx + cx
+            mapy[u][v] = y2*fy + cy
+    return (mapx, mapy)
+
+
+def create_reverse_map(height, width, mtx, newcameramtx, dist):
+    cx, cy = mtx[0][2], mtx[1][2]
+    fx, fy = mtx[0][0], mtx[1][1]
+    cx2, cy2 = newcameramtx[0][2], newcameramtx[1][2]
+    fx2, fy2 = newcameramtx[0][0], newcameramtx[1][1]
+    k1, k2, p1, p2, k3 = dist[0]
+
+    next_index_x = [[None] * width for _ in range(height)]
+    next_index_y = [[None] * width for _ in range(height)]
+    for u in range(width):
+        for v in range(height):
+            x = (u - cx2) / fx2
+            y = (v - cy2) / fy2
+            rr = x ** 2 + y ** 2
+            K = 1 + k1*rr + k2*(rr**2) + k3*(rr**3)
+
+            x2 = x*K + 2*p1*x*y + p2*(rr+2*(x**2))
+            y2 = y*K + p1*(rr+2*(y**2)) + 2*p2*x*y
+            org_x = round(x2*fx + cx)
+            org_y = round(y2*fy + cy)
+
+            if 0 <= org_x < width and 0 <= org_y < height:
+                next_index_x[org_y][org_x] = v
+                next_index_y[org_y][org_x] = u
+
+    # NOTE: Fill array by BFS
+    def fill_next_index(next_index, h, w):
+        for i in range(h):
+            for j in range(w):
+                if next_index[i][j] is None:
+                    deq = deque([(i, j)])
+                    while deq:
+                        x, y = deq.popleft()
+                        if next_index[x][y] is not None:
+                            next_index[i][j] = next_index[x][y]
+                            break
+                        if 0 < x:
+                            deq.append((x-1, y))
+                        if x < h - 1:
+                            deq.append((x+1, y))
+                        if 0 < y:
+                            deq.append((x, y-1))
+                        if y < w - 1:
+                            deq.append((x, y+1))
+    fill_next_index(next_index_x, height, width)
+    fill_next_index(next_index_y, height, width)
+    return (next_index_x, next_index_y)
 
 
 def extractPaths(targets):
