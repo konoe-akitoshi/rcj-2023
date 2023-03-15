@@ -69,6 +69,8 @@ extern void analogWriteFreq(uint32_t freq);
 
 void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode);
 void detachInterrupt(uint32_t pin);
+void interrupts();
+void noInterrupts();
 
 extern void delay(uint32_t dwMs);
 extern uint32_t millis();

@@ -3,6 +3,8 @@
 
 #ifdef WITHOUT_ARDUINO_ENVIRONMENT
 #include "core/deps/arduino.hpp"
+#else
+#include "Arduino.h"
 #endif
 
 namespace pins

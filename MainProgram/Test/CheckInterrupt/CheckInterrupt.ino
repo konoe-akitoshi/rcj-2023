@@ -4,7 +4,7 @@
  */
 
 /*
-constexpr int LineSensorLed = 21;
+constexpr int LineSensorLed = 22;
 
 constexpr int Interrupt = 28;
 constexpr int LineSensor1 = 16;
