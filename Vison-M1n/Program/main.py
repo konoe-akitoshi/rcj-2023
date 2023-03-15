@@ -10,8 +10,8 @@ if DEBUG_MODE:
 
 CAMERA_ID = 0
 
-I2C_SCL = 20
-I2C_SDA = 21
+I2C_SCL = 8
+I2C_SDA = 15
 I2C_ADDRESS = [0x21, 0x22, 0x23, 0x24][CAMERA_ID]
 
 CAMERA_MATRIX = [
@@ -32,6 +32,9 @@ ORAMGE_COLOR_THRESHOLD = [(14, 100, 25, 127, 0, 127)]
 YELLOW_COLOR_THRESHOLD = [(20, 100, -10, 0, 16, 65)]
 BLUE_COLOR_THRESHOLD = [(0, 30, -20, 127, -128, -10)]
 
+is_adjusting_white_balance = False
+current_white_balance = (0, 0, 0)
+
 
 class Coordinate:
     def __init__(self, x, y, w, h):
@@ -39,19 +42,6 @@ class Coordinate:
         self.y = y
         self.w = w
         self.h = h
-
-
-class Calibration:
-    def __init__(self, width, height):
-        # TODO: 逆引き配列の生成
-        self._index = []
-        fx, fy, cx, cy = CAMERA_MATRIX
-        fx2, fy2, cx2, cy2 = CAMERA_MATRIX2
-        k1, k2, p1, p2, k3 = CAMERA_DISTORTION_COEFFICIENTS
-
-    def calc(coordinate):
-        # TODO: 座標を修正して新しい座標を生成する
-        return Coordinate(x=0, y=0, w=coordinate.w, h=coordinate.h)
 
 
 i2c = None
@@ -75,6 +65,8 @@ def main():
         lcd.init(type=1, freq=15000000)
 
     while True:
+        if is_adjusting_white_balance:
+            auto_white_blance()
         if DEBUG_MODE:
             clock.tick()
         image = sensor.snapshot()
@@ -116,10 +108,25 @@ def main():
             lcd.display(image)
 
 
+class Calibration:
+    def __init__(self, width, height):
+        # TODO: 逆引き配列の生成
+        self._index = []
+        fx, fy, cx, cy = CAMERA_MATRIX
+        fx2, fy2, cx2, cy2 = CAMERA_MATRIX2
+        k1, k2, p1, p2, k3 = CAMERA_DISTORTION_COEFFICIENTS
+
+    def calc(coordinate):
+        # TODO: 座標を修正して新しい座標を生成する
+        return Coordinate(x=0, y=0, w=coordinate.w, h=coordinate.h)
+
+
 def on_receive(request):
-    global i2c_received_id, i2c_continued_id_count
+    global i2c_received_id, i2c_continued_id_count, is_adjusting_white_balance
     i2c_received_id = request
     i2c_continued_id_count = -1
+    if request == 1:
+        is_adjusting_white_balance = True
 
 
 def on_transmit():
@@ -137,21 +144,15 @@ def on_transmit():
         else:
             return max(200, ret - 200) if ret != -1 else 255
     if i2c_received_id == 1:
-        # ホワイトバランス up
-        current_gain = sensor.get_gain_db()
-        next_gain = current_gain + 1
-        sensor.set_auto_gain(False, next_gain)
-        return next_gain
-    elif i2c_received_id == 2:
-        # ホワイトバランス down
-        current_gain = sensor.get_gain_db()
-        next_gain = current_gain - 1
-        sensor.set_auto_gain(False, next_gain)
-        return next_gain
-    elif i2c_received_id == 3:
-        # ホワイトバランス自動調整
-        next_gain = auto_white_blance()
-        return next_gain
+        if i2c_continued_id_count == 0:
+            if is_adjusting_white_balance:
+                i2c_continued_id_count -= 1
+                return 2
+            else:
+                return 1
+        else:
+            color = i2c_continued_id_count - 1
+            return current_white_balance[color]
     else:
         width = snapshot_image.width()
         count = i2c_continued_id_count // 2
@@ -170,6 +171,10 @@ def on_transmit():
             return ((g & 0b111) << 5) | b
 
 
+def on_event(_):
+    pass
+
+
 def track_color(image,
                 color_threshold,
                 pixels_threshold,
@@ -186,7 +191,7 @@ def track_color(image,
         Coordinate
     """
     blobs = image.find_blobs(
-        thresholds=color_threshold,
+        color_threshold,
         pixels_threshold=pixels_threshold,
         area_threshold=area_threshold
     )
@@ -221,7 +226,7 @@ def setup_i2c(scl, sda, address):
         addr_size=7,
         on_receive=on_receive,
         on_transmit=on_transmit,
-        on_event=None,
+        on_event=on_event,
     )
 
 
