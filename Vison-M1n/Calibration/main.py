@@ -178,18 +178,17 @@ def create_reverse_map(height, width, mtx, newcameramtx, dist):
             if 0 <= org_x < width and 0 <= org_y < height:
                 next_index_x[pos(org_x, org_y)] = u - org_x
                 next_index_y[pos(org_x, org_y)] = v - org_y
-    
-    
+
     def fill_jpg(x, y):
         dst = np.zeros((height, width, 3))
         cv2.imwrite("fill.jpg", dst)
         dst = cv2.imread("fill.jpg")
-        
+
         for v in range(height):
             for u in range(width):
                 if next_index_x[pos(u, v)] != inf and next_index_y[pos(u, v)] != inf:
                     dst[v, u] = [255, 255, 255]
-        
+
         for i in range(-1, 2):
             for j in range(-1, 2):
                 dst[y+i, x+j] = [0, 0, 255]
@@ -201,7 +200,7 @@ def create_reverse_map(height, width, mtx, newcameramtx, dist):
             for u in range(w):
                 if next_index[pos(u, v)] != inf:
                     continue
-                
+
                 deq = deque([(u, v)])
                 seen = dict()
                 seen[pos(u, v)] = True
@@ -223,7 +222,6 @@ def create_reverse_map(height, width, mtx, newcameramtx, dist):
     fill_next_index(next_index_x, height, width, 0)
     fill_next_index(next_index_y, height, width, 1)
 
-    
     return (next_index_x, next_index_y)
 
 

@@ -1,6 +1,8 @@
 import sensor
 import time
+import array
 from machine import I2C
+from ucollections import OrderedDict, deque
 
 DEBUG_MODE = False
 
@@ -109,16 +111,69 @@ def main():
 
 
 class Calibration:
+    def _pos(self, x, y):
+        return y * self.width + x
+
     def __init__(self, width, height):
-        # TODO: 逆引き配列の生成
-        self._index = []
+        global CAMERA_MATRIX, CAMERA_MATRIX2, CAMERA_DISTORTION_COEFFICIENTS
+        self.width = width
+        self.height = height
+        self._next_index_x = array.array("b")
+        self._next_index_y = array.array("b")
         fx, fy, cx, cy = CAMERA_MATRIX
         fx2, fy2, cx2, cy2 = CAMERA_MATRIX2
         k1, k2, p1, p2, k3 = CAMERA_DISTORTION_COEFFICIENTS
+        INF = 127
+        for _ in range(height*width):
+            self._next_index_x.append(INF)
+            self._next_index_y.append(INF)
 
-    def calc(coordinate):
-        # TODO: 座標を修正して新しい座標を生成する
-        return Coordinate(x=0, y=0, w=coordinate.w, h=coordinate.h)
+        for v in range(height):
+            for u in range(width):
+                x = (u - cx2) / fx2
+                y = (v - cy2) / fy2
+                rr = x ** 2 + y ** 2
+                K = 1 + k1*rr + k2*(rr**2) + k3*(rr**3)
+
+                x2 = x*K + 2*p1*x*y + p2*(rr+2*(x**2))
+                y2 = y*K + p1*(rr+2*(y**2)) + 2*p2*x*y
+                org_x = round(x2*fx + cx)
+                org_y = round(y2*fy + cy)
+
+                if 0 <= org_x < width and 0 <= org_y < height:
+                    self._next_index_x[self._pos(org_x, org_y)] = u - org_x
+                    self._next_index_y[self._pos(org_x, org_y)] = v - org_y
+
+        # NOTE: Fill array by BFS
+        def fill_next_index(next_index, h, w, flg):
+            seen = OrderedDict()
+            for v in range(h):
+                for u in range(w):
+                    if next_index[self._pos(u, v)] != INF:
+                        continue
+                    deq = deque((), 32, False)
+                    deq.append((u, v))
+                    seen.clear()
+                    seen[self._pos(u, v)] = True
+                    while deq:
+                        x, y = deq.popleft()
+                        if next_index[self._pos(x, y)] != INF:
+                            next_index[self._pos(u, v)] = next_index[self._pos(
+                                x, y)] + (x, y)[flg] - (u, v)[flg]
+                            break
+                        for i in range(-1, 2):
+                            for j in range(-1, 2):
+                                if (0 <= x + i < w) and (0 <= y + j < h) and (self._pos(x+i, y+j) not in seen):
+                                    deq.append((x+i, y+j))
+                                    seen[self._pos(x+i, y+j)] = True
+
+        fill_next_index(self._next_index_x, height, width, 0)
+        fill_next_index(self._next_index_y, height, width, 1)
+
+    def calc(self, coordinate):
+        x = coordinate.x + self._next_index_x[self._pos(coordinate.x, coordinate.y)]
+        y = coordinate.y + self._next_index_y[self._pos(coordinate.x, coordinate.y)]
+        return Coordinate(x=x, y=y, w=coordinate.w, h=coordinate.h)
 
 
 def on_receive(request):
