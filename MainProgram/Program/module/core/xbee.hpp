@@ -52,7 +52,7 @@ class XBee
      * @param data the transfer data
      */
     void sendData(const uint8_t data) const {
-        Serial.write(data);
+        Serial1.write(data);
     }
 
   private:
