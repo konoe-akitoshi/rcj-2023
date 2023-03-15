@@ -1,4 +1,7 @@
 /*
+constexpr int RESET_INPUT_PIN = 23;
+constexpr int RESET_OUTPUT_PIN = 7;
+
 void setup() {
     do {
         Serial.begin(9600);
@@ -11,6 +14,9 @@ void setup() {
         delay(100);
     } while(!Serial2);
     Serial.println("Open Serial2(11520)");
+
+    pinMode(RESET_INPUT_PIN, INPUT_PULLUP);
+    pinMode(RESET_OUTPUT_PIN, OUTPUT);
 }
 
 void loop() {
@@ -29,6 +35,10 @@ void loop() {
     } else {
         Serial.println("Serial2 not available");
     }
+
+    auto state = digitalRead(RESET_INPUT_PIN);
+    digitalWrite(RESET_OUTPUT_PIN, state);
+
     delay(100);
 }
 //*/
