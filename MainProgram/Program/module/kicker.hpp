@@ -4,6 +4,6 @@
 #include "pin.hpp"
 #include "core/kicker.hpp"
 
-constexpr module::Kicker Kicker(raspberry_pi_pico::PIN16_GP12);
+constexpr module::Kicker Kicker(pins::rp2040::GPIO12);
 
 #endif

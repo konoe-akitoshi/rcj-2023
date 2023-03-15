@@ -5,12 +5,12 @@
 #include "core/line_sensors.hpp"
 
 constexpr module::LineSensors LineSensors(
-    raspberry_pi_pico::PIN34_GP28,  // interrupt
-    raspberry_pi_pico::PIN21_GP16,  // front sensor
-    raspberry_pi_pico::PIN22_GP17,  // right
-    raspberry_pi_pico::PIN24_GP18,  // back
-    raspberry_pi_pico::PIN25_GP19,  // left
-    raspberry_pi_pico::PIN26_GP20   // center
+    pins::rp2040::GPIO28,  // interrupt
+    pins::rp2040::GPIO16,  // front sensor
+    pins::rp2040::GPIO17,  // right
+    pins::rp2040::GPIO18,  // back
+    pins::rp2040::GPIO19,  // left
+    pins::rp2040::GPIO20   // center
 );
 
 #endif

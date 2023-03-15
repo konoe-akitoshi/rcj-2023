@@ -4,6 +4,6 @@
 #include "pin.hpp"
 #include "core/dribbler.hpp"
 
-constexpr module::Dribbler Dribbler(raspberry_pi_pico::PIN17_GP13);
+constexpr module::Dribbler Dribbler(pins::rp2040::GPIO13);
 
 #endif

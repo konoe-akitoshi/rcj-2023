@@ -4,7 +4,7 @@
 #include "pin.hpp"
 #include "core/digital_reader.hpp"
 
-constexpr module::DigitalReader StartSwitch(raspberry_pi_pico::PIN04_GP02, INPUT_PULLUP);
-constexpr module::DigitalReader GoalSwitch(raspberry_pi_pico::PIN05_GP03, INPUT_PULLUP);
+constexpr module::DigitalReader StartSwitch(pins::rp2040::GPIO02, INPUT_PULLUP);
+constexpr module::DigitalReader GoalSwitch(pins::rp2040::GPIO03, INPUT_PULLUP);
 
 #endif
