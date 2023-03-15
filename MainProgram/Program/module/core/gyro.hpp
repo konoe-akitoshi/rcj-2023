@@ -19,20 +19,20 @@ class Gyro
         do {
             Serial1.begin(SPEED_);
             delay(100);
-        } while (Serial1 == false);
+        } while (!Serial1);
     }
 
-    int getRotation(void) const {
+    int8_t getRotation(void) const {
         static int prev = 0;
         if (Serial1.available() == 0) {
             return prev;
         }
-        int ret = 0;
+        int8_t ret = 0;
         while (Serial1.available() != 0) {
             // Serial2の送信側がint8_tで送ってるので、intで受け取ると負の数が期待通り受け取れない。
             // そのため、int8_tにキャストする必要がある。
             const int8_t raw = Serial1.read();
-            const int val = (int)raw;
+            const int16_t val = (int16_t)raw;
             ret = val * 100 / 128;
         }
         prev = ret;

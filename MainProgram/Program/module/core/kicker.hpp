@@ -15,7 +15,7 @@ class Kicker
     /**
      * @param pin pin number.
      */
-    explicit constexpr Kicker(const int pin) : PIN_(pin) {
+    explicit constexpr Kicker(const pin_size_t pin) : PIN_(pin) {
     }
 
     void setup(void) const {
@@ -38,7 +38,7 @@ class Kicker
     }
 
   private:
-    const int PIN_;
+    const pin_size_t PIN_;
 };
 }  // namespace module
 

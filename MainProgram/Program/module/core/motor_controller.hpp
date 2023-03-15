@@ -2,6 +2,7 @@
 #define MODULE_CORE_MOTOR_CONTOROLER2_HPP
 
 #ifdef WITHOUT_ARDUINO_ENVIRONMENT
+#include "deps/arduino.hpp"
 #include "deps/wire.hpp"
 #else
 #include <Wire.h>
@@ -15,7 +16,7 @@ class MotorController
     /**
      * @param address the address of the I2C slave for transmission processing
      */
-    explicit constexpr MotorController(const int sda, const int scl, const int address)
+    explicit constexpr MotorController(const pin_size_t sda, const pin_size_t scl, const uint8_t address)
         : SDA_(sda), SCL_(scl), ADDRESS_(address) {
     }
 
@@ -34,7 +35,7 @@ class MotorController
      * @param power [-100, 100]
      * @param rotation [-100, 100] (positive is clockwise, negative is counter-clockwise)
      */
-    void drive(float azimuth, int power, int rotation) const {
+    void drive(float azimuth, int8_t power, int8_t rotation) const {
         // それぞれのモーターは次のように配置されている
         // 各モーターのパワーの比率を x[0] ~ x[3] に計算する
         //  motor1 right-top motor. forward-direction: ↖︎
@@ -47,10 +48,8 @@ class MotorController
         // --
 
         // clamp(power|rotation, -100, 100)
-        power = power > 100 ? 100 : power < -100 ? -100
-                                                 : power;
-        rotation = rotation > 100 ? 100 : rotation < -100 ? -100
-                                                          : rotation;
+        power = max(-100, min(100, power));
+        rotation = max(-100, min(100, rotation));
 
         float x[4];
         x[0] = sin(azimuth - (PI / 4));
@@ -59,27 +58,27 @@ class MotorController
         x[3] = -sin(azimuth + (PI / 4));
 
         float x_max = 0;
-        for (int i = 0; i < 4; ++i) {
+        for (int8_t i = 0; i < 4; ++i) {
             if (x_max < abs(x[i])) {
                 x_max = abs(x[i]);
             }
         }
-        for (int i = 0; i < 4; ++i) {
+        for (int8_t i = 0; i < 4; ++i) {
             x[i] = (x[i] / x_max) - (rotation / 100.0);
         }
 
         x_max = 0;
-        for (int i = 0; i < 4; ++i) {
+        for (int8_t i = 0; i < 4; ++i) {
             if (x_max < abs(x[i])) {
                 x_max = abs(x[i]);
             }
         }
-        for (int i = 0; i < 4; ++i) {
+        for (int8_t i = 0; i < 4; ++i) {
             x[i] /= x_max;
         }
 
         uint8_t motorPower[4] = {0};
-        for (int i = 0; i < 4; ++i) {
+        for (int8_t i = 0; i < 4; ++i) {
             motorPower[i] = formatPower_(x[i] * power);
         }
         transmit_(motorPower);
@@ -102,12 +101,12 @@ class MotorController
     }
 
   private:
-    const int SDA_;
-    const int SCL_;
-    const int ADDRESS_;
+    const pin_size_t SDA_;
+    const pin_size_t SCL_;
+    const uint8_t ADDRESS_;
 
     uint8_t formatPower_(const int power) const {
-        const int p = min(abs(power), 100);
+        const uint8_t p = min(abs(power), 100);
 
         // bit 8: モーターの回転方向 (0: 正転, 1: 逆転)
         // bit 1~7: モーターの出力(%)

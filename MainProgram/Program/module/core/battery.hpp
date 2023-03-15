@@ -16,7 +16,7 @@ class Battery
      * @param pin pin number.
      * @param limit the limit of voltage (unit is V)
      */
-    explicit constexpr Battery(const int pin, const float limit) : PIN_(pin), LIMIT_(limit) {
+    explicit constexpr Battery(const pin_size_t pin, const float limit) : PIN_(pin), LIMIT_(limit) {
     }
 
     /**
@@ -41,7 +41,7 @@ class Battery
     }
 
   private:
-    const int PIN_;
+    const pin_size_t PIN_;
     const float LIMIT_;
     static constexpr float kCOUNT_ = 0.01811;  // 0.01811V/count
 };

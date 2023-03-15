@@ -15,7 +15,7 @@ class Dribbler
     /**
      * @param pin_pwm PWM pin number.
      */
-    explicit constexpr Dribbler(const int pin_pwm) : PIN_PWM_(pin_pwm) {
+    explicit constexpr Dribbler(const pin_size_t pin_pwm) : PIN_PWM_(pin_pwm) {
     }
 
     void setup(void) const {
@@ -25,14 +25,14 @@ class Dribbler
     }
 
     /**
-     * Start dribbler with specified power. If power is zero or negative, it meens Stop().
+     * Start dribbler with specified power. If power is zero, it meens Stop().
      */
-    void start(const int power) const {
-        if (power <= 0) {
+    void start(const uint8_t power) const {
+        if (power == 0) {
             stop();
             return;
         }
-        int p = min(power, 100);
+        uint8_t p = min(power, 100);
         p = (p << 1) + (p >> 1);  // p *= 2.5
         analogWrite(PIN_PWM_, p);
     }
@@ -45,7 +45,7 @@ class Dribbler
     }
 
   private:
-    const int PIN_PWM_;
+    const pin_size_t PIN_PWM_;
 };
 }  // namespace module
 

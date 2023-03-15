@@ -17,7 +17,7 @@ class DigitalReader
      * @param pin pin number.
      * @param mode pin mode. e.g. INPUT
      */
-    explicit constexpr DigitalReader(const int pin, const int mode) : PIN_(pin), MODE_(mode) {
+    explicit constexpr DigitalReader(const pin_size_t pin, const int mode) : PIN_(pin), MODE_(mode) {
     }
 
     /**
@@ -46,14 +46,14 @@ class DigitalReader
     }
 
   private:
-    const int PIN_;
+    const pin_size_t PIN_;
     const int MODE_;
 };
 
 class DigitalReaderPCF8575
 {
   public:
-    explicit constexpr DigitalReaderPCF8575(Adafruit_PCF8574& pcf8574, const int pin, const int mode)
+    explicit constexpr DigitalReaderPCF8575(Adafruit_PCF8574& pcf8574, const uint8_t pin, const int mode)
         : pcf8574_(pcf8574), PIN_(pin), MODE_(mode) {
     }
 
@@ -81,7 +81,7 @@ class DigitalReaderPCF8575
 
   private:
     Adafruit_PCF8574& pcf8574_;
-    const int PIN_;
+    const uint8_t PIN_;
     const int MODE_;
 };
 }  // namespace module

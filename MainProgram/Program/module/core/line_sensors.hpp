@@ -15,14 +15,14 @@ namespace module
 {
 struct LineSensorsDirectionIndex
 {
-    const int front;
-    const int left;
-    const int right;
-    const int back;
-    const int center;
+    const int8_t front;
+    const int8_t left;
+    const int8_t right;
+    const int8_t back;
+    const int8_t center;
     explicit constexpr LineSensorsDirectionIndex() : front(-1), left(-1), right(-1), back(-1), center(-1) {
     }
-    explicit LineSensorsDirectionIndex(const int _front, const int _left, const int _right, const int _back, const int _center)
+    explicit LineSensorsDirectionIndex(const int8_t _front, const int8_t _left, const int8_t _right, const int8_t _back, const int8_t _center)
         : front(_front), left(_left), right(_right), back(_back), center(_center) {
     }
 };
@@ -31,12 +31,12 @@ class LineSensors
 {
   public:
     explicit constexpr LineSensors(
-        const int interrupt_pin,
-        const int front_sensor_pin,
-        const int right_sensor_pin,
-        const int back_sensor_pin,
-        const int left_sensor_pin,
-        const int center_sensor_pin)
+        const pin_size_t interrupt_pin,
+        const pin_size_t front_sensor_pin,
+        const pin_size_t right_sensor_pin,
+        const pin_size_t back_sensor_pin,
+        const pin_size_t left_sensor_pin,
+        const pin_size_t center_sensor_pin)
         : INTERRUPT_PIN_(interrupt_pin),
           Sensors_{
               module::DigitalReader(front_sensor_pin, INPUT_PULLUP),
@@ -46,30 +46,26 @@ class LineSensors
               module::DigitalReader(center_sensor_pin, INPUT_PULLUP),
           } {}
 
-    void setup() const {
+    void setup(void) const {
         pinMode(INTERRUPT_PIN_, INPUT_PULLUP);
-        for (int i = 0; i < 5; ++i) {
-            Sensors_[i].setup();
-        }
+        Sensors_[0].setup();
+        Sensors_[1].setup();
+        Sensors_[2].setup();
+        Sensors_[3].setup();
+        Sensors_[4].setup();
     }
 
-    int getInterruptPin() const {
+    pin_size_t getInterruptPin(void) const {
         return digitalPinToInterrupt(INTERRUPT_PIN_);
     }
 
-    bool isLineDetected() const {
-        // bool ret = false;
-        // for (int _ = 0; _ < 10; ++_) {
-        //     ret |= (digitalRead(INTERRUPT_PIN_) == HIGH);
-        //     delay(1);
-        // }
-        // return ret;
+    bool isLineDetected(void) const {
         return digitalRead(INTERRUPT_PIN_) == HIGH;
     }
 
-    std::pair<float, LineSensorsDirectionIndex> calculateLineAzimut() const {
+    std::pair<float, LineSensorsDirectionIndex> calculateLineAzimut(void) const {
         float az = 0;
-        int front = -1;
+        int8_t front = -1;
         if (Sensors_[0].isHigh()) {
             az = PI / 2;
             front = 0;
@@ -86,8 +82,8 @@ class LineSensors
         if (front == -1) {
             return {404, LineSensorsDirectionIndex()};
         }
-        const int left = (front + 3) % 4;
-        const int right = (front + 1) % 4;
+        const int8_t left = (front + 3) % 4;
+        const int8_t right = (front + 1) % 4;
         if (Sensors_[left].isHigh()) {
             az += -3 * PI / 4;
         } else if (Sensors_[right].isHigh()) {
@@ -98,7 +94,7 @@ class LineSensors
         return {az, LineSensorsDirectionIndex(front, left, right, (front + 2) % 4, 4)};
     }
 
-    const module::DigitalReader& operator[](const int index) const {
+    const module::DigitalReader& operator[](const int8_t index) const {
         if ((unsigned int)index >= 5) {
             Serial.println("Index out of range at LineSensors[index]");
             Serial.print("  index must lower than 5 but passed ");
@@ -109,7 +105,7 @@ class LineSensors
     }
 
   private:
-    const int INTERRUPT_PIN_;
+    const pin_size_t INTERRUPT_PIN_;
     const module::DigitalReader Sensors_[5];
 };
 }  // namespace module
