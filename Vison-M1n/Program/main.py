@@ -180,6 +180,8 @@ class Calibration:
         fill_next_index(self._next_index_y, height, width, 1)
 
     def calc(self, coordinate):
+        if coordinate.x < 0 or coordinate.y < 0:
+            return coordinate
         x = coordinate.x + self._next_index_x[self._pos(coordinate.x, coordinate.y)]
         y = coordinate.y + self._next_index_y[self._pos(coordinate.x, coordinate.y)]
         return Coordinate(x=x, y=y, w=coordinate.w, h=coordinate.h)
