@@ -5,6 +5,7 @@
 #include "deps/arduino.hpp"
 #include "deps/wire.hpp"
 #else
+#include "Arduino.h"
 #include "Wire.h"
 #endif
 
@@ -15,7 +16,7 @@ namespace module
 class CameraController
 {
   public:
-    explicit constexpr CameraController(const int sda, const int scl, const uint8_t (&addresses)[4])
+    explicit constexpr CameraController(const pin_size_t sda, const pin_size_t scl, const uint8_t (&addresses)[4])
         : SDA_(sda), SCL_(scl), ADDRESSES_{addresses[0], addresses[1], addresses[2], addresses[3]} {}
 
     void setup() const {
@@ -37,8 +38,8 @@ class CameraController
     }
 
   private:
-    const int SDA_;
-    const int SCL_;
+    const pin_size_t SDA_;
+    const pin_size_t SCL_;
     const uint8_t ADDRESSES_[4];
 
     void requestSet_(const uint8_t address, const uint8_t id) const {

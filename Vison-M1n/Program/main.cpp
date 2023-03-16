@@ -1,14 +1,27 @@
 #include "module/camera_controller.hpp"
+#include "module/main_wire.hpp"
 #include "module/types.hpp"
 
-constexpr int WIRE1_SDA = 6;
-constexpr int WIRE1_SCL = 7;
-constexpr int WIRE1_ADDRESS = 0x10;
-
 volatile CameraFieldData field_data;
+#define FILL_REQUEST_RETURN(ret, value, idx1, idx2)  \
+    if ((value) < 0) {                               \
+        (ret)[(idx1)] = 1 << 7;                      \
+    } else {                                         \
+        (ret)[(idx1)] = ((value) >> 7) & 0b11111111; \
+        (ret)[(idx2)] = ((value) >> 0) & 0b11111111; \
+    }
 
 void onRequest() {
-    // TODO: field_data いじって配列にして返す
+    uint8_t ret[16] = {0};
+    FILL_REQUEST_RETURN(ret, field_data.ballPosition.x, 0, 1);
+    FILL_REQUEST_RETURN(ret, field_data.ballPosition.y, 2, 3);
+    FILL_REQUEST_RETURN(ret, field_data.yellowGoalPosition.x, 4, 5);
+    FILL_REQUEST_RETURN(ret, field_data.yellowGoalPosition.y, 6, 7);
+    FILL_REQUEST_RETURN(ret, field_data.yellowGoalWidth, 8, 9);
+    FILL_REQUEST_RETURN(ret, field_data.blueGoalPosition.x, 10, 11);
+    FILL_REQUEST_RETURN(ret, field_data.blueGoalPosition.y, 12, 13);
+    FILL_REQUEST_RETURN(ret, field_data.blueGoalWidth, 14, 15);
+    MainWire.write(ret);
 }
 
 void setup() {
@@ -23,11 +36,9 @@ void setup() {
     CameraController.setup();
     Serial.println("DONE setup CameraController");
 
-    Wire1.setSDA(WIRE1_SDA);
-    Wire1.setSCL(WIRE1_SCL);
-    Wire1.onRequest(onRequest);
-    Wire1.begin(WIRE1_ADDRESS);
-    Serial.println("DONE setup Wire1");
+    MainWire.setup();
+    MainWire.start(onRequest);
+    Serial.println("DONE setup MainWire");
 }
 
 CameraFieldData fixFiledData0(const CameraFieldData& data) {
