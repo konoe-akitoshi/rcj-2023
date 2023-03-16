@@ -1,20 +1,27 @@
 #ifndef MODULE_TYPES_HPP
 #define MODULE_TYPES_HPP
 
+#ifdef WITHOUT_ARDUINO_ENVIRONMENT
+#include "core/deps/arduino.hpp"
+#else
+#include "Arduino.h"
+#endif
+
+
 struct Vector2Int
 {
-    const int x;
-    const int y;
+    int x;
+    int y;
     constexpr Vector2Int(const int _x, const int _y) : x(_x), y(_y) {}
 };
 
 struct CameraFieldData
 {
-    const Vector2Int ballPosition;
-    const Vector2Int yellowGoalPosition;
-    const Vector2Int blueGoalPosition;
-    const int yellowGoalWidth;
-    const int blueGoalWidth;
+    Vector2Int ballPosition;
+    Vector2Int yellowGoalPosition;
+    Vector2Int blueGoalPosition;
+    int yellowGoalWidth;
+    int blueGoalWidth;
 
     explicit constexpr CameraFieldData()
         : ballPosition(-1, -1),
@@ -34,6 +41,36 @@ struct CameraFieldData
           blueGoalPosition(_blueGoalPosition),
           yellowGoalWidth(_yellowGoalWidth),
           blueGoalWidth(_blueGoalWidth) {}
+
+    void dumpToSerial() const {
+        Serial.println("{");
+
+        Serial.print("  ballPosition: (");
+        Serial.print(ballPosition.x);
+        Serial.print(", ");
+        Serial.print(ballPosition.y);
+        Serial.println(")");
+
+        Serial.print("  yellowGoalPosition: (");
+        Serial.print(yellowGoalPosition.x);
+        Serial.print(", ");
+        Serial.print(yellowGoalPosition.y);
+        Serial.println(")");
+
+        Serial.print("  blueGoalPosition: (");
+        Serial.print(blueGoalPosition.x);
+        Serial.print(", ");
+        Serial.print(blueGoalPosition.y);
+        Serial.println(")");
+
+        Serial.print("  yellowGoalWidth: ");
+        Serial.println(yellowGoalWidth);
+
+        Serial.print("  blueGoalWidth: ");
+        Serial.println(blueGoalWidth);
+
+        Serial.println("}");
+    }
 };
 
 #endif

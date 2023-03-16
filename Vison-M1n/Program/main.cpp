@@ -5,8 +5,6 @@ constexpr int WIRE1_SDA = 6;
 constexpr int WIRE1_SCL = 7;
 constexpr int WIRE1_ADDRESS = 0x10;
 
-constexpr module::CameraController CameraController(8, 9, {0x21, 0x22, 0x23, 0x24});
-
 volatile CameraFieldData field_data;
 
 void onRequest() {
