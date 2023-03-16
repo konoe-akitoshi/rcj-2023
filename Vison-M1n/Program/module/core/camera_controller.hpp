@@ -13,6 +13,22 @@
 
 namespace module
 {
+struct Image
+{
+    static constexpr uint16_t width = 320;
+    static constexpr uint16_t height = 240;
+    uint16_t pixel[height][width] = {{0}};
+    explicit Image() {}
+
+    void set(const uint16_t x, const uint16_t y, const uint16_t rgb565) {
+        pixel[y][x] = rgb565;
+    }
+
+    uint16_t get(const uint16_t x, const uint16_t y) const {
+        return pixel[y][x];
+    }
+};
+
 class CameraController
 {
   public:
@@ -27,20 +43,43 @@ class CameraController
     }
 
     const CameraFieldData getFieldData(const int index) const {
-        // TODO: index check
-        const uint8_t addr = ADDRESSES_[index];
+        const uint8_t addr = getAddress_(index);
         const Vector2Int ball_pos = {getCoordinateOne_(addr, 100), getCoordinateOne_(addr, 101)};
         const Vector2Int yellow_goal_pos = {getCoordinateOne_(addr, 102), getCoordinateOne_(addr, 103)};
-        const int yellow_goal_width = getCoordinateOne_(addr, 104);
         const Vector2Int blue_goal_pos = {getCoordinateOne_(addr, 105), getCoordinateOne_(addr, 106)};
+        const int yellow_goal_width = getCoordinateOne_(addr, 104);
         const int blue_goal_width = getCoordinateOne_(addr, 107);
         return CameraFieldData(ball_pos, yellow_goal_pos, blue_goal_pos, yellow_goal_width, blue_goal_width);
+    }
+
+    void scanImage(const int index, Image& image) const {
+        const uint8_t addr = getAddress_(index);
+        requestSet_(addr, 2);
+        for (int y = 0; y < image.height; ++y) {
+            for (int x = 0; x < image.width; ++x) {
+                uint16_t top = requestGet_(addr);
+                uint16_t low = requestGet_(addr);
+                image.set(x, y, (top << 8) | low);
+            }
+        }
+    }
+
+    void setWhiteBlance(const int index) const {
+        const uint8_t addr = getAddress_(index);
+        requestSet_(addr, 1);
+        do {
+            delay(100);
+        } while (requestGet_(addr) != 1);
     }
 
   private:
     const pin_size_t SDA_;
     const pin_size_t SCL_;
     const uint8_t ADDRESSES_[4];
+
+    uint8_t getAddress_(const int index) const {
+        return ADDRESSES_[index % 4];
+    }
 
     void requestSet_(const uint8_t address, const uint8_t id) const {
         // Serial.println("> requestSet");

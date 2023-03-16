@@ -1,5 +1,6 @@
 #include "module/camera_controller.hpp"
 #include "module/main_wire.hpp"
+#include "module/terminal.hpp"
 #include "module/types.hpp"
 
 volatile CameraFieldData field_data;
@@ -36,6 +37,9 @@ void setup() {
     CameraController.setup();
     Serial.println("DONE setup CameraController");
 
+    Terminal.setup();
+    Serial.println("DONE setup Terminal");
+
     MainWire.setup();
     MainWire.start(onRequest);
     Serial.println("DONE setup MainWire");
@@ -43,25 +47,81 @@ void setup() {
 
 CameraFieldData fixFiledData0(const CameraFieldData& data) {
     // TODO :impl
+    if (data.ballPosition.x != -1) {
+        return CameraFieldData(
+            {1, 1}, {0, 0}, {0, 0},
+            0, 0);
+    }
+    return data;
 }
 
 CameraFieldData fixFiledData1(const CameraFieldData& data) {
     // TODO :impl
+    if (data.ballPosition.x != -1) {
+        return CameraFieldData(
+            {1, -1}, {0, 0}, {0, 0},
+            0, 0);
+    }
+    return data;
 }
 
 CameraFieldData fixFiledData2(const CameraFieldData& data) {
     // TODO :impl
+    if (data.ballPosition.x != -1) {
+        return CameraFieldData(
+            {-1, -1}, {0, 0}, {0, 0},
+            0, 0);
+    }
+    return data;
 }
 
 CameraFieldData fixFiledData3(const CameraFieldData& data) {
     // TODO :impl
+    if (data.ballPosition.x != -1) {
+        return CameraFieldData(
+            {-1, 1}, {0, 0}, {0, 0},
+            0, 0);
+    }
+    return data;
 }
 
 void loop() {
-    const auto field_data0 = fixFiledData0(CameraController.getFieldData(0));
-    const auto field_data1 = fixFiledData1(CameraController.getFieldData(1));
-    const auto field_data2 = fixFiledData2(CameraController.getFieldData(2));
-    const auto field_data3 = fixFiledData3(CameraController.getFieldData(3));
+    static module::Image image;
 
-    // TODO: impl marge field_data* to field_data
+    const int terminalRequest = Terminal.popRequest();
+
+    if (terminalRequest >= 5) {
+        const int camera_index = terminalRequest - 5;
+        CameraController.scanImage(camera_index, image);
+        Terminal.writeImage(image);
+        return;
+    }
+
+    if (terminalRequest > 0) {
+        const int camera_index = terminalRequest - 1;
+        CameraController.setWhiteBlance(camera_index);
+        Terminal.writeMessage(camera_index + 1);
+        return;
+    }
+
+    // terminalRequest == 0
+
+    const auto cam0 = fixFiledData0(CameraController.getFieldData(0));
+    const auto cam1 = fixFiledData1(CameraController.getFieldData(1));
+    const auto cam2 = fixFiledData2(CameraController.getFieldData(2));
+    const auto cam3 = fixFiledData3(CameraController.getFieldData(3));
+
+    field_data.ballPosition.x = (cam0.ballPosition.x + cam1.ballPosition.x + cam2.ballPosition.x + cam3.ballPosition.x) / 4;
+    field_data.ballPosition.y = (cam0.ballPosition.y + cam1.ballPosition.y + cam2.ballPosition.y + cam3.ballPosition.y) / 4;
+
+    field_data.yellowGoalPosition.x = (cam0.yellowGoalPosition.x + cam1.yellowGoalPosition.x + cam2.yellowGoalPosition.x + cam3.yellowGoalPosition.x) / 4;
+    field_data.yellowGoalPosition.y = (cam0.yellowGoalPosition.y + cam1.yellowGoalPosition.y + cam2.yellowGoalPosition.y + cam3.yellowGoalPosition.y) / 4;
+
+    field_data.blueGoalPosition.x = (cam0.blueGoalPosition.x + cam1.blueGoalPosition.x + cam2.blueGoalPosition.x + cam3.blueGoalPosition.x) / 4;
+    field_data.blueGoalPosition.y = (cam0.blueGoalPosition.y + cam1.blueGoalPosition.y + cam2.blueGoalPosition.y + cam3.blueGoalPosition.y) / 4;
+
+    field_data.yellowGoalWidth = (cam0.yellowGoalWidth + cam1.yellowGoalWidth + cam2.yellowGoalWidth + cam3.yellowGoalWidth) / 4;
+    field_data.blueGoalWidth = (cam0.blueGoalWidth + cam1.blueGoalWidth + cam2.blueGoalWidth + cam3.blueGoalWidth) / 4;
+
+    Serial.println(field_data.ballPosition.x);
 }
