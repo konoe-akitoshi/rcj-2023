@@ -22,13 +22,18 @@ class MainWire
         Wire1.setSCL(SCL_);
     }
 
-    void start(void (*on_request)(void)) const {
+    void start(void (*on_receive)(int), void (*on_request)(void)) const {
+        Wire1.onReceive(on_receive);
         Wire1.onRequest(on_request);
         Wire1.begin(ADDRESS_);
     }
 
-    void write(const uint8_t (&data)[16]) const {
-        Wire1.write(data, 16);
+    void write(const uint8_t (&data)[7]) const {
+        Wire1.write(data, 7);
+    }
+
+    uint8_t read() const {
+        return Wire.read();
     }
 
   private:

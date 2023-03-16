@@ -10,13 +10,13 @@
 
 #include <array>
 #include "module/battery.hpp"
+#include "module/camera.hpp"
 #include "module/dribbler.hpp"
 #include "module/gyro.hpp"
 #include "module/kicker.hpp"
 #include "module/led_light.hpp"
 #include "module/line_sensors.hpp"
 #include "module/motor_controller.hpp"
-#include "module/open_cv.hpp"
 #include "module/switch.hpp"
 #include "module/vector2.hpp"
 #include "module/xbee.hpp"
@@ -34,14 +34,9 @@ void forceOutOfBounds();
 
 VL6180X ToFSensor;
 
-Vector2 ball_pos;
-Vector2 blue_goal;
-Vector2 yellow_goal;
-bool exist_ball;
-bool exist_yellow_goal;
-bool exist_blue_goal;
-int blue_goal_width;
-int yellow_goal_width;
+module::ObjectData ball;
+module::ObjectData blue_goal;
+module::ObjectData yellow_goal;
 int ball_front;
 int rotation;
 // Vector2 velocity; // NEXT: impl
@@ -73,7 +68,7 @@ void setup() {
 
     SETUP_MODULE(Dribbler);
     SETUP_MODULE(Kicker);
-    SETUP_MODULE(OpenCV);
+    SETUP_MODULE(Camera);
     SETUP_MODULE(Gyro);
     SETUP_MODULE(MotorController);
     SETUP_MODULE(SwitchLedR);
@@ -135,17 +130,11 @@ void loop() {
         }
     }
 
-    OpenCV.waitData();
     rotation = Gyro.getRotation();
 
-    exist_ball = OpenCV.getBallExistence();
-    ball_pos = OpenCV.getBallPosition();
-    exist_blue_goal = OpenCV.getBlueGoalExistence();
-    blue_goal = OpenCV.getBlueGoalPosition();
-    blue_goal_width = OpenCV.getBlueGoalWidth();
-    exist_yellow_goal = OpenCV.getYellowGoalExistence();
-    yellow_goal = OpenCV.getYellowGoalPosition();
-    yellow_goal_width = OpenCV.getYellowGoalWidth();
+    ball = Camera.getBallData();
+    blue_goal = Camera.getBlueGoalData();
+    yellow_goal = Camera.getYellowGoalData();
 
     target_goal_type = GoalSwitch.isHigh() ? GoalType::Blue : GoalType::Yellow;
 
@@ -157,17 +146,17 @@ void loop() {
     //    |         |          |         |
     //    |_________|          |_________|
     //             +y              -y
-    if (exist_ball) {
-        ball_pos = Vector2(150, 127) - ball_pos;
+    if (ball.is_exist) {
+        ball.position = Vector2(150, 127) - ball.position;
     }
-    if (exist_yellow_goal) {
-        yellow_goal = Vector2(150, 127) - yellow_goal;
+    if (yellow_goal.is_exist) {
+        yellow_goal.position = Vector2(150, 127) - yellow_goal.position;
     }
-    if (exist_blue_goal) {
-        blue_goal = Vector2(150, 127) - blue_goal;
+    if (blue_goal.is_exist) {
+        blue_goal.position = Vector2(150, 127) - blue_goal.position;
     }
 
-    ball_dist = Vector2::norm(ball_pos);
+    ball_dist = Vector2::norm(ball.position);
     ball_front = ToFSensor.readRangeSingleMillimeters();
 
     // Start Switch が Low でスタート、それ以外はロボット停止
@@ -182,7 +171,7 @@ void loop() {
 
     LineSensorLed.ternOn();
 
-    if (exist_ball == false && ball_front == 255) {
+    if (ball.is_exist == false && ball_front == 255) {
         MotorController.stopAll();
         return;
     }
@@ -199,9 +188,9 @@ void keeper() {
     Dribbler.stop();
 
     const auto goal = target_goal_type == GoalType::Blue ? yellow_goal : blue_goal;
-    const auto exist_goal = target_goal_type == GoalType::Blue ? exist_yellow_goal : exist_blue_goal;
+    const auto exist_goal = target_goal_type == GoalType::Blue ? yellow_goal.is_exist : blue_goal.is_exist;
 
-    if (exist_goal == false || exist_ball == false) {
+    if (exist_goal == false || ball.is_exist == false) {
         // ゴールから離れているのでゴールまで後進する
         MotorController.drive(3 * PI / 2, 50, -rotation);
         return;
@@ -209,7 +198,7 @@ void keeper() {
 
     // NEXT: ボールが後ろにある時の動作
     //       横移動のみして、相手がボールに向かってくるのを邪魔する + ボールに触れないようにする
-    if (ball_pos.y < 0) {
+    if (ball.position.y < 0) {
         // 後ろにボールがある時は、諦める
         MotorController.stopAll();
         return;
@@ -218,17 +207,17 @@ void keeper() {
     if (ball_dist > 60 + pair_ball_dist) {
         // ボールとの距離が十分遠い or ペアのロボットがボールに十分近い ので、自らボールに近づく
         // keeper となっている時点で、ball_dist > pair_ball_dist である
-        const auto az = Vector2::angle(ball_pos);
-        const auto pw = sqrt((ball_pos.x * ball_pos.x) + (ball_pos.y * ball_pos.y / 4));
+        const auto az = Vector2::angle(ball.position);
+        const auto pw = sqrt((ball.position.x * ball.position.x) + (ball.position.y * ball.position.y / 4));
         MotorController.drive(az, pw, -rotation);
         return;
     }
 
-    if (goal.y > 15) {
+    if (goal.position.y > 15) {
         // ゴール横にいるので、ゴール前の角に移動するように動く
         // 機体がゴール前の角にいる時の goal の座標を target とすると、進む方向のベクトル dir は dir = goal - target で求まる
-        const auto target = goal.x < 0 ? Vector2(-10, -5) : Vector2(10, -5);
-        const auto dir = goal - target;
+        const auto target = goal.position.x < 0 ? Vector2(-10, -5) : Vector2(10, -5);
+        const auto dir = goal.position - target;
         const auto pw = 100;  // NEXT: velocity が導入されたら PD 制御する
         MotorController.drive(Vector2::angle(dir), pw, -rotation);
         return;
@@ -236,7 +225,7 @@ void keeper() {
 
     // あとはゴール前でボールがゴールに入らないように守る
     // だたし、1次元的な動きのみはルール違反になるので、ボールとの距離をみて少し前後にも動くようにする
-    const auto dir = Vector2(ball_pos.x, 5 + max(0, 0.5 * (ball_dist - 100)));
+    const auto dir = Vector2(ball.position.x, 5 + max(0, 0.5 * (ball_dist - 100)));
     MotorController.drive(Vector2::angle(dir), 50, -rotation);
 }
 
@@ -244,40 +233,40 @@ void attacker() {
     static float pre_ball_dist = 0;
 
     const auto goal = target_goal_type == GoalType::Blue ? blue_goal : yellow_goal;
-    const auto goal_width = target_goal_type == GoalType::Blue ? blue_goal_width : yellow_goal_width;
-    const auto exist_goal = target_goal_type == GoalType::Blue ? exist_blue_goal : exist_yellow_goal;
+    const auto goal_width = target_goal_type == GoalType::Blue ? blue_goal.width : yellow_goal.width;
+    const auto exist_goal = target_goal_type == GoalType::Blue ? blue_goal.is_exist : yellow_goal.is_exist;
 
     // NEXT: velocity導入されたら、それを使うようにする
     const auto ball_dist_diff = ball_dist - pre_ball_dist;
 
-    if (exist_ball == false) {
+    if (ball.is_exist == false) {
         // ボールが見えていないがこの時 ball_front < 255 なので、前方に直進する
         MotorController.drive(PI / 2, 30, -rotation);
         return;
     }
 
-    if (ball_pos.y > 10 || abs(ball_pos.x) > 30) {
+    if (ball.position.y > 10 || abs(ball.position.x) > 30) {
         // ボールから離れてるので、近づく
         Dribbler.stop();
         const float pw = (0.1 * ball_dist) + (0.01 * ball_dist_diff);  // PD制御
-        MotorController.drive(Vector2::angle(ball_pos), pw, -rotation);
+        MotorController.drive(Vector2::angle(ball.position), pw, -rotation);
         return;
     }
 
-    if (ball_pos.y <= 0) {
+    if (ball.position.y <= 0) {
         // ボールが後方近くにあるので、下がって回り込んでボールを取りにいく
         // 機体はボールの方向に垂直な方向に進んで回り込む
         // この時ラインを踏まないようにコートの中心側(ラインから遠い方)を通るように回り込む
         Dribbler.stop();
         Vector2 dir;
         if (exist_goal) {
-            dir.x = goal.x > 0 ? 1 : -1;
+            dir.x = goal.position.x > 0 ? 1 : -1;
         } else {
-            const auto goal2 = target_goal_type == GoalType::Yellow ? blue_goal : yellow_goal;
+            const auto goal2 = target_goal_type == GoalType::Yellow ? blue_goal.position : yellow_goal.position;
             dir.x = goal2.x > 0 ? 1 : -1;
         }
-        dir.y = dir.x * -1 * ball_pos.x / ball_pos.y;
-        const auto pw = 40 + (0.1 * ball_pos.y);  // 若干楕円軌道を描くように調整
+        dir.y = dir.x * -1 * ball.position.x / ball.position.y;
+        const auto pw = 40 + (0.1 * ball.position.y);  // 若干楕円軌道を描くように調整
         MotorController.drive(Vector2::angle(dir), pw, -rotation);
         return;
     }
@@ -287,8 +276,8 @@ void attacker() {
 
     if (ball_front > 30) {
         // ボールを保持してないので、目の前のボールを保持しに行く
-        const auto az = Vector2::angle(ball_pos);
-        const auto pw = Vector2::norm(ball_pos);
+        const auto az = Vector2::angle(ball.position);
+        const auto pw = Vector2::norm(ball.position);
         MotorController.drive(az, pw, -rotation);
         return;
     }
@@ -302,9 +291,9 @@ void attacker() {
         return;
     }
 
-    const float goal_center1 = float(goal.x - goal_width) / 2;
-    const float goal_center2 = float(goal.x + goal_width) / 2;
-    if (goal.y < 120 && goal_center1 * goal_center2 < 0 && min(abs(goal_center1), abs(goal_center2)) > 25) {
+    const float goal_center1 = float(goal.position.x - goal_width) / 2;
+    const float goal_center2 = float(goal.position.x + goal_width) / 2;
+    if (goal.position.y < 120 && goal_center1 * goal_center2 < 0 && min(abs(goal_center1), abs(goal_center2)) > 25) {
         // ゴールにボールを蹴れる距離にいるので、ボールを蹴る
         Dribbler.stop();
         Kicker.pushFront();
@@ -314,18 +303,18 @@ void attacker() {
         return;
     }
 
-    if (goal.y < 80) {
+    if (goal.position.y < 80) {
         // ゴール横にいるので、ゴール前の角に移動するように動く
         // 機体がゴール前の角にいる時の goal の座標を target とすると、進む方向のベクトル dir は dir = goal - target で求まる
-        const auto target = goal.x < 0 ? Vector2(-50, 95) : Vector2(50, 95);
-        const auto dir = goal - target;
+        const auto target = goal.position.x < 0 ? Vector2(-50, 95) : Vector2(50, 95);
+        const auto dir = goal.position - target;
         MotorController.drive(Vector2::angle(dir), 50, -rotation);
         return;
     }
 
     // ゴールに向かう
-    const auto az = Vector2::angle(goal);
-    const auto pw = Vector2::norm(goal);
+    const auto az = Vector2::angle(goal.position);
+    const auto pw = Vector2::norm(goal.position);
     MotorController.drive(az, pw, -rotation);
 }
 

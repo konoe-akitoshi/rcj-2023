@@ -4,6 +4,8 @@
 #include "module/types.hpp"
 
 volatile CameraFieldData field_data;
+volatile uint8_t request_id;
+
 #define FILL_REQUEST_RETURN(ret, value, idx1, idx2)  \
     if ((value) < 0) {                               \
         (ret)[(idx1)] = 1 << 7;                      \
@@ -12,16 +14,27 @@ volatile CameraFieldData field_data;
         (ret)[(idx2)] = ((value) >> 0) & 0b11111111; \
     }
 
+void onReceive(int count) {
+    for (int i = 0; i < count; ++i) {
+        request_id = MainWire.read();
+    }
+}
+
 void onRequest() {
-    uint8_t ret[16] = {0};
-    FILL_REQUEST_RETURN(ret, field_data.ballPosition.x, 0, 1);
-    FILL_REQUEST_RETURN(ret, field_data.ballPosition.y, 2, 3);
-    FILL_REQUEST_RETURN(ret, field_data.yellowGoalPosition.x, 4, 5);
-    FILL_REQUEST_RETURN(ret, field_data.yellowGoalPosition.y, 6, 7);
-    FILL_REQUEST_RETURN(ret, field_data.yellowGoalWidth, 8, 9);
-    FILL_REQUEST_RETURN(ret, field_data.blueGoalPosition.x, 10, 11);
-    FILL_REQUEST_RETURN(ret, field_data.blueGoalPosition.y, 12, 13);
-    FILL_REQUEST_RETURN(ret, field_data.blueGoalWidth, 14, 15);
+    // TODO: impl ret[0] (existance data)
+    uint8_t ret[7] = {0};
+    if (request_id == 1) {
+        FILL_REQUEST_RETURN(ret, field_data.ballPosition.x, 1, 2);
+        FILL_REQUEST_RETURN(ret, field_data.ballPosition.y, 3, 4);
+    } else if (request_id == 2) {
+        FILL_REQUEST_RETURN(ret, field_data.yellowGoalPosition.x, 1, 2);
+        FILL_REQUEST_RETURN(ret, field_data.yellowGoalPosition.y, 3, 4);
+        FILL_REQUEST_RETURN(ret, field_data.yellowGoalWidth, 5, 6);
+    } else if (request_id == 3) {
+        FILL_REQUEST_RETURN(ret, field_data.blueGoalPosition.x, 1, 2);
+        FILL_REQUEST_RETURN(ret, field_data.blueGoalPosition.y, 3, 4);
+        FILL_REQUEST_RETURN(ret, field_data.blueGoalWidth, 5, 6);
+    }
     MainWire.write(ret);
 }
 
@@ -41,7 +54,7 @@ void setup() {
     Serial.println("DONE setup Terminal");
 
     MainWire.setup();
-    MainWire.start(onRequest);
+    MainWire.start(onReceive, onRequest);
     Serial.println("DONE setup MainWire");
 }
 
