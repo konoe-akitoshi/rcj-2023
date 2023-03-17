@@ -42,7 +42,7 @@ class CameraController
         Wire.begin();
     }
 
-    const CameraFieldData getFieldData(const int index) const {
+    CameraFieldData getFieldData(const int index) const {
         const uint8_t addr = getAddress_(index);
         const Vector2Int ball_pos = {getCoordinateOne_(addr, 100), getCoordinateOne_(addr, 101)};
         const Vector2Int yellow_goal_pos = {getCoordinateOne_(addr, 102), getCoordinateOne_(addr, 103)};
@@ -82,15 +82,12 @@ class CameraController
     }
 
     void requestSet_(const uint8_t address, const uint8_t id) const {
-        // Serial.println("> requestSet");
         Wire.beginTransmission(address);
         Wire.write(id);
         Wire.endTransmission();
-        // Serial.println("< requestSet");
     }
 
     int requestGet_(const uint8_t address) const {
-        // Serial.println("> requestGet");
         Wire.requestFrom(address, 1);
         for (int time = 0; !Wire.available(); ++time) {
             if (time < 5) {
@@ -100,7 +97,6 @@ class CameraController
             Serial.println("timeout");
             return -1;
         }
-        // Serial.println("< requestGet");
         return (int)((uint8_t)Wire.read());
     }
 
