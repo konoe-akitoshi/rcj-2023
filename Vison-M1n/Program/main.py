@@ -67,9 +67,9 @@ snapshot_image = None
 def main():
     global orange_ball_pos, yellow_goal_pos, blue_goal_pos, snapshot_image
 
-    setup_i2c(scl=I2C_SCL, sda=I2C_SDA, address=I2C_ADDRESS)
     setup_sensor(dual_buff=True)
     calibration = Calibration(320, 240)
+    setup_i2c(scl=I2C_SCL, sda=I2C_SDA, address=I2C_ADDRESS)
 
     if DEBUG_MODE:
         clock = time.clock()
@@ -121,7 +121,7 @@ def main():
 
 class Calibration:
     def _pos(self, x, y):
-        return y * self.width + x
+        return y * (self.width // 2) + x
 
     def __init__(self, width, height):
         global CAMERA_MATRIX, CAMERA_MATRIX2, CAMERA_DISTORTION_COEFFICIENTS
@@ -133,12 +133,12 @@ class Calibration:
         fx2, fy2, cx2, cy2 = CAMERA_MATRIX2
         k1, k2, p1, p2, k3 = CAMERA_DISTORTION_COEFFICIENTS
         INF = 127
-        for _ in range(height*width):
+        for _ in range(height*width//4):
             self._next_index_x.append(INF)
             self._next_index_y.append(INF)
 
-        for v in range(height):
-            for u in range(width):
+        for v in range(0, height, 2):
+            for u in range(0, width, 2):
                 x = (u - cx2) / fx2
                 y = (v - cy2) / fy2
                 rr = x ** 2 + y ** 2
@@ -150,14 +150,14 @@ class Calibration:
                 org_y = round(y2*fy + cy)
 
                 if 0 <= org_x < width and 0 <= org_y < height:
-                    self._next_index_x[self._pos(org_x, org_y)] = u - org_x
-                    self._next_index_y[self._pos(org_x, org_y)] = v - org_y
+                    self._next_index_x[self._pos(org_x//2, org_y//2)] = u - org_x
+                    self._next_index_y[self._pos(org_x//2, org_y//2)] = v - org_y
 
         # NOTE: Fill array by BFS
         def fill_next_index(next_index, h, w, flg):
             seen = OrderedDict()
-            for v in range(h):
-                for u in range(w):
+            for v in range(h//2):
+                for u in range(w//2):
                     if next_index[self._pos(u, v)] != INF:
                         continue
                     deq = deque((), 32, False)
@@ -168,7 +168,7 @@ class Calibration:
                         x, y = deq.popleft()
                         if next_index[self._pos(x, y)] != INF:
                             next_index[self._pos(u, v)] = next_index[self._pos(
-                                x, y)] + (x, y)[flg] - (u, v)[flg]
+                                x, y)] + (x, y)[flg] * 2 - (u, v)[flg] * 2
                             break
                         for i in range(-1, 2):
                             for j in range(-1, 2):
@@ -182,8 +182,8 @@ class Calibration:
     def calc(self, coordinate):
         if coordinate.x < 0 or coordinate.y < 0:
             return coordinate
-        x = coordinate.x + self._next_index_x[self._pos(coordinate.x, coordinate.y)]
-        y = coordinate.y + self._next_index_y[self._pos(coordinate.x, coordinate.y)]
+        x = coordinate.x + self._next_index_x[self._pos(coordinate.x//2, coordinate.y//2)]
+        y = coordinate.y + self._next_index_y[self._pos(coordinate.x//2, coordinate.y//2)]
         return Coordinate(x=x, y=y, w=coordinate.w, h=coordinate.h)
 
 
@@ -208,7 +208,7 @@ def on_transmit():
         if i2c_continued_id_count == 0:
             return min(200, ret) if ret != -1 else 0
         else:
-            return max(200, ret - 200) if ret != -1 else 255
+            return max(0, ret - 200) if ret != -1 else 255
     if i2c_received_id == 1:
         if i2c_continued_id_count == 0:
             if is_adjusting_white_balance:
