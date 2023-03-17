@@ -81,7 +81,7 @@ def main():
         dst += [255, 0, 0][::-1]  # fill red
         for v in range(h):
             for u in range(w):
-                x, y = u + next_x[v*w+u], v + next_y[v*w+u]
+                x, y = u + next_x[(v//2)*(w//2)+u//2], v + next_y[(v//2)*(w//2)+u//2]
                 dst[y][x] = image.image[v, u]
         cv2.imwrite("./undistorted_reverse/" + image.name, dst)
 
@@ -153,18 +153,18 @@ def create_reverse_map(height, width, mtx, newcameramtx, dist):
     k1, k2, p1, p2, k3 = dist[0]
 
     def pos(x, y):
-        return y * width + x
+        return y * (width // 2) + x
 
     next_index_x = array.array("b")
     next_index_y = array.array("b")
     inf = 127
 
-    for _ in range(height*width):
+    for _ in range(height*width//4):
         next_index_x.append(inf)
         next_index_y.append(inf)
 
-    for v in range(height):
-        for u in range(width):
+    for v in range(0, height, 2):
+        for u in range(0, width, 2):
             x = (u - cx2) / fx2
             y = (v - cy2) / fy2
             rr = x ** 2 + y ** 2
@@ -176,8 +176,8 @@ def create_reverse_map(height, width, mtx, newcameramtx, dist):
             org_y = round(y2*fy + cy)
 
             if 0 <= org_x < width and 0 <= org_y < height:
-                next_index_x[pos(org_x, org_y)] = u - org_x
-                next_index_y[pos(org_x, org_y)] = v - org_y
+                next_index_x[pos(org_x//2, org_y//2)] = u - org_x
+                next_index_y[pos(org_x//2, org_y//2)] = v - org_y
 
     def fill_jpg(x, y):
         dst = np.zeros((height, width, 3))
@@ -196,8 +196,8 @@ def create_reverse_map(height, width, mtx, newcameramtx, dist):
 
     # NOTE: Fill array by BFS
     def fill_next_index(next_index, h, w, flg):
-        for v in range(h):
-            for u in range(w):
+        for v in range(h//2):
+            for u in range(w//2):
                 if next_index[pos(u, v)] != inf:
                     continue
 
@@ -207,11 +207,11 @@ def create_reverse_map(height, width, mtx, newcameramtx, dist):
                 while deq:
                     x, y = deq.popleft()
                     if next_index[pos(x, y)] != inf:
-                        if not (-128 <= next_index[pos(x, y)] + (x, y)[flg] - (u, v)[flg] <= 127):
+                        if not (-128 <= next_index[pos(x, y)] + (x, y)[flg] * 2 - (u, v)[flg] * 2 <= 127):
                             print(u, v)
                             fill_jpg(u, v)
                             exit()
-                        next_index[pos(u, v)] = next_index[pos(x, y)] + (x, y)[flg] - (u, v)[flg]
+                        next_index[pos(u, v)] = next_index[pos(x, y)] + (x, y)[flg] * 2 - (u, v)[flg] * 2
                         break
                     for i in range(-1, 2):
                         for j in range(-1, 2):
