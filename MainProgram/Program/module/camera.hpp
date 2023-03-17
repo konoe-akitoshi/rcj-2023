@@ -1,9 +1,9 @@
 #ifndef MODULE_CAMERA_HPP
 #define MODULE_CAMERA_HPP
 
-#include "pin.hpp"
+#include "i2c_manager.hpp"
 #include "core/camera.hpp"
 
-constexpr module::Camera Camera(4, 5, 0x10, 400000);
+constexpr module::Camera Camera(I2CManager, 0x10);
 
 #endif

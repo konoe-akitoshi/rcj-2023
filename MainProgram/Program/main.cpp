@@ -58,14 +58,7 @@ void setup() {
         Serial.println("WARN Serial(9600) does not open");
     }
 
-    const bool pcf8574_status = PCF8574.begin(0x27, &Wire);
-    if (pcf8574_status == false) {
-        Serial.println("ERROR not find PCF8574");
-        while (true)
-            ;
-    }
-    Serial.println("DONE setup PCF8574");
-
+    SETUP_MODULE(Battery);
     SETUP_MODULE(Dribbler);
     SETUP_MODULE(Kicker);
     SETUP_MODULE(Camera);

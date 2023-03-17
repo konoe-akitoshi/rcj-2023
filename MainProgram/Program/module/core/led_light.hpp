@@ -1,11 +1,11 @@
 #ifndef MODULE_CORE_LED_HPP
 #define MODULE_CORE_LED_HPP
 
+#include "i2c_manager.hpp"
+
 #ifdef WITHOUT_ARDUINO_ENVIRONMENT
-#include "deps/Adafruit_PCF8574.hpp"
 #include "deps/arduino.hpp"
 #else
-#include <Adafruit_PCF8574.h>
 #include <Arduino.h>
 #endif
 
@@ -56,31 +56,32 @@ class LedLightPCF8574
      * @param on  the value(HIGH or LOW) to Write to the specified pin if you want to tern on the LED.
      * @param off  the value(HIGH or LOW) to Write to the specified pin if you want to tern off the LED.
      */
-    explicit constexpr LedLightPCF8574(Adafruit_PCF8574& pcf8574, const uint8_t pin, const int on = HIGH, const int off = LOW)
-        : pcf8574_(pcf8574), PIN_(pin), MODE_ON_(on), MODE_OFF_(off) {
+    explicit constexpr LedLightPCF8574(const I2CManager& i2c_manager, const uint8_t pin, const int on = HIGH, const int off = LOW)
+        : I2C_MANAGER_(i2c_manager), PIN_(pin), MODE_ON_(on), MODE_OFF_(off) {
     }
 
     void setup(void) const {
-        pcf8574_.pinMode(PIN_, OUTPUT);
-        pcf8574_.digitalWrite(PIN_, MODE_OFF_);
+        I2C_MANAGER_.beginPCF8574();
+        I2C_MANAGER_.pcf8574_pinMode(PIN_, OUTPUT);
+        I2C_MANAGER_.pcf8574_digitalWrite(PIN_, MODE_OFF_);
     }
 
     /**
      * Tern on the LED light.
      */
     void ternOn() const {
-        pcf8574_.digitalWrite(PIN_, MODE_ON_);
+        I2C_MANAGER_.pcf8574_digitalWrite(PIN_, MODE_ON_);
     }
 
     /**
      * Tern off the LED light.
      */
     void ternOff() const {
-        pcf8574_.digitalWrite(PIN_, MODE_OFF_);
+        I2C_MANAGER_.pcf8574_digitalWrite(PIN_, MODE_OFF_);
     }
 
   private:
-    Adafruit_PCF8574& pcf8574_;
+    const I2CManager& I2C_MANAGER_;
     const uint8_t PIN_;
     const int MODE_ON_;
     const int MODE_OFF_;

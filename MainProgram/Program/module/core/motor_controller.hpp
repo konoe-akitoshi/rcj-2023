@@ -1,6 +1,8 @@
 #ifndef MODULE_CORE_MOTOR_CONTOROLER2_HPP
 #define MODULE_CORE_MOTOR_CONTOROLER2_HPP
 
+#include "i2c_manager.hpp"
+
 #ifdef WITHOUT_ARDUINO_ENVIRONMENT
 #include "deps/arduino.hpp"
 #include "deps/wire.hpp"
@@ -16,14 +18,12 @@ class MotorController
     /**
      * @param address the address of the I2C slave for transmission processing
      */
-    explicit constexpr MotorController(const pin_size_t sda, const pin_size_t scl, const uint8_t address)
-        : SDA_(sda), SCL_(scl), ADDRESS_(address) {
+    explicit constexpr MotorController(const I2CManager& i2c_manager, const uint8_t address)
+        : I2CManager_(i2c_manager), ADDRESS_(address) {
     }
 
     void setup(void) const {
-        Wire1.setSDA(SDA_);
-        Wire1.setSCL(SCL_);
-        Wire1.begin();
+        I2CManager_.beginWire1();
     }
 
     /**
@@ -101,8 +101,7 @@ class MotorController
     }
 
   private:
-    const pin_size_t SDA_;
-    const pin_size_t SCL_;
+    const I2CManager& I2CManager_;
     const uint8_t ADDRESS_;
 
     uint8_t formatPower_(const int power) const {

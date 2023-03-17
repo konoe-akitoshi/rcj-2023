@@ -2,6 +2,7 @@
 #define MODULE_CORE_CAMERA_HPP
 
 #include "../vector2.hpp"
+#include "i2c_manager.hpp"
 
 #ifdef WITHOUT_ARDUINO_ENVIRONMENT
 #include "deps/arduino.hpp"
@@ -33,15 +34,12 @@ class Camera
     /**
      * @param speed transfer speed rate (in bits per second).
      */
-    explicit constexpr Camera(const pin_size_t sda, const pin_size_t scl, const uint8_t address, const uint32_t clock)
-        : SDA_(sda), SCL_(scl), ADDRESS_(address), CLOCK_(clock) {
+    explicit constexpr Camera(const I2CManager& i2c_manager, const uint8_t address)
+        : I2CManager_(i2c_manager), ADDRESS_(address) {
     }
 
     void setup(void) const {
-        Wire.setSDA(SDA_);
-        Wire.setSCL(SCL_);
-        Wire.setClock(CLOCK_);
-        Wire.begin();
+        I2CManager_.beginWire();
     }
 
     /**
@@ -86,10 +84,8 @@ class Camera
     }
 
   private:
-    const pin_size_t SDA_;
-    const pin_size_t SCL_;
+    const I2CManager& I2CManager_;
     const uint8_t ADDRESS_;
-    const uint32_t CLOCK_;
 
     static constexpr int8_t DATA_LENGTH_ = 7;
 

@@ -19,6 +19,10 @@ class Battery
     explicit constexpr Battery(const pin_size_t pin, const float limit) : PIN_(pin), LIMIT_(limit) {
     }
 
+    void setup(void) const {
+        // empty
+    }
+
     /**
      * Check whether the battery voltage is low (under the limit).
      *
