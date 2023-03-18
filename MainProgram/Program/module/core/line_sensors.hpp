@@ -15,17 +15,35 @@ namespace module
 {
 struct LineSensorsDirectionIndex
 {
-    const int8_t front;
-    const int8_t left;
-    const int8_t right;
-    const int8_t back;
-    const int8_t center;
-    explicit constexpr LineSensorsDirectionIndex() : front(-1), left(-1), right(-1), back(-1), center(-1) {
+    int8_t front;
+    int8_t right;
+    int8_t back;
+    int8_t left;
+    int8_t center;
+    explicit constexpr LineSensorsDirectionIndex() : front(-1), right(-1), back(-1), left(-1), center(-1) {
     }
-    explicit LineSensorsDirectionIndex(const int8_t _front, const int8_t _left, const int8_t _right, const int8_t _back, const int8_t _center)
-        : front(_front), left(_left), right(_right), back(_back), center(_center) {
+    explicit constexpr LineSensorsDirectionIndex(const int8_t _front, const int8_t _right, const int8_t _back, const int8_t _left, const int8_t _center)
+        : front(_front), right(_right), back(_back), left(_left), center(_center) {
+    }
+    LineSensorsDirectionIndex(const volatile LineSensorsDirectionIndex& other)
+        : front(other.front), right(other.right), back(other.right), left(other.left), center(other.center) {
+    }
+
+    LineSensorsDirectionIndex(const LineSensorsDirectionIndex&) = default;
+    LineSensorsDirectionIndex(LineSensorsDirectionIndex&&) = default;
+    LineSensorsDirectionIndex& operator=(const LineSensorsDirectionIndex&) = default;
+    LineSensorsDirectionIndex& operator=(LineSensorsDirectionIndex&&) = default;
+
+    void operator=(const LineSensorsDirectionIndex& other) volatile {
+        front = other.front;
+        left = other.left;
+        right = other.right;
+        back = other.back;
+        center = other.center;
     }
 };
+
+constexpr std::pair<float, LineSensorsDirectionIndex> NOT_FOUND_LINE_AZIMUT = {404, module::LineSensorsDirectionIndex()};
 
 class LineSensors
 {
@@ -80,7 +98,7 @@ class LineSensors
             front = 3;
         }
         if (front == -1) {
-            return {404, LineSensorsDirectionIndex()};
+            return NOT_FOUND_LINE_AZIMUT;
         }
         const int8_t left = (front + 3) % 4;
         const int8_t right = (front + 1) % 4;
@@ -91,7 +109,7 @@ class LineSensors
         } else {
             az += PI;
         }
-        return {az, LineSensorsDirectionIndex(front, left, right, (front + 2) % 4, 4)};
+        return {az, LineSensorsDirectionIndex(front, right, (front + 2) % 4, left, 4)};
     }
 
     const module::DigitalReader& operator[](const int8_t index) const {
