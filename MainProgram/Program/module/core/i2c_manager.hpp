@@ -56,12 +56,14 @@ class I2CManager
         enabled = true;
 
         beginWire1();
-        const bool pcf8574_status = pcf8574_.begin(PCF8574_ADDRESS_, &Wire1);
-        if (pcf8574_status == false) {
-            while (true) {
+        bool pcf8574_status;
+        do {
+            pcf8574_status = pcf8574_.begin(PCF8574_ADDRESS_, &Wire1);
+            if (pcf8574_status == false) {
                 Serial.println("ERROR not find PCF8574");
+                delay(500);
             }
-        }
+        } while (!pcf8574_status);
         Serial.println("DONE setup PCF8574");
     }
 
