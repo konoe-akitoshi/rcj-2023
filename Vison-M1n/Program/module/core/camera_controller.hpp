@@ -49,7 +49,11 @@ class CameraController
         const Vector2Int blue_goal_pos = {getCoordinateOne_(addr, 105), getCoordinateOne_(addr, 106)};
         const int yellow_goal_width = getCoordinateOne_(addr, 104);
         const int blue_goal_width = getCoordinateOne_(addr, 107);
-        return CameraFieldData(ball_pos, yellow_goal_pos, blue_goal_pos, yellow_goal_width, blue_goal_width);
+        return CameraFieldData(
+            ball_pos, yellow_goal_pos, blue_goal_pos,                             // Position
+            (ball_pos.x >= 0), (yellow_goal_pos.x >= 0), (blue_goal_pos.x >= 0),  // is exist
+            yellow_goal_width, blue_goal_width                                    // width
+        );
     }
 
     void scanImage(const int index, Image& image) const {

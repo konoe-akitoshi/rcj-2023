@@ -21,16 +21,18 @@ void onReceive(int count) {
 }
 
 void onRequest() {
-    // TODO: impl ret[0] (existance data)
     uint8_t ret[7] = {0};
     if (request_id == 1) {
+        ret[0] = field_data.ballExist;
         FILL_REQUEST_RETURN(ret, field_data.ballPosition.x, 1, 2);
         FILL_REQUEST_RETURN(ret, field_data.ballPosition.y, 3, 4);
     } else if (request_id == 2) {
+        ret[0] = field_data.yellowGoalExist;
         FILL_REQUEST_RETURN(ret, field_data.yellowGoalPosition.x, 1, 2);
         FILL_REQUEST_RETURN(ret, field_data.yellowGoalPosition.y, 3, 4);
         FILL_REQUEST_RETURN(ret, field_data.yellowGoalWidth, 5, 6);
     } else if (request_id == 3) {
+        ret[0] = field_data.blueGoalExist;
         FILL_REQUEST_RETURN(ret, field_data.blueGoalPosition.x, 1, 2);
         FILL_REQUEST_RETURN(ret, field_data.blueGoalPosition.y, 3, 4);
         FILL_REQUEST_RETURN(ret, field_data.blueGoalWidth, 5, 6);
@@ -58,48 +60,49 @@ void setup() {
     Serial.println("DONE setup MainWire");
 }
 
-CameraFieldData fixFiledData0(const CameraFieldData& data) {
-    // TODO :impl
-    if (data.ballPosition.x != -1) {
-        return CameraFieldData(
-            {1, 1}, {0, 0}, {0, 0},
-            0, 0);
+constexpr Vector2Int fixBySectionSeparate(const Vector2Int& vec) {
+    const int section_x = vec.x / 40;
+    const int section_y = vec.y / 80;
+    int ret_x = 0, ret_y = 0;
+    if (section_y == 0) {
+        ret_y = 65;
+        ret_x = (section_x - 4) * 17 + (17 / 2);
+    } else if (section_y == 1) {
+        ret_y = 15;
+        ret_x = (section_x - 4) * 6 + (6 / 2);
+    } else {
+        ret_y = 3;
+        ret_x = (section_x - 4) * 3 + (3 / 2);
     }
-    return data;
+    return {ret_x, ret_y};
 }
 
-CameraFieldData fixFiledData1(const CameraFieldData& data) {
-    // TODO :impl
-    if (data.ballPosition.x != -1) {
-        return CameraFieldData(
-            {1, -1}, {0, 0}, {0, 0},
-            0, 0);
-    }
-    return data;
+constexpr Vector2Int translate(const Vector2Int& vec, const float theta, const float tx, const float ty) {
+    // / \   /              \  / \
+    // |X|   |cosθ  -sinθ  Tx| |x|
+    // |Y| = |sinθ   cosθ  Ty| |y|
+    // |1|   |  0     0    1 | |1|
+    // \_/   \______________/  \_/
+    const int x = (vec.x * cos(theta)) - (vec.y * sin(theta)) + tx;
+    const int y = (vec.x * sin(theta)) + (vec.y * cos(theta)) + ty;
+    return {x, y};
 }
 
-CameraFieldData fixFiledData2(const CameraFieldData& data) {
-    // TODO :impl
-    if (data.ballPosition.x != -1) {
-        return CameraFieldData(
-            {-1, -1}, {0, 0}, {0, 0},
-            0, 0);
-    }
-    return data;
-}
-
-CameraFieldData fixFiledData3(const CameraFieldData& data) {
-    // TODO :impl
-    if (data.ballPosition.x != -1) {
-        return CameraFieldData(
-            {-1, 1}, {0, 0}, {0, 0},
-            0, 0);
-    }
-    return data;
+constexpr CameraFieldData fixFieldData(const CameraFieldData& data, const float rotation, const float move_x, const float move_y) {
+    return CameraFieldData(
+        data.ballExist ? translate(fixBySectionSeparate(data.ballPosition), rotation, move_x, move_y) : Vector2Int(0, 0),
+        data.yellowGoalExist ? translate(fixBySectionSeparate(data.yellowGoalPosition), rotation, move_x, move_y) : Vector2Int(0, 0),
+        data.blueGoalExist ? translate(fixBySectionSeparate(data.blueGoalPosition), rotation, move_x, move_y) : Vector2Int(0, 0),
+        data.ballExist,
+        data.yellowGoalExist,
+        data.blueGoalExist,
+        data.yellowGoalWidth,
+        data.blueGoalWidth);
 }
 
 void loop() {
     static module::Image image;
+    static CameraFieldData cam[4];
 
     const int terminalRequest = Terminal.popRequest();
 
@@ -119,22 +122,56 @@ void loop() {
 
     // terminalRequest == 0
 
-    const auto cam0 = fixFiledData0(CameraController.getFieldData(0));
-    const auto cam1 = fixFiledData1(CameraController.getFieldData(1));
-    const auto cam2 = fixFiledData2(CameraController.getFieldData(2));
-    const auto cam3 = fixFiledData3(CameraController.getFieldData(3));
+    cam[0] = fixFieldData(CameraController.getFieldData(0), -1 * PI / 4, 7, -1);
+    cam[1] = fixFieldData(CameraController.getFieldData(1), -3 * PI / 4, 7, -16);
+    cam[2] = fixFieldData(CameraController.getFieldData(2), -5 * PI / 4, -7, -16);
+    cam[3] = fixFieldData(CameraController.getFieldData(3), -7 * PI / 4, -7, -1);
 
-    field_data.ballPosition.x = (cam0.ballPosition.x + cam1.ballPosition.x + cam2.ballPosition.x + cam3.ballPosition.x) / 4;
-    field_data.ballPosition.y = (cam0.ballPosition.y + cam1.ballPosition.y + cam2.ballPosition.y + cam3.ballPosition.y) / 4;
+    Vector2Int sumVector = {0, 0};
+    int count = 0;
+    for (int i = 0; i < 4; ++i) {
+        if (cam[i].ballExist) {
+            sumVector += cam[i].ballPosition;
+            count += 1;
+        }
+    }
+    if (count != 0) {
+        field_data.ballPosition = sumVector / count;
+        field_data.ballExist = true;
+    } else {
+        field_data.ballExist = false;
+    }
 
-    field_data.yellowGoalPosition.x = (cam0.yellowGoalPosition.x + cam1.yellowGoalPosition.x + cam2.yellowGoalPosition.x + cam3.yellowGoalPosition.x) / 4;
-    field_data.yellowGoalPosition.y = (cam0.yellowGoalPosition.y + cam1.yellowGoalPosition.y + cam2.yellowGoalPosition.y + cam3.yellowGoalPosition.y) / 4;
+    sumVector = {0, 0};
+    count = 0;
+    for (int i = 0; i < 4; ++i) {
+        if (cam[i].yellowGoalExist) {
+            sumVector += cam[i].yellowGoalPosition;
+            count += 1;
+        }
+    }
+    if (count != 0) {
+        field_data.yellowGoalPosition = sumVector / count;
+        field_data.yellowGoalExist = true;
+    } else {
+        field_data.yellowGoalExist = false;
+    }
 
-    field_data.blueGoalPosition.x = (cam0.blueGoalPosition.x + cam1.blueGoalPosition.x + cam2.blueGoalPosition.x + cam3.blueGoalPosition.x) / 4;
-    field_data.blueGoalPosition.y = (cam0.blueGoalPosition.y + cam1.blueGoalPosition.y + cam2.blueGoalPosition.y + cam3.blueGoalPosition.y) / 4;
+    sumVector = {0, 0};
+    count = 0;
+    for (int i = 0; i < 4; ++i) {
+        if (cam[i].blueGoalExist) {
+            sumVector += cam[i].blueGoalPosition;
+            count += 1;
+        }
+    }
+    if (count != 0) {
+        field_data.blueGoalPosition = sumVector / count;
+        field_data.blueGoalExist = true;
+    } else {
+        field_data.blueGoalExist = false;
+    }
 
-    field_data.yellowGoalWidth = (cam0.yellowGoalWidth + cam1.yellowGoalWidth + cam2.yellowGoalWidth + cam3.yellowGoalWidth) / 4;
-    field_data.blueGoalWidth = (cam0.blueGoalWidth + cam1.blueGoalWidth + cam2.blueGoalWidth + cam3.blueGoalWidth) / 4;
-
-    Serial.println(field_data.ballPosition.x);
+    CameraFieldData::dumpToSerial(field_data);
+    delay(1000);
 }
