@@ -53,8 +53,8 @@ constexpr SerialReader Reader;
 
 // First: id, Second: count
 std::pair<int, int> sendId(const uint8_t address) {
-    Serial.print("Input number for ");
-    Serial.print(address);
+    Serial.print("Input number for 0x");
+    Serial.print(address, 16);
     Serial.print(": ");
     uint8_t id = Reader.readInt();
     Serial.println(id);

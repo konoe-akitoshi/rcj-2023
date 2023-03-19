@@ -56,22 +56,24 @@ void onRequest() {
 }
 
 void setup() {
-    do {
+    // do {
         Serial.begin(9600);
         delay(10);
-    } while(!Serial);
-    Serial.println("Open Serial(9600)");
+    // } while(!Serial);
+    // Serial.println("Open Serial(9600)");
 
     Wire1.setSDA(I2C_SDA);
     Serial.println("1");
     Wire1.setSCL(I2C_SCL);
     Serial.println("2");
-    Wire1.begin(I2C_ADDRESS);
+    Wire1.setClock(400000);
     Serial.println("3");
     Wire1.onReceive(onReceive);
     Serial.println("4");
     Wire1.onRequest(onRequest);
-    Serial.println("Done Wire1 setup");
+    Serial.println("5");
+    Wire1.begin(I2C_ADDRESS);
+    Serial.println("Wire1 begin");
 }
 
 void loop() {}
