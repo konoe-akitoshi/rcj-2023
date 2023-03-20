@@ -65,6 +65,6 @@ void loop() {
     }
     transmit();
 
-    delay(1500);
+    delay(1000);
     count += 1;
 }
