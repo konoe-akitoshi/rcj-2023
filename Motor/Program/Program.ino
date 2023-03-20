@@ -87,8 +87,8 @@ void setup() {
     TCCR2B &= 0b11111000;
     TCCR2B |= 0b00000001;  // set PWM 15.1kHz
 
-    Wire.begin(I2C_ADDRESS);
     Wire.onReceive(onReceive);
+    Wire.begin(I2C_ADDRESS);
 }
 
 void loop() {
