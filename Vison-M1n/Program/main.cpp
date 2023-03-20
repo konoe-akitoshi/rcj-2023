@@ -47,6 +47,8 @@ void setup() {
     Terminal.setup();
     Serial.println("DONE setup Terminal");
 
+    // NOTE: MainWire must be last because the start of I2C connection is used
+    //       in MainProgram for check whether Camera has been setup.
     MainWire.setup();
     MainWire.start(onReceive, onRequest);
     Serial.println("DONE setup MainWire");
@@ -164,6 +166,5 @@ void loop() {
         field_data.blueGoalExist = false;
     }
 
-    CameraFieldData::dumpToSerial(field_data);
-    delay(1000);
+    delay(20);
 }

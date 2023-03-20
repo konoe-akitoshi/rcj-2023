@@ -40,6 +40,29 @@ class CameraController
         Wire.setSCL(SCL_);
         Wire.setClock(400000);
         Wire.begin();
+
+        bool camera_started;
+        do {
+            camera_started = true;
+            for (const uint8_t addr : ADDRESSES_) {
+                Wire.beginTransmission(addr);
+                Wire.write((uint8_t)3);
+                const int status = Wire.endTransmission();
+                if (status != 0) {
+                    camera_started = false;
+                } else {
+                    Wire.requestFrom(addr, 1);
+                    for (int time = 0; time < 5; ++time) {
+                        if (Wire.available()) {
+                            break;
+                        }
+                    }
+                    const int result = (Wire.available() ? Wire.read() : 2);
+                    camera_started &= (result == 1);
+                }
+            }
+            delay(1000);
+        } while (!camera_started);
     }
 
     CameraFieldData getFieldData(const int index) const {
