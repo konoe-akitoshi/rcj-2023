@@ -7,18 +7,22 @@ void setup() {
     LedY.setup();
     LedG.setup();
     LedB.setup();
+    LineSensorLed.setup();
 }
 
 void nextSwitchLed() {
-    static bool flag = false;
-    if (flag) {
+    static int flag = 0;
+    if (flag == 0) {
         SwitchLedG.ternOn();
         SwitchLedR.ternOff();
-    } else {
+    } else if (flag == 1) {
         SwitchLedG.ternOff();
         SwitchLedR.ternOn();
+    } else {
+        SwitchLedG.ternOff();
+        SwitchLedR.ternOff();
     }
-    flag ^= true;
+    flag = (flag + 1) % 3;
 }
 
 void nextRYGBLed() {
@@ -49,11 +53,22 @@ void nextRYGBLed() {
             LedB.ternOn();
             break;
     }
-
     flag = (flag + 1) % 4;
+}
+
+void nextLineSensorLed() {
+    static int flag = 0;
+    if (flag) {
+        LineSensorLed.ternOff();
+    } else {
+        LineSensorLed.ternOn();
+    }
+    flag = (flag + 1) % 3;
 }
 
 void loop() {
     nextSwitchLed();
+    nextRYGBLed();
+    nextLineSensorLed();
     delay(500);
 }

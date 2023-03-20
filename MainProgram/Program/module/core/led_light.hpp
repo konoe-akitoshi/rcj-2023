@@ -19,7 +19,7 @@ class LedLight
      * @param on  the value(HIGH or LOW) to Write to the specified pin if you want to tern on the LED.
      * @param off  the value(HIGH or LOW) to Write to the specified pin if you want to tern off the LED.
      */
-    explicit constexpr LedLight(const pin_size_t pin, const int on = HIGH, const int off = LOW)
+    explicit constexpr LedLight(const pin_size_t pin, const int on, const int off)
         : PIN_(pin), MODE_ON_(on), MODE_OFF_(off) {
     }
 
@@ -56,7 +56,7 @@ class LedLightPCF8574
      * @param on  the value(HIGH or LOW) to Write to the specified pin if you want to tern on the LED.
      * @param off  the value(HIGH or LOW) to Write to the specified pin if you want to tern off the LED.
      */
-    explicit constexpr LedLightPCF8574(const I2CManager& i2c_manager, const uint8_t pin, const int on = HIGH, const int off = LOW)
+    explicit constexpr LedLightPCF8574(const I2CManager& i2c_manager, const uint8_t pin, const int on, const int off)
         : I2C_MANAGER_(i2c_manager), PIN_(pin), MODE_ON_(on), MODE_OFF_(off) {
     }
 
