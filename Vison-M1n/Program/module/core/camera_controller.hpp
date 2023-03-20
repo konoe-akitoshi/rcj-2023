@@ -98,7 +98,6 @@ class CameraController
                 delay(1);
                 continue;
             }
-            Serial.println("timeout");
             return -1;
         }
         return (int)((uint8_t)Wire.read());
@@ -108,7 +107,7 @@ class CameraController
         requestSet_(address, id);
         int t1 = requestGet_(address);
         int t2 = requestGet_(address);
-        if (t2 > t1 || t1 < 0 || t2 < 0) {
+        if (t1 < t2 || t1 < 0 || t2 < 0) {
             return -1;
         }
         return t1 + t2;

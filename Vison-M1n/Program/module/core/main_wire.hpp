@@ -28,8 +28,8 @@ class MainWire
         Wire1.begin(ADDRESS_);
     }
 
-    void write(const uint8_t (&data)[7]) const {
-        Wire1.write(data, 7);
+    void write(const uint8_t (&data)[4]) const {
+        Wire1.write(data, 4);
     }
 
     uint8_t read() const {

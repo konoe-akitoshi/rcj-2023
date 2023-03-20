@@ -50,8 +50,8 @@ class Camera
     ObjectData getBallData(void) const {
         uint8_t data[DATA_LENGTH_] = {0};
         request_(1, data);
-        const int x = ((int)data[1] << 8) | data[2];
-        const int y = ((int)data[3] << 8) | data[4];
+        const int x = (int8_t)data[1];
+        const int y = (int8_t)data[2];
         return ObjectData(data[0], {x, y}, 0);
     }
 
@@ -63,9 +63,9 @@ class Camera
     ObjectData getYellowGoalData(void) const {
         uint8_t data[DATA_LENGTH_] = {0};
         request_(2, data);
-        const int x = ((int)data[1] << 8) | data[2];
-        const int y = ((int)data[3] << 8) | data[4];
-        const int w = ((int)data[5] << 8) | data[6];
+        const int x = (int8_t)data[1];
+        const int y = (int8_t)data[2];
+        const int w = (uint8_t)data[3];
         return ObjectData(data[0], {x, y}, w);
     }
 
@@ -77,9 +77,9 @@ class Camera
     ObjectData getBlueGoalData(void) const {
         uint8_t data[DATA_LENGTH_] = {0};
         request_(3, data);
-        const int x = ((int)data[1] << 8) | data[2];
-        const int y = ((int)data[3] << 8) | data[4];
-        const int w = ((int)data[5] << 8) | data[6];
+        const int x = (int8_t)data[1];
+        const int y = (int8_t)data[2];;
+        const int w = (uint8_t)data[3];;
         return ObjectData(data[0], {x, y}, w);
     }
 
@@ -87,7 +87,7 @@ class Camera
     const I2CManager& I2CManager_;
     const uint8_t ADDRESS_;
 
-    static constexpr int8_t DATA_LENGTH_ = 7;
+    static constexpr int8_t DATA_LENGTH_ = 4;
 
     inline void request_(const uint8_t id, uint8_t (&data)[DATA_LENGTH_]) const {
         while (Wire.available()) {

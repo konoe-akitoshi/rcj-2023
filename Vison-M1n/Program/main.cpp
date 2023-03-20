@@ -6,14 +6,6 @@
 volatile CameraFieldData field_data;
 volatile uint8_t request_id;
 
-#define FILL_REQUEST_RETURN(ret, value, idx1, idx2)  \
-    if ((value) < 0) {                               \
-        (ret)[(idx1)] = 1 << 7;                      \
-    } else {                                         \
-        (ret)[(idx1)] = ((value) >> 7) & 0b11111111; \
-        (ret)[(idx2)] = ((value) >> 0) & 0b11111111; \
-    }
-
 void onReceive(int count) {
     for (int i = 0; i < count; ++i) {
         request_id = MainWire.read();
@@ -21,21 +13,21 @@ void onReceive(int count) {
 }
 
 void onRequest() {
-    uint8_t ret[7] = {0};
+    uint8_t ret[4] = {0};
     if (request_id == 1) {
-        ret[0] = field_data.ballExist;
-        FILL_REQUEST_RETURN(ret, field_data.ballPosition.x, 1, 2);
-        FILL_REQUEST_RETURN(ret, field_data.ballPosition.y, 3, 4);
+        ret[0] = (field_data.ballExist ? 1 : 0);
+        ret[1] = field_data.ballPosition.x;
+        ret[2] = field_data.ballPosition.y;
     } else if (request_id == 2) {
-        ret[0] = field_data.yellowGoalExist;
-        FILL_REQUEST_RETURN(ret, field_data.yellowGoalPosition.x, 1, 2);
-        FILL_REQUEST_RETURN(ret, field_data.yellowGoalPosition.y, 3, 4);
-        FILL_REQUEST_RETURN(ret, field_data.yellowGoalWidth, 5, 6);
+        ret[0] = (field_data.yellowGoalExist ? 1 : 0);
+        ret[1] = field_data.yellowGoalPosition.x;
+        ret[2] = field_data.yellowGoalPosition.y;
+        ret[3] = field_data.yellowGoalWidth;
     } else if (request_id == 3) {
-        ret[0] = field_data.blueGoalExist;
-        FILL_REQUEST_RETURN(ret, field_data.blueGoalPosition.x, 1, 2);
-        FILL_REQUEST_RETURN(ret, field_data.blueGoalPosition.y, 3, 4);
-        FILL_REQUEST_RETURN(ret, field_data.blueGoalWidth, 5, 6);
+        ret[0] = (field_data.blueGoalExist ? 1 : 0);
+        ret[1] = field_data.blueGoalPosition.x;
+        ret[2] = field_data.blueGoalPosition.y;
+        ret[3] = field_data.blueGoalWidth;
     }
     MainWire.write(ret);
 }
