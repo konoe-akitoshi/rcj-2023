@@ -106,10 +106,10 @@ def main():
             # draw_color=(0, 0, 255)
         )
 
-        snapshot_image = image
         orange_ball_pos = calibration.calc(orange)
         yellow_goal_pos = calibration.calc(yellow)
         blue_goal_pos = calibration.calc(blue)
+        snapshot_image = image
 
         if DEBUG_MODE:
             print("fps: {}".format(clock.fps()))
@@ -196,7 +196,7 @@ def on_receive(request):
 
 
 def on_transmit():
-    global i2c_received_id, i2c_continued_id_count
+    global i2c_received_id, i2c_continued_id_count, snapshot_image
     i2c_continued_id_count += 1
 
     if i2c_received_id >= 100:
@@ -209,6 +209,8 @@ def on_transmit():
             return min(200, ret) if ret != -1 else 0
         else:
             return max(0, ret - 200) if ret != -1 else 255
+    if i2c_received_id == 3:
+        return 2 if snapshot_image is None else 1
     if i2c_received_id == 1:
         if i2c_continued_id_count == 0:
             if is_adjusting_white_balance:
