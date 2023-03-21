@@ -25,7 +25,7 @@ void loop() {
     power[0] = 128;
     power[1] = 128;
     power[2] = 80;
-    power[3] = -30;
+    power[3] = 128 + 30;
     transmit();
     delay(1000);
 }
