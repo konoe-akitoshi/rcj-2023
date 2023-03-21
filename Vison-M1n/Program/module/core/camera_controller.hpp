@@ -67,11 +67,22 @@ class CameraController
 
     CameraFieldData getFieldData(const int index) const {
         const uint8_t addr = getAddress_(index);
-        const Vector2Int ball_pos = {getCoordinateOne_(addr, 100), getCoordinateOne_(addr, 101)};
-        const Vector2Int yellow_goal_pos = {getCoordinateOne_(addr, 102), getCoordinateOne_(addr, 103)};
-        const Vector2Int blue_goal_pos = {getCoordinateOne_(addr, 105), getCoordinateOne_(addr, 106)};
-        const int yellow_goal_width = getCoordinateOne_(addr, 104);
-        const int blue_goal_width = getCoordinateOne_(addr, 107);
+
+        requestSet_(addr, 100);
+        const Vector2Int ball_pos = convertVector2(requestGet_(addr));
+
+        requestSet_(addr, 101);
+        const Vector2Int yellow_goal_pos = convertVector2(requestGet_(addr));
+
+        requestSet_(addr, 102);
+        const Vector2Int blue_goal_pos = convertVector2(requestGet_(addr));
+
+        requestSet_(addr, 103);
+        const int yellow_goal_width = requestGet_(addr) * 2;
+
+        requestSet_(addr, 104);
+        const int blue_goal_width = requestGet_(addr) * 2;
+
         return CameraFieldData(
             ball_pos, yellow_goal_pos, blue_goal_pos,                             // Position
             (ball_pos.x >= 0), (yellow_goal_pos.x >= 0), (blue_goal_pos.x >= 0),  // is exist
@@ -126,14 +137,24 @@ class CameraController
         return (int)((uint8_t)Wire.read());
     }
 
-    int getCoordinateOne_(const uint8_t address, const uint8_t id) const {
-        requestSet_(address, id);
-        int t1 = requestGet_(address);
-        int t2 = requestGet_(address);
-        if (t1 < t2 || t1 < 0 || t2 < 0) {
-            return -1;
+    inline Vector2Int convertVector2(const uint8_t section_number) const {
+        if (section_number <= 0 || 25 <= section_number) {
+            return Vector2Int(-1, -1);
         }
-        return t1 + t2;
+        const auto section_x = (section_number - 1) % 8;
+        const auto section_y = (section_number - 1) / 8;
+        int ret_x = 0, ret_y = 0;
+        if (section_y == 0) {
+            ret_y = 65;
+            ret_x = (section_x - 4) * 17 + (17 / 2);
+        } else if (section_y == 1) {
+            ret_y = 15;
+            ret_x = (section_x - 4) * 6 + (6 / 2);
+        } else {
+            ret_y = 3;
+            ret_x = (section_x - 4) * 3 + (3 / 2);
+        }
+        return {ret_x, ret_y};
     }
 };
 }  // namespace module

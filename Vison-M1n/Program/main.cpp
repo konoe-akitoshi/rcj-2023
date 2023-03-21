@@ -54,23 +54,6 @@ void setup() {
     Serial.println("DONE setup MainWire");
 }
 
-constexpr Vector2Int fixBySectionSeparate(const Vector2Int& vec) {
-    const int section_x = vec.x / 40;
-    const int section_y = vec.y / 80;
-    int ret_x = 0, ret_y = 0;
-    if (section_y == 0) {
-        ret_y = 65;
-        ret_x = (section_x - 4) * 17 + (17 / 2);
-    } else if (section_y == 1) {
-        ret_y = 15;
-        ret_x = (section_x - 4) * 6 + (6 / 2);
-    } else {
-        ret_y = 3;
-        ret_x = (section_x - 4) * 3 + (3 / 2);
-    }
-    return {ret_x, ret_y};
-}
-
 constexpr Vector2Int translate(const Vector2Int& vec, const float theta, const float tx, const float ty) {
     // / \   /              \  / \
     // |X|   |cosθ  -sinθ  Tx| |x|
@@ -84,9 +67,9 @@ constexpr Vector2Int translate(const Vector2Int& vec, const float theta, const f
 
 constexpr CameraFieldData fixFieldData(const CameraFieldData& data, const float rotation, const float move_x, const float move_y) {
     return CameraFieldData(
-        data.ballExist ? translate(fixBySectionSeparate(data.ballPosition), rotation, move_x, move_y) : Vector2Int(0, 0),
-        data.yellowGoalExist ? translate(fixBySectionSeparate(data.yellowGoalPosition), rotation, move_x, move_y) : Vector2Int(0, 0),
-        data.blueGoalExist ? translate(fixBySectionSeparate(data.blueGoalPosition), rotation, move_x, move_y) : Vector2Int(0, 0),
+        data.ballExist ? translate(data.ballPosition, rotation, move_x, move_y) : Vector2Int(0, 0),
+        data.yellowGoalExist ? translate(data.yellowGoalPosition, rotation, move_x, move_y) : Vector2Int(0, 0),
+        data.blueGoalExist ? translate(data.blueGoalPosition, rotation, move_x, move_y) : Vector2Int(0, 0),
         data.ballExist,
         data.yellowGoalExist,
         data.blueGoalExist,
@@ -166,6 +149,5 @@ void loop() {
         field_data.blueGoalExist = false;
     }
 
-    // CameraFieldData::dumpToSerial(field_data);
     delay(20);
 }
