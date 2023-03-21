@@ -307,6 +307,7 @@ def setup_i2c(scl, sda, address):
         mode=I2C.MODE_SLAVE,
         scl=scl,
         sda=sda,
+        freq=400000,
         addr=address,
         addr_size=7,
         on_receive=on_receive,
