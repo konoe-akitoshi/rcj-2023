@@ -14,6 +14,6 @@ void setup() {
 void loop() {
     Serial.println("===");
     const auto data = CameraController.getFieldData(1);
-    data.dumpToSerial();
+    CameraFieldData::dumpToSerial(data);
     delay(100);
 }

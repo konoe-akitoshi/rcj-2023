@@ -33,7 +33,7 @@ class MainWire
     }
 
     uint8_t read() const {
-        return Wire.read();
+        return (uint8_t)Wire1.read();
     }
 
   private:
