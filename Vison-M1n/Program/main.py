@@ -60,19 +60,18 @@ current_white_balance = (0, 0, 0)
 
 
 class Coordinate:
-    def __init__(self, x, y, w, h):
+    def __init__(self, x, y, w):
         self.x = x
         self.y = y
         self.w = w
-        self.h = h
 
 
 i2c = None
 i2c_received_id = -1
 i2c_continued_id_count = 0
-orange_ball_pos = Coordinate(-1, -1, -1, -1)
-yellow_goal_pos = Coordinate(-1, -1, -1, -1)
-blue_goal_pos = Coordinate(-1, -1, -1, -1)
+orange_ball_pos = Coordinate(-1, -1, -1)
+yellow_goal_pos = Coordinate(-1, -1, -1)
+blue_goal_pos = Coordinate(-1, -1, -1)
 snapshot_image = None
 
 
@@ -196,7 +195,15 @@ class Calibration:
             return coordinate
         x = coordinate.x + self._next_index_x[self._pos(coordinate.x//2, coordinate.y//2)]
         y = coordinate.y + self._next_index_y[self._pos(coordinate.x//2, coordinate.y//2)]
-        return Coordinate(x=x, y=y, w=coordinate.w, h=coordinate.h)
+        return Coordinate(x=x, y=y, w=coordinate.w)
+
+
+def separate_section(coordinate):
+    if coordinate.x < 0:
+        return 25
+    section_x = coordinate.x // 40
+    section_y = coordinate.y // 80
+    return section_x + section_y * 8 + 1
 
 
 def on_receive(request):
@@ -212,15 +219,14 @@ def on_transmit():
     i2c_continued_id_count += 1
 
     if i2c_received_id >= 100:
-        ret = (
-            orange_ball_pos.x, orange_ball_pos.y,
-            yellow_goal_pos.x, yellow_goal_pos.y, yellow_goal_pos.w,
-            blue_goal_pos.x, blue_goal_pos.y, blue_goal_pos.w
+        obj = (
+            orange_ball_pos, yellow_goal_pos, blue_goal_pos,
+            yellow_goal_pos.w, blue_goal_pos.w
         )[i2c_received_id - 100]
-        if i2c_continued_id_count == 0:
-            return min(200, ret) if ret != -1 else 0
+        if i2c_received_id <= 102:
+            return separate_section(obj)
         else:
-            return max(0, ret - 200) if ret != -1 else 255
+            return obj // 2
     if i2c_received_id == 3:
         return 2 if snapshot_image is None else 1
     if i2c_received_id == 1:
@@ -276,7 +282,7 @@ def track_color(image,
         area_threshold=area_threshold
     )
     if (blobs is None) or (len(blobs) == 0):
-        return Coordinate(-1, -1, -1, -1)
+        return Coordinate(-1, -1, -1)
     if draw_color is not None:
         for b in blobs:
             image.draw_rectangle(b.rect(), color=draw_color)
@@ -286,7 +292,6 @@ def track_color(image,
         x=max_blob.cx(),
         y=max_blob.cy(),
         w=max_blob.w(),
-        h=max_blob.h(),
     )
 
 
@@ -331,10 +336,9 @@ def setup_sensor(dual_buff):
 def print_coordinate(coordinate, name=None,  end="\n"):
     if name is not None:
         print(name + ": ", end="")
-    print("({}, {}, {}, {})".format(
+    print("({}, {}, {})".format(
         coordinate.x,
         coordinate.y,
-        coordinate.h,
         coordinate.w,
     ), end=end)
 
