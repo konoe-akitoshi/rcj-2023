@@ -1,14 +1,7 @@
 import sensor
-import time
 import array
 from machine import I2C
 from ucollections import OrderedDict, deque
-
-DEBUG_MODE = False
-
-if DEBUG_MODE:
-    import lcd
-
 
 CAMERA_ID = 0
 
@@ -82,52 +75,36 @@ def main():
     calibration = Calibration(320, 240)
     setup_i2c(scl=I2C_SCL, sda=I2C_SDA, address=I2C_ADDRESS)
 
-    if DEBUG_MODE:
-        clock = time.clock()
-        lcd.init(type=1, freq=15000000)
-
     while True:
         if is_adjusting_white_balance:
             auto_white_blance()
-        if DEBUG_MODE:
-            clock.tick()
         image = sensor.snapshot()
 
         orange = track_color(
             image=image,
             color_threshold=ORAMGE_COLOR_THRESHOLD,
             pixels_threshold=10,
-            area_threshold=10,
-            # draw_color=(255, 0, 0)
+            area_threshold=10
         )
 
         yellow = track_color(
             image=image,
             color_threshold=YELLOW_COLOR_THRESHOLD,
             pixels_threshold=250,
-            area_threshold=250,
-            # draw_color=(0, 255, 0)
+            area_threshold=250
         )
 
         blue = track_color(
             image=image,
             color_threshold=BLUE_COLOR_THRESHOLD,
             pixels_threshold=250,
-            area_threshold=250,
-            # draw_color=(0, 0, 255)
+            area_threshold=250
         )
 
         orange_ball_pos = calibration.calc(orange)
         yellow_goal_pos = calibration.calc(yellow)
         blue_goal_pos = calibration.calc(blue)
         snapshot_image = image
-
-        if DEBUG_MODE:
-            print("fps: {}".format(clock.fps()))
-            print_coordinate(orange_ball_pos, name="Orange ball")
-            print_coordinate(yellow_goal_pos, name="Yellow goal")
-            print_coordinate(blue_goal_pos,   name="Blue goal  ")
-            lcd.display(image)
 
 
 class Calibration:
@@ -161,8 +138,10 @@ class Calibration:
                 org_y = round(y2*fy + cy)
 
                 if 0 <= org_x < width and 0 <= org_y < height:
-                    self._next_index_x[self._pos(org_x//2, org_y//2)] = u - org_x
-                    self._next_index_y[self._pos(org_x//2, org_y//2)] = v - org_y
+                    self._next_index_x[self._pos(
+                        org_x//2, org_y//2)] = u - org_x
+                    self._next_index_y[self._pos(
+                        org_x//2, org_y//2)] = v - org_y
 
         # NOTE: Fill array by BFS
         def fill_next_index(next_index, h, w, flg):
@@ -264,8 +243,7 @@ def on_event(_):
 def track_color(image,
                 color_threshold,
                 pixels_threshold,
-                area_threshold,
-                draw_color=None):
+                area_threshold):
     """Tracks specified color and returns max blob data
     Args:
       image (Image): the image object you want to color track.
@@ -283,10 +261,6 @@ def track_color(image,
     )
     if (blobs is None) or (len(blobs) == 0):
         return Coordinate(-1, -1, -1)
-    if draw_color is not None:
-        for b in blobs:
-            image.draw_rectangle(b.rect(), color=draw_color)
-            image.draw_cross(b.cx(), b.cy())
     max_blob = max(blobs, key=lambda x: x.area())
     return Coordinate(
         x=max_blob.cx(),
@@ -332,16 +306,6 @@ def setup_sensor(dual_buff):
     # TODO: gein値の読み出し
     camera_gain = 0
     sensor.set_auto_gain(False, camera_gain)
-
-
-def print_coordinate(coordinate, name=None,  end="\n"):
-    if name is not None:
-        print(name + ": ", end="")
-    print("({}, {}, {})".format(
-        coordinate.x,
-        coordinate.y,
-        coordinate.w,
-    ), end=end)
 
 
 if __name__ == "__main__":
