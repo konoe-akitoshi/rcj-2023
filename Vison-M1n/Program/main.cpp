@@ -4,7 +4,7 @@
 #include "module/types.hpp"
 
 volatile CameraFieldData field_data;
-volatile uint8_t request_id;
+volatile uint8_t request_id = 0;
 
 void onReceive(int count) {
     for (int i = 0; i < count; ++i) {
@@ -166,5 +166,6 @@ void loop() {
         field_data.blueGoalExist = false;
     }
 
+    // CameraFieldData::dumpToSerial(field_data);
     delay(20);
 }

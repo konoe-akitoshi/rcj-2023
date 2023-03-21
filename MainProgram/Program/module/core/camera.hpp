@@ -42,6 +42,12 @@ class Camera
         I2CManager_.beginWire();
     }
 
+    bool available() const {
+        Wire.beginTransmission(ADDRESS_);
+        const uint8_t status = Wire.endTransmission();
+        return status == 0;
+    }
+
     /**
      * Get the ball existance, position.
      *
