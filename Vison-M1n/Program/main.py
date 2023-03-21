@@ -226,7 +226,7 @@ def on_transmit():
         if i2c_received_id <= 102:
             return separate_section(obj)
         else:
-            return obj // 2
+            return max(0, obj // 2)
     if i2c_received_id == 3:
         return 2 if snapshot_image is None else 1
     if i2c_received_id == 1:
