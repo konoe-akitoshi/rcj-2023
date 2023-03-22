@@ -1,42 +1,22 @@
 # rcj-2023
 
-Program of rcj in 2023.
+Program of RoboCup Junior 2023 soccer.
 
-## Commit message rule
+## Member
 
-コミットは次のフォーマットで行うこと。
+| Name      | Role                  | Links |
+| :-------- | :-------------------- | :---- |
+| Akitoshi  | Team Reader, Hardware |       |
+| ryota2357 | Software              |       |
+| sepa_38   | Algorithms            |       |
+| gae       | Other                 |       |
+
+## Project Layout
 
 ```
-<prefix>: <message>
+
 ```
 
-### \<prefix\>
+## Wiki
 
-- feat
-  - 新機能の追加
-  - 特定の機能を廃止した場合は`feat!`と感嘆符をつけること
-- refactor
-  - コードの改善(リファクタリング)
-  - ファイルの削除、ファイル名の変更もこれ。
-  - プログラムの可読性や保守性をあげる変更をした時に
-  - 関数の引数を変えた、新たな機能を追加した、場合は`feat`を使うこと
-- fix
-  - バグの修正
-  - 機能や実装方法を変えてないこと
-- perf
-  - パフォーマンスの改善
-  - 機能や実装方法を変えてないこと
-- style
-  - コードのスタイルを変更した時
-  - インデントや改行位置、空行の追加・削除など
-- chore
-  - コメントの追加
-  - タイポの修正
-- test
-  - テストの追加や修正
-
-### \<message\>
-
-できる限り簡潔に英語で。
-
-詳しい説明が必要な場合は、2 行目以降に書くこと。その説明は日本語でも良い。
+Our wiki are available at [Here](https://github.com/konoe-akitoshi/rcj-2023/wiki)
