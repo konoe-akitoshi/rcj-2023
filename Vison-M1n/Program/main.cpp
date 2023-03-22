@@ -1,6 +1,5 @@
 #include "module/camera_controller.hpp"
 #include "module/main_wire.hpp"
-#include "module/terminal.hpp"
 #include "module/types.hpp"
 
 volatile CameraFieldData field_data;
@@ -44,9 +43,6 @@ void setup() {
     CameraController.setup();
     Serial.println("DONE setup CameraController");
 
-    Terminal.setup();
-    Serial.println("DONE setup Terminal");
-
     // NOTE: MainWire must be last because the start of I2C connection is used
     //       in MainProgram for check whether Camera has been setup.
     MainWire.setup();
@@ -80,24 +76,6 @@ constexpr CameraFieldData fixFieldData(const CameraFieldData& data, const float 
 void loop() {
     static module::Image image;
     static CameraFieldData cam[4];
-
-    const int terminalRequest = Terminal.popRequest();
-
-    if (terminalRequest >= 5) {
-        const int camera_index = terminalRequest - 5;
-        CameraController.scanImage(camera_index, image);
-        Terminal.writeImage(image);
-        return;
-    }
-
-    if (terminalRequest > 0) {
-        const int camera_index = terminalRequest - 1;
-        CameraController.setWhiteBlance(camera_index);
-        Terminal.writeMessage(camera_index + 1);
-        return;
-    }
-
-    // terminalRequest == 0
 
     cam[0] = fixFieldData(CameraController.getFieldData(0), -1 * PI / 4, 7, -1);
     cam[1] = fixFieldData(CameraController.getFieldData(1), -3 * PI / 4, 7, -16);
@@ -149,5 +127,6 @@ void loop() {
         field_data.blueGoalExist = false;
     }
 
-    delay(20);
+    CameraFieldData::dumpToSerial(field_data);
+    delay(30);
 }

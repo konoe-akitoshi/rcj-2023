@@ -105,6 +105,8 @@ class SerialClass
     void print(const int msg);
     void println(const char* msg);
     void println(const int msg);
+    bool setRX(pin_size_t pin);
+    bool setTX(pin_size_t pin);
 };
 extern SerialClass Serial;
 extern SerialClass Serial1;

@@ -17,6 +17,8 @@ class Terminal
     explicit constexpr Terminal() {}
 
     void setup(void) const {
+        Serial1.setTX(12);
+        Serial1.setRX(13);
         Serial1.begin(115200);
     }
 
@@ -47,6 +49,13 @@ class Terminal
                 Serial1.write(max(254, low));
             }
         }
+    }
+
+    void writeVector(const Vector2Int vector) const {
+        static uint8_t data[3] = {255, 0, 0};
+        data[1] = vector.x;
+        data[2] = vector.y;
+        Serial1.write(data, 3);
     }
 
     void writeMessage(const uint8_t msg) const {
