@@ -127,6 +127,6 @@ void loop() {
         field_data.blueGoalExist = false;
     }
 
-    CameraFieldData::dumpToSerial(field_data);
+    // CameraFieldData::dumpToSerial(field_data);
     delay(30);
 }

@@ -78,7 +78,7 @@ class CameraController
 
         return CameraFieldData(
             ball_pos, yellow_goal_pos, blue_goal_pos,                             // Position
-            (ball_pos.x >= 0), (yellow_goal_pos.x >= 0), (blue_goal_pos.x >= 0),  // is exist
+            (ball_pos.y >= 0), (yellow_goal_pos.y >= 0), (blue_goal_pos.y >= 0),  // is exist
             yellow_goal_width, blue_goal_width                                    // width
         );
     }
@@ -130,12 +130,12 @@ class CameraController
         return (int)((uint8_t)Wire.read());
     }
 
-    inline Vector2Int convertVector2(const uint8_t section_number) const {
+    inline Vector2Int convertVector2(const int section_number) const {
         if (section_number <= 0 || 25 <= section_number) {
             return Vector2Int(-1, -1);
         }
-        const auto section_x = (section_number - 1) % 8;
-        const auto section_y = (section_number - 1) / 8;
+        const int section_x = (section_number - 1) % 8;
+        const int section_y = (section_number - 1) / 8;
         int ret_x = 0, ret_y = 0;
         if (section_y == 0) {
             ret_y = 65;
