@@ -2,11 +2,12 @@ import sensor
 import array
 from machine import I2C
 from ucollections import OrderedDict, deque
+from micropython import const
 
-CAMERA_ID = 0
+CAMERA_ID = const(0)
 
-I2C_SCL = 8
-I2C_SDA = 15
+I2C_SCL = const(8)
+I2C_SDA = const(15)
 I2C_ADDRESS = [0x21, 0x22, 0x23, 0x24][CAMERA_ID % 4]
 
 CAMERA_MATRIX = [
@@ -121,7 +122,7 @@ class Calibration:
         fx, fy, cx, cy = CAMERA_MATRIX
         fx2, fy2, cx2, cy2 = CAMERA_MATRIX2
         k1, k2, p1, p2, k3 = CAMERA_DISTORTION_COEFFICIENTS
-        INF = 127
+        INF = const(127)
         for _ in range(height*width//4):
             self._next_index_x.append(INF)
             self._next_index_y.append(INF)
