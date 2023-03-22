@@ -69,18 +69,11 @@ class CameraController
         const uint8_t addr = getAddress_(index);
 
         requestSet_(addr, 100);
+
         const Vector2Int ball_pos = convertVector2(requestGet_(addr));
-
-        requestSet_(addr, 101);
         const Vector2Int yellow_goal_pos = convertVector2(requestGet_(addr));
-
-        requestSet_(addr, 102);
-        const Vector2Int blue_goal_pos = convertVector2(requestGet_(addr));
-
-        requestSet_(addr, 103);
         const int yellow_goal_width = requestGet_(addr) * 2;
-
-        requestSet_(addr, 104);
+        const Vector2Int blue_goal_pos = convertVector2(requestGet_(addr));
         const int blue_goal_width = requestGet_(addr) * 2;
 
         return CameraFieldData(
@@ -115,7 +108,7 @@ class CameraController
     const pin_size_t SCL_;
     const uint8_t ADDRESSES_[4];
 
-    uint8_t getAddress_(const int index) const {
+    constexpr uint8_t getAddress_(const int index) const {
         return ADDRESSES_[index % 4];
     }
 

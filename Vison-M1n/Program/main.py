@@ -51,25 +51,20 @@ BLUE_COLOR_THRESHOLD = [(0, 30, -20, 127, -128, -10)]
 is_adjusting_white_balance = False
 current_white_balance = (0, 0, 0)
 
-
-class Coordinate:
-    def __init__(self, x, y, w):
-        self.x = x
-        self.y = y
-        self.w = w
-
+data_register = array.array("B", [
+    25,      # section of orange ball
+    25, 0,  # section of yellow goal, half width of yellow goal
+    25, 0   # section of blue goal, half width of blue goal
+])
 
 i2c = None
 i2c_received_id = -1
 i2c_continued_id_count = 0
-orange_ball_pos = Coordinate(-1, -1, -1)
-yellow_goal_pos = Coordinate(-1, -1, -1)
-blue_goal_pos = Coordinate(-1, -1, -1)
 snapshot_image = None
 
 
 def main():
-    global orange_ball_pos, yellow_goal_pos, blue_goal_pos, snapshot_image
+    global data_register, snapshot_image
 
     setup_sensor(dual_buff=True)
     calibration = Calibration(320, 240)
@@ -101,9 +96,15 @@ def main():
             area_threshold=250
         )
 
-        orange_ball_pos = calibration.calc(orange)
-        yellow_goal_pos = calibration.calc(yellow)
-        blue_goal_pos = calibration.calc(blue)
+        fixed_orange = calibration.calc(orange[0], orange[1])
+        fixed_yellow = calibration.calc(yellow[0], yellow[1])
+        fixed_blue = calibration.calc(blue[0], blue[1])
+
+        data_register[0] = separate_section(*fixed_orange)
+        data_register[1] = separate_section(*fixed_yellow)
+        data_register[2] = yellow[2] // 2
+        data_register[3] = separate_section(*fixed_blue)
+        data_register[4] = blue[2] // 2
         snapshot_image = image
 
 
@@ -169,19 +170,19 @@ class Calibration:
         fill_next_index(self._next_index_x, height, width, 0)
         fill_next_index(self._next_index_y, height, width, 1)
 
-    def calc(self, coordinate):
-        if coordinate.x < 0 or coordinate.y < 0:
-            return coordinate
-        x = coordinate.x + self._next_index_x[self._pos(coordinate.x//2, coordinate.y//2)]
-        y = coordinate.y + self._next_index_y[self._pos(coordinate.x//2, coordinate.y//2)]
-        return Coordinate(x=x, y=y, w=coordinate.w)
+    def calc(self, x,  y):
+        if x < 0 or y < 0:
+            return -1, -1
+        ret_x = x + self._next_index_x[self._pos(x//2, y//2)]
+        ret_y = y + self._next_index_y[self._pos(x//2, y//2)]
+        return ret_x, ret_y
 
 
-def separate_section(coordinate):
-    if coordinate.x < 0:
+def separate_section(x, y):
+    if x < 0:
         return 25
-    section_x = coordinate.x // 40
-    section_y = coordinate.y // 80
+    section_x = x // 40
+    section_y = y // 80
     return section_x + section_y * 8 + 1
 
 
@@ -194,21 +195,12 @@ def on_receive(request):
 
 
 def on_transmit():
-    global i2c_received_id, i2c_continued_id_count, snapshot_image
+    global i2c_received_id, i2c_continued_id_count
     i2c_continued_id_count += 1
 
-    if i2c_received_id >= 100:
-        obj = (
-            orange_ball_pos, yellow_goal_pos, blue_goal_pos,
-            yellow_goal_pos.w, blue_goal_pos.w
-        )[i2c_received_id - 100]
-        if i2c_received_id <= 102:
-            return separate_section(obj)
-        else:
-            return max(0, obj // 2)
-    if i2c_received_id == 3:
-        return 2 if snapshot_image is None else 1
-    if i2c_received_id == 1:
+    if i2c_received_id == 100:
+        return data_register[i2c_continued_id_count % 5]
+    elif i2c_received_id == 1:
         if i2c_continued_id_count == 0:
             if is_adjusting_white_balance:
                 i2c_continued_id_count -= 1
@@ -218,7 +210,7 @@ def on_transmit():
         else:
             color = i2c_continued_id_count - 1
             return current_white_balance[color]
-    else:
+    elif i2c_received_id == 2:
         width = snapshot_image.width()
         count = i2c_continued_id_count // 2
         y = count // width
@@ -234,6 +226,10 @@ def on_transmit():
             g = rgb[1] >> 2
             b = rgb[2] >> 3
             return ((g & 0b111) << 5) | b
+    elif i2c_received_id == 3:
+        return 2 if snapshot_image is None else 1
+    else:
+        return 0
 
 
 def on_event(_):
@@ -250,7 +246,6 @@ def track_color(image,
       color_threshold (List<Tupple>): [(l_lo, l_hi, a_lo, a_hi, b_lo, b_hi)]
       pixels_threshold (int):
       area_threshold (int):
-      draw_color (Tupple): (r, g, b)
     Returns:
         Coordinate
     """
@@ -260,13 +255,9 @@ def track_color(image,
         area_threshold=area_threshold
     )
     if (blobs is None) or (len(blobs) == 0):
-        return Coordinate(-1, -1, -1)
+        return -1, -1, -1
     max_blob = max(blobs, key=lambda x: x.area())
-    return Coordinate(
-        x=max_blob.cx(),
-        y=max_blob.cy(),
-        w=max_blob.w(),
-    )
+    return max_blob.cx(), max_blob.cy(), max_blob.w()
 
 
 def auto_white_blance():
