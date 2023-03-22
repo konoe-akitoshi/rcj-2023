@@ -35,7 +35,7 @@ class MotorController
      * @param power [-100, 100]
      * @param rotation [-100, 100] (positive is clockwise, negative is counter-clockwise)
      */
-    void drive(float azimuth, int8_t power, int8_t rotation) const {
+    void drive(float azimuth, int power, int8_t rotation) const {
         // それぞれのモーターは次のように配置されている
         // 各モーターのパワーの比率を x[0] ~ x[3] に計算する
         //  motor1 right-top motor. forward-direction: ↖︎
