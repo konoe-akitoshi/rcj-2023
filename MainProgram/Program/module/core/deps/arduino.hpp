@@ -73,6 +73,7 @@ void interrupts();
 void noInterrupts();
 
 extern void delay(uint32_t dwMs);
+extern void delayMicroseconds(unsigned int us);
 extern uint32_t millis();
 
 #define digitalPinToPort(pin)       (0)

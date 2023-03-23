@@ -7,44 +7,10 @@
 #include <Arduino.h>
 #endif
 
-#include <array>
-#include <utility>
 #include "digital_reader.hpp"
 
 namespace module
 {
-struct LineSensorsDirectionIndex
-{
-    int8_t front;
-    int8_t right;
-    int8_t back;
-    int8_t left;
-    int8_t center;
-    explicit constexpr LineSensorsDirectionIndex() : front(-1), right(-1), back(-1), left(-1), center(-1) {
-    }
-    explicit constexpr LineSensorsDirectionIndex(const int8_t _front, const int8_t _right, const int8_t _back, const int8_t _left, const int8_t _center)
-        : front(_front), right(_right), back(_back), left(_left), center(_center) {
-    }
-    LineSensorsDirectionIndex(const volatile LineSensorsDirectionIndex& other)
-        : front(other.front), right(other.right), back(other.right), left(other.left), center(other.center) {
-    }
-
-    LineSensorsDirectionIndex(const LineSensorsDirectionIndex&) = default;
-    LineSensorsDirectionIndex(LineSensorsDirectionIndex&&) = default;
-    LineSensorsDirectionIndex& operator=(const LineSensorsDirectionIndex&) = default;
-    LineSensorsDirectionIndex& operator=(LineSensorsDirectionIndex&&) = default;
-
-    void operator=(const LineSensorsDirectionIndex& other) volatile {
-        front = other.front;
-        left = other.left;
-        right = other.right;
-        back = other.back;
-        center = other.center;
-    }
-};
-
-constexpr std::pair<float, LineSensorsDirectionIndex> NOT_FOUND_LINE_AZIMUT = {404, module::LineSensorsDirectionIndex()};
-
 class LineSensors
 {
   public:
@@ -81,35 +47,33 @@ class LineSensors
         return digitalRead(INTERRUPT_PIN_) == HIGH;
     }
 
-    std::pair<float, LineSensorsDirectionIndex> calculateLineAzimut(void) const {
+    float calculateLineAzimut(void) const {
         float az = 0;
-        int8_t front = -1;
-        if (Sensors_[0].isHigh()) {
-            az = PI / 2;
-            front = 0;
-        } else if (Sensors_[1].isHigh()) {
-            az = 0;
-            front = 1;
-        } else if (Sensors_[2].isHigh()) {
+        if (Sensors_[4].isHigh()) {
+            return 100;
+        }
+        bool front = Sensors_[0].isHigh();
+        bool right = Sensors_[1].isHigh();
+        bool back = Sensors_[2].isHigh();
+        bool left = Sensors_[3].isHigh();
+        if (front && right) {
+            az = 1 * PI / 4;
+        } else if (front && left) {
+            az = 3 * PI / 4;
+        } else if (back && right) {
+            az = -1 * PI / 4;
+        } else if (back && left) {
+            az = -3 * PI / 4;
+        } else if (front) {
+            az = 1 * PI / 2;
+        } else if (right) {
+            az = 0 * PI / 2;
+        } else if (left) {
+            az = 2 * PI / 2;
+        } else if (back) {
             az = -1 * PI / 2;
-            front = 2;
-        } else if (Sensors_[3].isHigh()) {
-            az = PI;
-            front = 3;
         }
-        if (front == -1) {
-            return NOT_FOUND_LINE_AZIMUT;
-        }
-        const int8_t left = (front + 3) % 4;
-        const int8_t right = (front + 1) % 4;
-        if (Sensors_[left].isHigh()) {
-            az += -3 * PI / 4;
-        } else if (Sensors_[right].isHigh()) {
-            az += 3 * PI / 4;
-        } else {
-            az += PI;
-        }
-        return {az, LineSensorsDirectionIndex(front, right, (front + 2) % 4, left, 4)};
+        return az;
     }
 
     const module::DigitalReader& operator[](const int8_t index) const {
