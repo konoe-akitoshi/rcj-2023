@@ -71,6 +71,12 @@ struct Vector2
     static constexpr float angle(const Vector2& vec) {
         return atan2(100 * vec.y, 100 * vec.x);
     }
+
+    static constexpr Vector2 rotate(const Vector2 vec, const float theta) {
+        const float x = vec.x * cos(theta) - vec.y * sin(theta);
+        const float y = vec.x * sin(theta) + vec.y * cos(theta);
+        return {x, y};
+    }
 };
 
 #endif
