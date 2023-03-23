@@ -45,9 +45,9 @@ CAMERA_DISTORTION_COEFFICIENTS = [
 ][CAMERA_ID]
 
 # (L Min, L Max, A Min, A Max, B Min, B Max)
-ORAMGE_COLOR_THRESHOLD = [(14, 100, 25, 127, 0, 127)]
+ORAMGE_COLOR_THRESHOLD = [(0, 80, 40, 60, 20, 40)]
 YELLOW_COLOR_THRESHOLD = [(20, 100, -10, 0, 16, 65)]
-BLUE_COLOR_THRESHOLD = [(0, 30, -20, 127, -128, -10)]
+BLUE_COLOR_THRESHOLD = [(30, 60, 0, 20, -40, -25)]
 
 is_adjusting_white_balance = False
 current_white_balance = (0, 0, 0)
@@ -256,7 +256,7 @@ def track_color(image,
         area_threshold=area_threshold
     )
     if (blobs is None) or (len(blobs) == 0):
-        return -1, -1, -1
+        return -1, -1, 0
     max_blob = max(blobs, key=lambda x: x.area())
     return max_blob.cx(), max_blob.cy(), max_blob.w()
 
