@@ -15,6 +15,7 @@ void setup() {
 
     ToFSensor.init();
     ToFSensor.configureDefault();
+    ToFSensor.setScaling(1);
     ToFSensor.setAddress(0x29);
     ToFSensor.setTimeout(100);
     Serial.println("DONE setup ToFSensor");
