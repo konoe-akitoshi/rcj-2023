@@ -27,12 +27,12 @@ VL6180X ToFSensor;
 // 自分自身の状態
 volatile float azimuth = 0;
 int8_t rotation = 0;
-int ball_front_dist = 255;
 
 // フィールドの状態
 module::ObjectData ball;
-module::ObjectData blue_goal;
-module::ObjectData yellow_goal;
+module::ObjectData attack_goal;
+module::ObjectData defence_goal;
+int ball_front_dist = 255;
 
 enum class GoalType
 {
@@ -111,10 +111,10 @@ void loop() {
     // 状態取得
     target_goal_type = GoalType::Blue;
     rotation = Gyro.getRotation();
-    ball = Camera.getBallData();
-    yellow_goal = Camera.getYellowGoalData();
-    blue_goal = Camera.getBlueGoalData();
     ball_front_dist = ToFSensor.readRangeSingleMillimeters();
+    ball = Camera.getBallData();
+    const auto yellow_goal = Camera.getYellowGoalData();
+    const auto blue_goal = Camera.getBlueGoalData();
 
     // 状態共有
     Terminal.sendMachineStatus(Battery.voltage(), rotation);
@@ -136,6 +136,9 @@ void loop() {
     SwitchLedG.ternOn();
     LineSensorLed.ternOn();
 
+    attack_goal = (target_goal_type == GoalType::Blue ? blue_goal : yellow_goal);
+    defence_goal = (target_goal_type == GoalType::Blue ? yellow_goal : blue_goal);
+
     if (ball.is_exist == false && ball_front_dist == 255) {
         MotorController.stopAll();
         return;
@@ -152,8 +155,6 @@ void attacker() {
     static float pre_ball_dist = 0;
 
     const float ball_dist = Vector2::norm(ball.position);
-    const auto attack_goal = (target_goal_type == GoalType::Blue ? blue_goal : yellow_goal);
-    const auto defence_goal = (target_goal_type == GoalType::Blue ? yellow_goal : blue_goal);
     const auto ball_dist_diff = ball_dist - pre_ball_dist;
     pre_ball_dist = ball_dist;
 
@@ -163,7 +164,7 @@ void attacker() {
         Dribbler.stop();
     }
 
-    if (ball_front_dist < 255) {
+    if (ball_front_dist < 255) {  // FIXME: ToFSensor が直ったら適切な値にする
         // ボール保持している時
         if (attack_goal.is_exist == false) {
             // ゴールが見えない時は相手と接触している状態なので、全力で押す
@@ -173,6 +174,7 @@ void attacker() {
         }
         // ゴールが見えている
         if (attack_goal.width >= 80 || attack_goal.position.y < 50) {
+            // キックできる位置にいるのでキックする
             Dribbler.stop();
             Kicker.pushFront();
             delay(200);
@@ -181,7 +183,6 @@ void attacker() {
         } else {
             // キックできる位置にいないので、ゴールへ向かう
             // ドリブラのホールドが弱いので、ゴール方向前方へ進む
-
             azimuth = Vector2::angle(attack_goal.position);
             MotorController.drive(azimuth, 50, -rotation);
         }
@@ -207,18 +208,15 @@ void attacker() {
 }
 
 void keeper() {
-    const auto attack_goal = (target_goal_type == GoalType::Blue ? blue_goal : yellow_goal);
-    const auto defence_goal = (target_goal_type == GoalType::Blue ? yellow_goal : blue_goal);
-
     // ボールの方へ横移動
     volatile float azimuth = defence_goal.position.x > 0 ? 0 : PI;
     if (defence_goal.width >= 80) {
         // TODO: width のパラメータ調整
         // ゴールから近いときは前に進む
         // x のみずれても width が変わるので、不規則に動いてくれる？
-        azimuth = (azimuth + (1 / 2 * PI)) / 2;
+        azimuth = (azimuth + (1 * PI / 2)) / 2;
     } else {
-        azimuth = (azimuth + (3 / 2 * PI)) / 2;
+        azimuth = (azimuth + (3 * PI / 2)) / 2;
     }
 
     MotorController.drive(azimuth, 30, -rotation);
