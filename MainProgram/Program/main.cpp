@@ -3,16 +3,16 @@
 #else
 #include <VL6180X.h>
 #endif
-#include "module/terminal.hpp"
 #include "module/battery.hpp"
 #include "module/camera.hpp"
-#include "module/gyro.hpp"
 #include "module/dribbler.hpp"
+#include "module/gyro.hpp"
 #include "module/kicker.hpp"
 #include "module/led_light.hpp"
 #include "module/line_sensors.hpp"
 #include "module/motor_controller.hpp"
 #include "module/switch.hpp"
+#include "module/terminal.hpp"
 #define SETUP_MODULE(x)                   \
     do {                                  \
         x.setup();                        \
@@ -164,7 +164,6 @@ void attacker() {
     }
 
     if (ball_front_dist < 255) {
-
         // ボール保持している時
         if (attack_goal.is_exist == false) {
             // ゴールが見えない時は相手と接触している状態なので、全力で押す
@@ -178,11 +177,11 @@ void attacker() {
             Kicker.pushFront();
             delay(200);
             Kicker.pullBack();
-            MotorController.drive(3 * PI / 2, 50, -rotation); // リバンドに備える(下がるだけなのでazimuthの更新はしなくていい？)
+            MotorController.drive(3 * PI / 2, 50, -rotation);  // リバンドに備える(下がるだけなのでazimuthの更新はしなくていい？)
         } else {
             // キックできる位置にいないので、ゴールへ向かう
             // ドリブラのホールドが弱いので、ゴール方向前方へ進む
-            
+
             azimuth = Vector2::angle(attack_goal.position);
             MotorController.drive(azimuth, 50, -rotation);
         }
@@ -205,7 +204,6 @@ void attacker() {
     const float power = 30 + (0.7 * Vector2::norm(ball.position)) + (0.7 * ball_dist_diff);  // PD制御
     azimuth = Vector2::angle(ball.position);
     MotorController.drive(azimuth, power, -rotation);
-
 }
 
 void keeper() {
@@ -213,18 +211,17 @@ void keeper() {
     const auto defence_goal = (target_goal_type == GoalType::Blue ? yellow_goal : blue_goal);
 
     // ボールの方へ横移動
-    volatile float azimuth = defence_goal.x > 0 ? 0: PI;
-    if (defencd_goal.width >= 80){
+    volatile float azimuth = defence_goal.position.x > 0 ? 0 : PI;
+    if (defence_goal.width >= 80) {
         // TODO: width のパラメータ調整
         // ゴールから近いときは前に進む
         // x のみずれても width が変わるので、不規則に動いてくれる？
         azimuth = (azimuth + (1 / 2 * PI)) / 2;
-    }else{
+    } else {
         azimuth = (azimuth + (3 / 2 * PI)) / 2;
     }
 
-    MotorController.drive(azimuth, 30, -rotation)
-
+    MotorController.drive(azimuth, 30, -rotation);
 }
 
 void interruptHandler() {
