@@ -190,11 +190,6 @@ void attacker() {
         Dribbler.stop();
     }
 
-    Serial.print("ball_front_dist: ");
-    Serial.println(ball_front_dist);
-    Serial.print("goal width: ");
-    Serial.println(attack_goal.width);
-
     if (ball_front_dist < 255) {
 
         // ボール保持している時
@@ -241,7 +236,22 @@ void attacker() {
 }
 
 void keeper() {
-    MotorController.stopAll();
+    const auto attack_goal = (target_goal_type == GoalType::Blue ? blue_goal : yellow_goal);
+    const auto defence_goal = (target_goal_type == GoalType::Blue ? yellow_goal : blue_goal);
+
+    // ボールの方へ横移動
+    volatile float azimuth = defence_goal.x > 0 ? 0: PI;
+    if (defencd_goal.width >= 80){
+        // TODO: width のパラメータ調整
+        // ゴールから近いときは前に進む
+        // x のみずれても width が変わるので、不規則に動いてくれる？
+        azimuth = (azimuth + (1 / 2 * PI)) / 2;
+    }else{
+        azimuth = (azimuth + (3 / 2 * PI)) / 2;
+    }
+
+    MotorController.drive(azimuth, 30, -rotation)
+
 }
 
 void interruptHandler() {
@@ -254,4 +264,4 @@ void interruptHandler() {
         delayMicroseconds(500);
     }
     MotorController.freeAll();
-}a
+}
