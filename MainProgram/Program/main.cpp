@@ -3,6 +3,7 @@
 #else
 #include <VL6180X.h>
 #endif
+#include "module/terminal.hpp"
 #include "module/battery.hpp"
 #include "module/camera.hpp"
 #include "module/gyro.hpp"
@@ -50,12 +51,10 @@ void setup() {
     SETUP_MODULE(Dribbler);
     SETUP_MODULE(Kicker);
     SETUP_MODULE(StartSwitch);
+    SETUP_MODULE(Terminal);
     SETUP_MODULE(LineSensorLed);
     SETUP_MODULE(SwitchLedG);
     SETUP_MODULE(SwitchLedR);
-
-    // Wio で使ってるので。(他のモジュールでbeginしてると思うけど一応)
-    I2CManager.beginWire();
 
     attachInterrupt(LineSensors.getInterruptPin(), interruptHandler, RISING);
     Serial.println("Attach interrupt");
@@ -75,7 +74,7 @@ void setup() {
     Dribbler.start(100);
     delay(1000);
     Dribbler.stop();
-    Serial.println("DONE check dribbler");
+    Serial.println("DONE check Dribbler");
 
     delay(1000);
 
@@ -83,8 +82,7 @@ void setup() {
     Kicker.pushFront();
     delay(100);
     Kicker.pullBack();
-    delay(1000);
-    Serial.println("DONE check kicker");
+    Serial.println("DONE check Kicker");
 
     // カメラが有効になるのを待つ
     while (true) {
@@ -99,7 +97,6 @@ void setup() {
 }
 
 void loop() {
-
     if (Battery.isEmergency()) {
         while (true) {
             SwitchLedG.ternOn();
@@ -111,7 +108,7 @@ void loop() {
         }
     }
 
-    // フィールド状況読み取り
+    // 状態取得
     target_goal_type = GoalType::Blue;
     rotation = Gyro.getRotation();
     ball = Camera.getBallData();
@@ -119,20 +116,12 @@ void loop() {
     blue_goal = Camera.getBlueGoalData();
     ball_front_dist = ToFSensor.readRangeSingleMillimeters();
 
-    // Wio terminal に データ送信
-    Wire.beginTransmission(0x11);
-    const uint8_t wio_send_data[10] = {
-        (uint8_t)(int8_t)ball.position.x, (uint8_t)(int8_t)ball.position.y,
-        (uint8_t)(int8_t)yellow_goal.position.x, (uint8_t)(int8_t)yellow_goal.position.y, (uint8_t)(yellow_goal.width / 2),
-        (uint8_t)(int8_t)blue_goal.position.x, (uint8_t)(int8_t)blue_goal.position.y, (uint8_t)(blue_goal.width / 2),
-        (uint8_t)(Battery.voltage() * 10),
-        (uint8_t)ball_front_dist,
-    };
-    Wire.write(wio_send_data, 10);
-    Wire.endTransmission();
+    // 状態共有
+    Terminal.sendMachineStatus(Battery.voltage(), rotation);
+    Terminal.sendFieldObjectData(ball, yellow_goal, blue_goal, ball_front_dist);
 
     if (StartSwitch.isHigh()) {
-        // ロボット停止
+        // ストップ
         SwitchLedR.ternOn();
         SwitchLedG.ternOff();
         Dribbler.stop();
@@ -151,22 +140,6 @@ void loop() {
         MotorController.stopAll();
         return;
     }
-
-    Serial.println("{");
-
-    Serial.print("  blue_goal pos: ");
-    Serial.print(blue_goal.position.x);
-    Serial.print(", ");
-    Serial.println(blue_goal.position.y);
-
-    Serial.print("  blue_goal exist: ");
-    Serial.println(blue_goal.is_exist ? "true" : "false");
-
-    Serial.print("  blue_goal width: ");
-    Serial.println(blue_goal.width);
-
-    Serial.println("}");
-
 
     // ボールに近いが attacker になる
     attacker();
