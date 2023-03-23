@@ -3,4 +3,6 @@
 
 #include "core/xbee.hpp"
 
+constexpr module::XBee XBee(9600);
+
 #endif

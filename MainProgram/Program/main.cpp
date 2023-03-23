@@ -13,6 +13,7 @@
 #include "module/motor_controller.hpp"
 #include "module/switch.hpp"
 #include "module/terminal.hpp"
+#include "module/xbee.hpp"
 #define SETUP_MODULE(x)                   \
     do {                                  \
         x.setup();                        \
@@ -33,6 +34,7 @@ module::ObjectData ball;
 module::ObjectData attack_goal;
 module::ObjectData defence_goal;
 int ball_front_dist = 255;
+int pair_ball_dist = 255;
 
 enum class GoalType
 {
@@ -47,11 +49,12 @@ void setup() {
     SETUP_MODULE(MotorController);
     SETUP_MODULE(Camera);
     SETUP_MODULE(Gyro);
+    SETUP_MODULE(XBee);
+    SETUP_MODULE(Terminal);
     SETUP_MODULE(LineSensors);
     SETUP_MODULE(Dribbler);
     SETUP_MODULE(Kicker);
     SETUP_MODULE(StartSwitch);
-    SETUP_MODULE(Terminal);
     SETUP_MODULE(LineSensorLed);
     SETUP_MODULE(SwitchLedG);
     SETUP_MODULE(SwitchLedR);
@@ -112,11 +115,13 @@ void loop() {
     target_goal_type = GoalType::Blue;
     rotation = Gyro.getRotation();
     ball_front_dist = ToFSensor.readRangeSingleMillimeters();
+    pair_ball_dist = (XBee.hasData() ? XBee.readData() : pair_ball_dist);
     ball = Camera.getBallData();
     const auto yellow_goal = Camera.getYellowGoalData();
     const auto blue_goal = Camera.getBlueGoalData();
 
     // 状態共有
+    XBee.sendData(Vector2::norm(ball.position));
     Terminal.sendMachineStatus(Battery.voltage(), rotation);
     Terminal.sendFieldObjectData(ball, yellow_goal, blue_goal, ball_front_dist);
 
