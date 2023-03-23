@@ -36,12 +36,6 @@ module::ObjectData defence_goal;
 int ball_front_dist = 255;
 int pair_ball_dist = 255;
 
-enum class GoalType
-{
-    Blue,
-    Yellow
-} target_goal_type;
-
 void setup() {
     Serial.begin(9600);
 
@@ -55,6 +49,7 @@ void setup() {
     SETUP_MODULE(Dribbler);
     SETUP_MODULE(Kicker);
     SETUP_MODULE(StartSwitch);
+    SETUP_MODULE(GoalSwitch);
     SETUP_MODULE(LineSensorLed);
     SETUP_MODULE(SwitchLedG);
     SETUP_MODULE(SwitchLedR);
@@ -112,7 +107,7 @@ void loop() {
     }
 
     // 状態取得
-    target_goal_type = GoalType::Blue;
+    const bool attack_blue_goal = GoalSwitch.isHigh();
     rotation = Gyro.getRotation();
     ball_front_dist = ToFSensor.readRangeSingleMillimeters();
     pair_ball_dist = (XBee.hasData() ? XBee.readData() : pair_ball_dist);
@@ -141,8 +136,8 @@ void loop() {
     SwitchLedG.ternOn();
     LineSensorLed.ternOn();
 
-    attack_goal = (target_goal_type == GoalType::Blue ? blue_goal : yellow_goal);
-    defence_goal = (target_goal_type == GoalType::Blue ? yellow_goal : blue_goal);
+    attack_goal = (attack_blue_goal ? blue_goal : yellow_goal);
+    defence_goal = (attack_blue_goal ? yellow_goal : blue_goal);
 
     if (ball.is_exist == false && ball_front_dist == 255) {
         MotorController.stopAll();
