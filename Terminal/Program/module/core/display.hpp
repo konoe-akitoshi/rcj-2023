@@ -30,16 +30,20 @@ class Display
     void setup(void) const {
         tft_.begin();
         tft_.setRotation(3);
+        tft_.fillScreen(BACKGROUND_COLOR);
         reset();
     }
 
     void reset(void) const {
-        tft_.fillScreen(BACKGROUND_COLOR);
         tft_.setTextSize(TEXT_HEIGHT_ / 10);
         tft_.setTextColor(TEXT_COLOR_FG, TEXT_COLOR_BG);
     }
 
-    void drawPixel(ScreenPosition pos, uint16_t color) const {
+    void fillScreen(const uint16_t color) const {
+        tft_.fillRect(PADDING_, PADDING_, WIDTH - (2 * PADDING_), HEIGHT- (2 * PADDING_), color);
+    }
+
+    void drawPixel(const ScreenPosition pos, const uint16_t color) const {
         const auto p = fixScreenPosition(pos);
         tft_.drawPixel(p.x, p.y, color);
     }
@@ -63,6 +67,24 @@ class Display
         if (fill_background) {
             tft_.setTextColor(TEXT_COLOR_FG, TEXT_COLOR_BG);
         }
+    }
+
+    void drawText(const char* string, const ScreenPosition pos, const uint8_t size) const {
+        drawText(String(string), pos, size);
+    }
+
+    void drawText(const String string, const ScreenPosition pos, const uint8_t size) const {
+        const auto p = fixScreenPosition(pos);
+        tft_.setTextSize(size);
+        tft_.drawString(string, p.x, p.y);
+        reset();
+    }
+
+    void drawText(const int number, const ScreenPosition pos, const uint8_t size) const {
+        const auto p = fixScreenPosition(pos);
+        tft_.setTextSize(size);
+        tft_.drawNumber(number, p.x, p.y);
+        reset();
     }
 
     void drawLine(const ScreenPosition pos0, const ScreenPosition pos1, const uint16_t color = TEXT_COLOR_FG) const {
