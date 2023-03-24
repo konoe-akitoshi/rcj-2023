@@ -16,9 +16,12 @@ void setup() {
 void loop() {
     Dribbler.start(100);
     delay(3000);
+
+    Dribbler.stop();
+    delay(100);
     Kicker.pushFront();
     delay(100);
     Kicker.pullBack();
-    Dribbler.stop();
-    delay(3000);
+
+    delay(5000);
 }

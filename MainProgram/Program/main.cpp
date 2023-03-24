@@ -22,6 +22,7 @@
 void attacker(void);
 void keeper(void);
 void interruptHandler(void);
+void forceOutOfBounds(void);
 
 VL6180X ToFSensor;
 
@@ -35,6 +36,7 @@ module::ObjectData attack_goal;
 module::ObjectData defence_goal;
 int ball_front_dist = 255;
 int pair_ball_dist = 255;
+int ball_dist = 255;
 
 void setup() {
     Serial.begin(9600);
@@ -104,16 +106,7 @@ void setup() {
 void loop() {
     if (Battery.isEmergency()) {
         Terminal.sendError();
-        while (true) {
-            SwitchLedG.turnOn();
-            SwitchLedR.turnOff();
-            Terminal.sendMachineStatus(Battery.voltage(), Gyro.getRotation());
-            delay(200);
-            SwitchLedG.turnOff();
-            SwitchLedR.turnOn();
-            Terminal.sendMachineStatus(Battery.voltage(), Gyro.getRotation());
-            delay(200);
-        }
+        forceOutOfBounds();
     }
 
     // 状態取得
@@ -125,8 +118,8 @@ void loop() {
     const auto yellow_goal = Camera.getYellowGoalData();
     const auto blue_goal = Camera.getBlueGoalData();
 
-    // 状態共有
-    XBee.sendData(Vector2::norm(ball.position));
+    // ボールまでの距離を送信
+    XBee.sendData(ball.is_exist ? Vector2::norm(ball.position) : 255);
 
     if (StartSwitch.isHigh()) {
         // ストップ
@@ -146,14 +139,19 @@ void loop() {
 
     attack_goal = (attack_blue_goal ? blue_goal : yellow_goal);
     defence_goal = (attack_blue_goal ? yellow_goal : blue_goal);
+    ball_dist = Vector2::norm(ball.position);
 
     if (ball.is_exist == false && ball_front_dist == 255) {
-        MotorController.stopAll();
+        MotorController.freeAll();
         return;
     }
 
     // ボールに近いが attacker になる
-    attacker();
+    if (ball_dist <= pair_ball_dist) {
+        attacker();
+    } else {
+        keeper();
+    }
 
     // カメラのI2Cをやりすぎないように少し待つ
     delay(10);
@@ -162,7 +160,6 @@ void loop() {
 void attacker() {
     static float pre_ball_dist = 0;
 
-    const float ball_dist = Vector2::norm(ball.position);
     const auto ball_dist_diff = ball_dist - pre_ball_dist;
     pre_ball_dist = ball_dist;
 
@@ -172,7 +169,7 @@ void attacker() {
         Dribbler.stop();
     }
 
-    if (ball_front_dist < 255) {  // FIXME: ToFSensor が直ったら適切な値にする
+    if (ball_front_dist < 25) {
         // ボール保持している時
         if (attack_goal.is_exist == false) {
             // ゴールが見えない時は相手と接触している状態なので、全力で押す
@@ -181,13 +178,19 @@ void attacker() {
             return;
         }
         // ゴールが見えている
-        if (attack_goal.width >= 80 || attack_goal.position.y < 50) {
+        if (attack_goal.width >= 40 || (attack_goal.position.y < 50 && abs(attack_goal.position.x) < 40)) {
             // キックできる位置にいるのでキックする
             Dribbler.stop();
+            delay(100);
             Kicker.pushFront();
-            delay(200);
+            delay(100);
             Kicker.pullBack();
-            MotorController.drive(3 * PI / 2, 50, -rotation);  // リバンドに備える(下がるだけなのでazimuthの更新はしなくていい？)
+
+            // リバンドに備える(下がるだけなのでazimuthの更新はしなくていい？)
+            MotorController.drive(3 * PI / 2, 50, 0);
+            delay(200);
+            MotorController.freeAll();
+            delay(800);
         } else {
             // キックできる位置にいないので、ゴールへ向かう
             // ドリブラのホールドが弱いので、ゴール方向前方へ進む
@@ -200,8 +203,8 @@ void attacker() {
     if (ball.position.y <= 3) {
         // ボールが後方にあるので、下がって回り込んでボールを取りにいく
         // ボールの偏角に45°を足した(引いた)方向に移動する
-        const int cloc_wise = ball.position.x < 0 ? 1 : -1;
-        Vector2 dir = Vector2::rotate(ball.position, cloc_wise * PI / 4);
+        const int clockwise = ball.position.x < 0 ? 1 : -1;
+        Vector2 dir = Vector2::rotate(ball.position, clockwise * PI / 4);
         const int power = 30 + (1 * Vector2::norm(ball.position)) + (0.5 * ball_dist_diff);  // PD制御
         Serial.println(power);
         azimuth = Vector2::angle(dir);
@@ -216,18 +219,23 @@ void attacker() {
 }
 
 void keeper() {
-    // ボールの方へ横移動
-    volatile float azimuth = defence_goal.position.x > 0 ? 0 : PI;
-    if (defence_goal.width >= 80) {
-        // TODO: width のパラメータ調整
-        // ゴールから近いときは前に進む
-        // x のみずれても width が変わるので、不規則に動いてくれる？
-        azimuth = (azimuth + (1 * PI / 2)) / 2;
-    } else {
-        azimuth = (azimuth + (3 * PI / 2)) / 2;
+    if (ball_dist > 60 + pair_ball_dist) {
+        // ボールとの距離が十分遠い or ペアのロボットがボールに十分近い ので、自らボールに近づく
+        // keeper となっている時点で、ball_dist > pair_ball_dist である
+        const auto az = Vector2::angle({ball.position.x, ball.position.y * 0.7f});
+        MotorController.drive(az, 50, -rotation);
+        return;
     }
 
-    MotorController.drive(azimuth, 30, -rotation);
+    // ボールの方へ横移動、 ゴールから近いときは前、遠い時は後ろ方向に進む
+    // x のみずれても width が変わるので、不規則に動いてくれる？
+    const bool forward = (defence_goal.width >= 50);  // TODO: width のパラメータ調整
+    if (ball.position.x > 0) {
+        azimuth = (forward ? 1 : -1) * 1 * PI / 4;
+    } else {
+        azimuth = (forward ? 1 : -1) * 3 * PI / 4;
+    }
+    MotorController.drive(azimuth, 50, -rotation);
 }
 
 void interruptHandler() {
@@ -240,4 +248,19 @@ void interruptHandler() {
         delayMicroseconds(500);
     }
     MotorController.freeAll();
+}
+
+void forceOutOfBounds() {
+    detachInterrupt(LineSensors.getInterruptPin());
+    while (true) {
+        MotorController.drive(0, 50, 0);
+        SwitchLedG.turnOn();
+        SwitchLedR.turnOff();
+        Terminal.sendMachineStatus(Battery.voltage(), Gyro.getRotation());
+        delay(200);
+        SwitchLedG.turnOff();
+        SwitchLedR.turnOn();
+        Terminal.sendMachineStatus(Battery.voltage(), Gyro.getRotation());
+        delay(200);
+    }
 }
