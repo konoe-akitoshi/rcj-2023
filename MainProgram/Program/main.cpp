@@ -58,6 +58,7 @@ void setup() {
     attachInterrupt(LineSensors.getInterruptPin(), interruptHandler, RISING);
     Serial.println("Attach interrupt");
 
+    ToFSensor.setBus(&Wire);
     ToFSensor.init();
     ToFSensor.configureDefault();
     ToFSensor.setScaling(1);

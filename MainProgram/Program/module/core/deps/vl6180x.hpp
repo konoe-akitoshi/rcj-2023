@@ -2,6 +2,7 @@
 #ifndef MODULE_CORE_DEPS_VL6180X_HPP
 #define MODULE_CORE_DEPS_VL6180X_HPP
 
+#include "wire.hpp"
 #include <stdint.h>
 
 class VL6180X
@@ -115,6 +116,7 @@ class VL6180X
     inline uint16_t readRangeContinuousMillimeters(void) { return (uint16_t)scaling * readRangeContinuous(); }
     uint16_t readAmbientContinuous(void);
 
+    void setBus(TwoWire *bus);
     inline void setTimeout(uint16_t timeout) { io_timeout = timeout; }
     inline uint16_t getTimeout(void) { return io_timeout; }
     bool timeoutOccurred(void);
