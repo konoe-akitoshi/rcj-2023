@@ -10,15 +10,15 @@ void setup() {
 void loop() {
     Serial.println(Battery.voltage());
     if (Battery.isEmergency()) {
-        SwitchLedR.ternOff();
-        SwitchLedG.ternOn();
+        SwitchLedR.turnOff();
+        SwitchLedG.turnOn();
         delay(500);
-        SwitchLedR.ternOn();
-        SwitchLedG.ternOff();
+        SwitchLedR.turnOn();
+        SwitchLedG.turnOff();
         delay(500);
     } else {
-        SwitchLedR.ternOff();
-        SwitchLedG.ternOff();
+        SwitchLedR.turnOff();
+        SwitchLedG.turnOff();
         delay(200);
     }
 }

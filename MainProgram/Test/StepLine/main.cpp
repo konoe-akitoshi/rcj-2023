@@ -29,7 +29,7 @@ void setup() {
 }
 
 void loop() {
-    LineSensorLed.ternOn();
+    LineSensorLed.turnOn();
     if (StartSwitch.isHigh()) {
         MotorController.freeAll();
         return;

@@ -29,16 +29,16 @@ class LedLight
     }
 
     /**
-     * Tern on the LED light.
+     * Turn on the LED light.
      */
-    void ternOn() const {
+    void turnOn() const {
         digitalWrite(PIN_, MODE_ON_);
     }
 
     /**
-     * Tern off the LED light.
+     * Turn off the LED light.
      */
-    void ternOff() const {
+    void turnOff() const {
         digitalWrite(PIN_, MODE_OFF_);
     }
 
@@ -67,16 +67,16 @@ class LedLightPCF8574
     }
 
     /**
-     * Tern on the LED light.
+     * Turn on the LED light.
      */
-    void ternOn() const {
+    void turnOn() const {
         I2C_MANAGER_.pcf8574_digitalWrite(PIN_, MODE_ON_);
     }
 
     /**
-     * Tern off the LED light.
+     * Turn off the LED light.
      */
-    void ternOff() const {
+    void turnOff() const {
         I2C_MANAGER_.pcf8574_digitalWrite(PIN_, MODE_OFF_);
     }
 

@@ -67,8 +67,8 @@ void setup() {
     Serial.println("DONE setup ToFSensor");
 
     // setup 完了通知
-    SwitchLedG.ternOn();
-    SwitchLedR.ternOn();
+    SwitchLedG.turnOn();
+    SwitchLedR.turnOn();
 
     // Dribbler 動作テスト
     Dribbler.start(100);
@@ -85,8 +85,8 @@ void setup() {
     Serial.println("DONE check Kicker");
 
     // カメラが有効になるのを待つ
-    SwitchLedG.ternOff();
-    SwitchLedR.ternOn();
+    SwitchLedG.turnOff();
+    SwitchLedR.turnOn();
     while (true) {
         if (Camera.available()) {
             break;
@@ -97,20 +97,20 @@ void setup() {
             delay(50);
         }
     }
-    SwitchLedG.ternOn();
-    SwitchLedR.ternOff();
+    SwitchLedG.turnOn();
+    SwitchLedR.turnOff();
 }
 
 void loop() {
     if (Battery.isEmergency()) {
         Terminal.sendError();
         while (true) {
-            SwitchLedG.ternOn();
-            SwitchLedR.ternOff();
+            SwitchLedG.turnOn();
+            SwitchLedR.turnOff();
             Terminal.sendMachineStatus(Battery.voltage(), Gyro.getRotation());
             delay(200);
-            SwitchLedG.ternOff();
-            SwitchLedR.ternOn();
+            SwitchLedG.turnOff();
+            SwitchLedR.turnOn();
             Terminal.sendMachineStatus(Battery.voltage(), Gyro.getRotation());
             delay(200);
         }
@@ -130,9 +130,9 @@ void loop() {
 
     if (StartSwitch.isHigh()) {
         // ストップ
-        SwitchLedG.ternOn();
+        SwitchLedG.turnOn();
         Dribbler.stop();
-        LineSensorLed.ternOff();
+        LineSensorLed.turnOff();
         MotorController.freeAll();
         Terminal.sendMachineStatus(Battery.voltage(), rotation);
         Terminal.sendFieldObjectData(ball, yellow_goal, blue_goal, ball_front_dist);
@@ -141,8 +141,8 @@ void loop() {
     }
 
     // スタート
-    SwitchLedG.ternOff();
-    LineSensorLed.ternOn();
+    SwitchLedG.turnOff();
+    LineSensorLed.turnOn();
 
     attack_goal = (attack_blue_goal ? blue_goal : yellow_goal);
     defence_goal = (attack_blue_goal ? yellow_goal : blue_goal);

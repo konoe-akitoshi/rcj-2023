@@ -13,14 +13,14 @@ void setup() {
 void nextSwitchLed() {
     static int flag = 0;
     if (flag == 0) {
-        SwitchLedG.ternOn();
-        SwitchLedR.ternOff();
+        SwitchLedG.turnOn();
+        SwitchLedR.turnOff();
     } else if (flag == 1) {
-        SwitchLedG.ternOff();
-        SwitchLedR.ternOn();
+        SwitchLedG.turnOff();
+        SwitchLedR.turnOn();
     } else {
-        SwitchLedG.ternOff();
-        SwitchLedR.ternOff();
+        SwitchLedG.turnOff();
+        SwitchLedR.turnOff();
     }
     flag = (flag + 1) % 3;
 }
@@ -29,28 +29,28 @@ void nextRYGBLed() {
     static int flag = 0;
     switch (flag) {
         case 0:
-            LedR.ternOn();
-            LedY.ternOff();
-            LedG.ternOff();
-            LedB.ternOff();
+            LedR.turnOn();
+            LedY.turnOff();
+            LedG.turnOff();
+            LedB.turnOff();
             break;
         case 1:
-            LedR.ternOff();
-            LedY.ternOn();
-            LedG.ternOff();
-            LedB.ternOff();
+            LedR.turnOff();
+            LedY.turnOn();
+            LedG.turnOff();
+            LedB.turnOff();
             break;
         case 2:
-            LedR.ternOff();
-            LedY.ternOff();
-            LedG.ternOn();
-            LedB.ternOff();
+            LedR.turnOff();
+            LedY.turnOff();
+            LedG.turnOn();
+            LedB.turnOff();
             break;
         case 3:
-            LedR.ternOff();
-            LedY.ternOff();
-            LedG.ternOff();
-            LedB.ternOn();
+            LedR.turnOff();
+            LedY.turnOff();
+            LedG.turnOff();
+            LedB.turnOn();
             break;
     }
     flag = (flag + 1) % 4;
@@ -59,9 +59,9 @@ void nextRYGBLed() {
 void nextLineSensorLed() {
     static int flag = 0;
     if (flag) {
-        LineSensorLed.ternOff();
+        LineSensorLed.turnOff();
     } else {
-        LineSensorLed.ternOn();
+        LineSensorLed.turnOn();
     }
     flag = (flag + 1) % 3;
 }

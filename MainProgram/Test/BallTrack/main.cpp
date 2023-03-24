@@ -17,14 +17,14 @@ void setup() {
 
 void loop() {
     if (!Camera.available()) {
-        SwitchLedG.ternOff();
-        SwitchLedR.ternOn();
+        SwitchLedG.turnOff();
+        SwitchLedR.turnOn();
         Serial.println("Camera not available");
         delay(1000);
         return;
     }
-    SwitchLedG.ternOn();
-    SwitchLedR.ternOff();
+    SwitchLedG.turnOn();
+    SwitchLedR.turnOff();
 
     const auto ball = Camera.getBallData();
     if (ball.is_exist) {

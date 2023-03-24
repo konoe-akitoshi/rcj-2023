@@ -10,7 +10,7 @@ void setup() {
 
 void loop() {
     static long count = 0;
-    LineSensorLed.ternOn();
+    LineSensorLed.turnOn();
     count += 1;
     const bool state = LineSensors.isLineDetected();
     // const bool state = LineSensors[0].IsHigh();
