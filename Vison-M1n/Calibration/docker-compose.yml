@@ -1,0 +1,10 @@
+version: "3"
+services:
+    calibration:
+        build: .
+        volumes:
+            - .:/calibration
+        container_name: rcj-calibration
+        tty: true
+        working_dir: /project
+        command: bash

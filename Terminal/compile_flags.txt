@@ -1,0 +1,6 @@
+-std=c++14
+-Wall
+-Wextra
+-Wpedantic
+-D WITHOUT_ARDUINO_ENVIRONMENT
+-I~/.arduino15/libraries/ArduinoSTL/src
