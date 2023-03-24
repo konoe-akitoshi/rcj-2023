@@ -72,9 +72,9 @@ class CameraController
 
         const Vector2Int ball_pos = convertVector2(requestGet_(addr));
         const Vector2Int yellow_goal_pos = convertVector2(requestGet_(addr));
-        const int yellow_goal_width = requestGet_(addr) * 2;
+        const int yellow_goal_width = requestGet_(addr);
         const Vector2Int blue_goal_pos = convertVector2(requestGet_(addr));
-        const int blue_goal_width = requestGet_(addr) * 2;
+        const int blue_goal_width = requestGet_(addr);
 
         return CameraFieldData(
             ball_pos, yellow_goal_pos, blue_goal_pos,                             // Position
