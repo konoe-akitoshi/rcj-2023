@@ -10,7 +10,7 @@ void displayToFSensorValue();   // 3
 void displayGyroViewer();       // 4
 
 const String HomeSelectItems[4] = {"Battery Voltage", "Field Object Data", "ToF Sensor Value", "Gyro Viewer"};
-ui::SelectView HomeSelectorView(Display, 4, HomeSelectItems, 8);
+ui::SelectView HomeSelectorView(Display, 4, HomeSelectItems, 7);
 bool redraw = true;
 int scene = 0;  // = Home
 
@@ -25,7 +25,11 @@ volatile int tof_sensor_value = 0;
 long current_time_sec = 0;
 
 void onReceive(int count) {
-    if (count == 2) {
+    if (count == 1) {
+        if (MainWire.read() != 1) {
+            Display.drawFlame(TFT_RED);
+        }
+    } else if (count == 2) {
         battery_voltage = MainWire.read();
         machine_rotation = (int8_t)MainWire.read();
     } else if (count == 10) {
@@ -76,7 +80,7 @@ void loop() {
         displayFieldObjectData();
     } else if (scene == 3) {
         displayToFSensorValue();
-    } else if (scene == 3) {
+    } else if (scene == 4) {
         displayGyroViewer();
     } else {
         Display.drawFlame(TFT_BLUE);
@@ -94,7 +98,7 @@ void home() {
     const int m = current_time_sec / 60;
     const int s = current_time_sec % 60;
     const auto timeText = String::format("%02d:%02d", m, s);
-    Display.drawText(timeText, {-65, 45}, 4);
+    Display.drawText(timeText, {-65, 50}, 4);
 
     if (StickUp.isPressed()) {
         HomeSelectorView.prev();
@@ -128,11 +132,11 @@ void displayBatteryVoltage() {
 }
 
 String format4(const int value) {
-    return String::format("% 4d", value);
+    return String::format("%04d", value);
 }
 
 String format3(const int value) {
-    return String::format("% 3d", value);
+    return String::format("%03d", value);
 }
 
 void displayFieldObjectData() {
@@ -143,12 +147,12 @@ void displayFieldObjectData() {
         redraw = false;
     }
 
-    Display.drawStringLine(indent + "Ball   : (" + (ball_data[0] ? (format4(ball_data[1]) + ", " + format4(ball_data[2])) : "   *,   *") + ")", 3);
-    Display.drawStringLine(indent + "Goal Y : (" + (yellow_goal_data[0] ? (format4(yellow_goal_data[1]) + ", " + format4(yellow_goal_data[2])) : "   *,   *") + ")", 4);
-    Display.drawStringLine(indent + "Goal B : (" + (blue_goal_data[0] ? (format4(blue_goal_data[1]) + ", " + format4(blue_goal_data[2])) : "   *,    *") + ")", 5);
+    Display.drawStringLine(indent + "Ball   : (" + (ball_data[0] ? (format4(ball_data[1]) + ", " + format4(ball_data[2])) : "____, ____") + ")", 3);
+    Display.drawStringLine(indent + "Goal Y : (" + (yellow_goal_data[0] ? (format4(yellow_goal_data[1]) + ", " + format4(yellow_goal_data[2])) : "____, ____") + ")", 4);
+    Display.drawStringLine(indent + "Goal B : (" + (blue_goal_data[0] ? (format4(blue_goal_data[1]) + ", " + format4(blue_goal_data[2])) : "____, ____") + ")", 5);
 
-    Display.drawStringLine(indent + "Goal Width Y : " + (yellow_goal_data[0] ? format3(yellow_goal_data[3]) : "  *"), 7);
-    Display.drawStringLine(indent + "Goal Width B : " + (blue_goal_data[0] ? format3(blue_goal_data[3]) : "  *"), 8);
+    Display.drawStringLine(indent + "Goal Width Y : " + (yellow_goal_data[0] ? format3(yellow_goal_data[3]) : "___"), 7);
+    Display.drawStringLine(indent + "Goal Width B : " + (blue_goal_data[0] ? format3(blue_goal_data[3]) : "___"), 8);
 
     if (ButtonLeft.isPressed()) {
         scene = 0;
@@ -179,14 +183,19 @@ void displayGyroViewer() {
         redraw = false;
     }
 
+    Display.fillRect({-70, 70}, 140, 140, Display.BACKGROUND_COLOR);
+    Display.drawRect({-5, 5}, 10, 10, TFT_LIGHTGREY);
+    Display.drawRect({-10, 10}, 20, 20, TFT_LIGHTGREY);
     const float theta = (machine_rotation * PI / 100) + (PI / 2);
-    const int x = 40 * cos(theta);
-    const int y = 40 * sin(theta);
+    const int x = 60 * cos(theta);
+    const int y = 60 * sin(theta);
     for (int i = -1; i < 2; ++i) {
         for (int j = -1; j < 2; ++j) {
             Display.drawLine({i, j}, {x + i, y + j});
         }
     }
+
+    delay(200);
 
     if (ButtonLeft.isPressed()) {
         scene = 0;

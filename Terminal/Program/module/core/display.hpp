@@ -93,12 +93,12 @@ class Display
         tft_.drawLine(p0.x, p0.y, p1.x, p1.y, color);
     }
 
-    void drawCircle(const ScreenPosition pos, const int32_t r, const uint32_t color = TEXT_COLOR_FG) const {
+    void drawCircle(const ScreenPosition pos, const int32_t r, const uint16_t color = TEXT_COLOR_FG) const {
         const auto p = fixScreenPosition(pos);
         tft_.drawCircle(p.x, p.y, r, color);
     }
 
-    void fillCircle(const ScreenPosition pos, const int32_t r, const uint32_t color = TEXT_COLOR_FG) const {
+    void fillCircle(const ScreenPosition pos, const int32_t r, const uint16_t color = TEXT_COLOR_FG) const {
         const auto p = fixScreenPosition(pos);
         tft_.fillCircle(p.x, p.y, r, color);
     }
@@ -106,6 +106,16 @@ class Display
     void eraseCircle(const ScreenPosition pos, const int32_t r) const {
         const auto p = fixScreenPosition(pos);
         tft_.fillCircle(p.x, p.y, r, BACKGROUND_COLOR);
+    }
+
+    void drawRect(const ScreenPosition topleft, const int32_t widht, const int32_t height, const uint16_t color = TEXT_COLOR_FG) const {
+        const auto p = fixScreenPosition(topleft);
+        tft_.drawRect(p.x, p.y, widht, height, color);
+    }
+
+    void fillRect(const ScreenPosition topleft, const int32_t widht, const int32_t height, const uint16_t color = TEXT_COLOR_FG) const {
+        const auto p = fixScreenPosition(topleft);
+        tft_.fillRect(p.x, p.y, widht, height, color);
     }
 
   private:
