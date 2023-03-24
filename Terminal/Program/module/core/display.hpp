@@ -118,6 +118,14 @@ class Display
         tft_.fillRect(p.x, p.y, widht, height, color);
     }
 
+    void backlightTurnOn() const {
+        digitalWrite(LCD_BACKLIGHT, HIGH);
+    }
+
+    void backlightTurnOff() const {
+        digitalWrite(LCD_BACKLIGHT, LOW);
+    }
+
   private:
     TFT_eSPI& tft_;
     static constexpr int32_t PADDING_ = 10;

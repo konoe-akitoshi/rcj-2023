@@ -12,6 +12,8 @@
 #define SPI_32(H, L) ((H) << 16 | (L))
 #define COL_32(H, L) ((H) << 16 | (L))
 
+#define LCD_BACKLIGHT (72Ul)
+
 #define TL_DATUM 0     // Top left (default)
 #define TC_DATUM 1     // Top centre
 #define TR_DATUM 2     // Top right

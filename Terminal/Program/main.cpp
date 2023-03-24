@@ -8,6 +8,7 @@ void displayBatteryVoltage();   // 1
 void displayFieldObjectData();  // 2
 void displayToFSensorValue();   // 3
 void displayGyroViewer();       // 4
+void blackOut();                // 5
 
 const String HomeSelectItems[4] = {"Battery Voltage", "Field Object Data", "ToF Sensor Value", "Gyro Viewer"};
 ui::SelectView HomeSelectorView(Display, 4, HomeSelectItems, 7);
@@ -22,11 +23,10 @@ volatile int yellow_goal_data[4] = {0, 0, 0, 0};  // [is_exist, pos_x, pos_y, wi
 volatile int blue_goal_data[4] = {0, 0, 0, 0};    // [is_exist, pos_x, pos_y, width]
 volatile int tof_sensor_value = 0;
 
-long current_time_sec = 0;
-
 void onReceive(int count) {
     if (count == 1) {
-        if (MainWire.read() != 1) {
+        if (MainWire.read() != 0) {
+            Display.backlightTurnOn();
             Display.drawFlame(TFT_RED);
         }
     } else if (count == 2) {
@@ -50,6 +50,7 @@ void onReceive(int count) {
         for (int i = 0; i < count; ++i) {
             Wire.read();  // ignore
         }
+        Display.backlightTurnOn();
         Display.drawFlame(TFT_GREEN);
     }
 }
@@ -62,18 +63,20 @@ void setup() {
     Display.setup();
     StickUp.setup();
     StickDown.setup();
+    StickRight.setup();
+    StickLeft.setup();
     StickPress.setup();
     ButtonLeft.setup();
+    ButtonCenter.setup();
+    ButtonRight.setup();
     MainWire.setup();
 
     MainWire.start(onReceive);
 }
 
 void loop() {
-    current_time_sec = millis() / 1000;
     if (scene == 0) {
         home();
-
     } else if (scene == 1) {
         displayBatteryVoltage();
     } else if (scene == 2) {
@@ -82,7 +85,10 @@ void loop() {
         displayToFSensorValue();
     } else if (scene == 4) {
         displayGyroViewer();
+    } else if (scene == 5) {
+        blackOut();
     } else {
+        Display.backlightTurnOn();
         Display.drawFlame(TFT_BLUE);
     }
 }
@@ -95,6 +101,7 @@ void home() {
         redraw = false;
     }
 
+    const int current_time_sec = millis() / 1000;
     const int m = current_time_sec / 60;
     const int s = current_time_sec % 60;
     const auto timeText = String::format("%02d:%02d", m, s);
@@ -111,6 +118,13 @@ void home() {
     if (StickPress.isPressed()) {
         scene = HomeSelectorView.get() + 1;
         redraw = true;
+    }
+    if (ButtonCenter.isPressed()) {
+        scene = 5;
+        redraw = true;
+    }
+    if (ButtonRight.isPressed()) {
+        Display.drawFlame(Display.BACKGROUND_COLOR);
         delay(200);
     }
 }
@@ -200,5 +214,19 @@ void displayGyroViewer() {
     if (ButtonLeft.isPressed()) {
         scene = 0;
         redraw = true;
+    }
+}
+
+void blackOut() {
+    if (redraw) {
+        Display.fillScreen(Display.BACKGROUND_COLOR);
+        delay(200);
+        Display.backlightTurnOff();
+    }
+    if (ButtonLeft.isPressed() || ButtonCenter.isPressed() || ButtonRight.isPressed()
+        || StickUp.isPressed() || StickRight.isPressed() || StickDown.isPressed() || StickLeft.isPressed() || StickPress.isPressed()) {
+        scene = 0;
+        redraw = true;
+        Display.backlightTurnOn();
     }
 }
