@@ -44,6 +44,12 @@ class Terminal
         Wire.endTransmission();
     }
 
+    void sendError() const {
+        Wire.beginTransmission(ADDRESS_);
+        Wire.write((uint8_t)1);
+        Wire.beginTransmission(ADDRESS_);
+    }
+
   private:
     const I2CManager& I2CManager_;
     const uint8_t ADDRESS_;

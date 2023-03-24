@@ -38,6 +38,7 @@ int pair_ball_dist = 255;
 
 void setup() {
     Serial.begin(9600);
+    delay(1000);
 
     SETUP_MODULE(Battery);
     SETUP_MODULE(MotorController);
@@ -83,25 +84,33 @@ void setup() {
     Serial.println("DONE check Kicker");
 
     // カメラが有効になるのを待つ
+    SwitchLedG.ternOff();
+    SwitchLedR.ternOn();
     while (true) {
         if (Camera.available()) {
             break;
         }
         Serial.println("Camera not available");
-        delay(1000);
+        for (int i = 0; i < 20; ++i) {
+            Terminal.sendMachineStatus(Battery.voltage(), Gyro.getRotation());
+            delay(50);
+        }
     }
-    SwitchLedG.ternOff();
-    SwitchLedR.ternOn();
+    SwitchLedG.ternOn();
+    SwitchLedR.ternOff();
 }
 
 void loop() {
     if (Battery.isEmergency()) {
+        Terminal.sendError();
         while (true) {
             SwitchLedG.ternOn();
             SwitchLedR.ternOff();
+            Terminal.sendMachineStatus(Battery.voltage(), Gyro.getRotation());
             delay(200);
             SwitchLedG.ternOff();
             SwitchLedR.ternOn();
+            Terminal.sendMachineStatus(Battery.voltage(), Gyro.getRotation());
             delay(200);
         }
     }
@@ -117,23 +126,21 @@ void loop() {
 
     // 状態共有
     XBee.sendData(Vector2::norm(ball.position));
-    Terminal.sendMachineStatus(Battery.voltage(), rotation);
-    Terminal.sendFieldObjectData(ball, yellow_goal, blue_goal, ball_front_dist);
 
     if (StartSwitch.isHigh()) {
         // ストップ
-        SwitchLedR.ternOn();
-        SwitchLedG.ternOff();
+        SwitchLedG.ternOn();
         Dribbler.stop();
         LineSensorLed.ternOff();
         MotorController.freeAll();
-        delay(50);
+        Terminal.sendMachineStatus(Battery.voltage(), rotation);
+        Terminal.sendFieldObjectData(ball, yellow_goal, blue_goal, ball_front_dist);
+        delay(40);
         return;
     }
 
     // スタート
-    SwitchLedR.ternOff();
-    SwitchLedG.ternOn();
+    SwitchLedG.ternOff();
     LineSensorLed.ternOn();
 
     attack_goal = (attack_blue_goal ? blue_goal : yellow_goal);
