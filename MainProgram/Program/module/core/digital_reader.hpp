@@ -1,11 +1,12 @@
 #ifndef MODULE_CORE_DIGITAL_READER_HPP
 #define MODULE_CORE_DIGITAL_READER_HPP
 
+#include "i2c_manager.hpp"
+
 #ifdef WITHOUT_ARDUINO_ENVIRONMENT
-#include "deps/Adafruit_PCF8574.hpp"
 #include "deps/arduino.hpp"
 #else
-#include <Adafruit_PCF8574.h>
+#include "Arduino.h"
 #endif
 
 namespace module
@@ -53,12 +54,13 @@ class DigitalReader
 class DigitalReaderPCF8575
 {
   public:
-    explicit constexpr DigitalReaderPCF8575(Adafruit_PCF8574& pcf8574, const uint8_t pin, const int mode)
-        : pcf8574_(pcf8574), PIN_(pin), MODE_(mode) {
+    explicit constexpr DigitalReaderPCF8575(const I2CManager& i2c_manager, const uint8_t pin, const int mode)
+        : I2C_MANAGER_(i2c_manager), PIN_(pin), MODE_(mode) {
     }
 
     void setup(void) const {
-        pcf8574_.pinMode(PIN_, MODE_);
+        I2C_MANAGER_.beginPCF8574();
+        I2C_MANAGER_.pcf8574_pinMode(PIN_, MODE_);
     }
 
     /**
@@ -67,7 +69,7 @@ class DigitalReaderPCF8575
      * @returns ture: pin value is HIGH.
      */
     bool isHigh(void) const {
-        return pcf8574_.digitalRead(PIN_) == HIGH;
+        return I2C_MANAGER_.pcf8574_digitalRead(PIN_);
     }
 
     /**
@@ -76,11 +78,11 @@ class DigitalReaderPCF8575
      * @returns ture: pin value is LOW.
      */
     bool isLow() const {
-        return pcf8574_.digitalRead(PIN_) == LOW;
+        return !I2C_MANAGER_.pcf8574_digitalRead(PIN_);
     }
 
   private:
-    Adafruit_PCF8574& pcf8574_;
+    const I2CManager& I2C_MANAGER_;
     const uint8_t PIN_;
     const int MODE_;
 };

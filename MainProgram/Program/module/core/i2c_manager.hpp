@@ -75,6 +75,10 @@ class I2CManager
         pcf8574_.digitalWrite(pin, value);
     }
 
+    bool pcf8574_digitalRead(const uint8_t pin) const {
+        return pcf8574_.digitalRead(pin);
+    }
+
   private:
     const pin_size_t WIRE_SDA_;
     const pin_size_t WIRE_SCL_;
