@@ -119,6 +119,10 @@ class CameraController
     }
 
     int requestGet_(const uint8_t address) const {
+        while (Wire.available()) {
+            // clear buffer
+            Wire.read();
+        }
         Wire.requestFrom(address, 1);
         for (int time = 0; !Wire.available(); ++time) {
             if (time < 5) {

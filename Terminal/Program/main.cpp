@@ -208,6 +208,8 @@ void displayGyroViewer() {
             Display.drawLine({i, j}, {x + i, y + j});
         }
     }
+    const String rot_value = String::format("%03d", max(-99, min(99, machine_rotation)));
+    Display.drawStringLine(rot_value, 10);
 
     delay(200);
 

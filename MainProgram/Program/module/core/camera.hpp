@@ -96,15 +96,13 @@ class Camera
     static constexpr int8_t DATA_LENGTH_ = 4;
 
     inline void request_(const uint8_t id, uint8_t (&data)[DATA_LENGTH_]) const {
+        Wire.beginTransmission(ADDRESS_);
+        Wire.write(id);
+        Wire.endTransmission();
         while (Wire.available()) {
             // clear buffer
             Wire.read();
         }
-
-        Wire.beginTransmission(ADDRESS_);
-        Wire.write(id);
-        Wire.endTransmission();
-
         Wire.requestFrom(ADDRESS_, DATA_LENGTH_);
         for (int8_t time = 0; !Wire.available(); ++time) {
             if (time < 5) {

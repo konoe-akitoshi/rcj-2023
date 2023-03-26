@@ -102,13 +102,13 @@ void loop() {
     int sumWidth = 0;
     for (int i = 0; i < 4; ++i) {
         if (cam[i].yellowGoalExist) {
-            sumVector += cam[i].yellowGoalPosition;
+            sumVector += cam[i].yellowGoalPosition * cam[i].yellowGoalWidth;
             sumWidth += cam[i].yellowGoalWidth;
             count += 1;
         }
     }
     if (count != 0) {
-        field_data.yellowGoalPosition = sumVector / count;
+        field_data.yellowGoalPosition = sumVector / sumWidth;
         field_data.yellowGoalWidth = sumWidth / count;
         field_data.yellowGoalExist = true;
     } else {
@@ -120,13 +120,13 @@ void loop() {
     sumWidth = 0;
     for (int i = 0; i < 4; ++i) {
         if (cam[i].blueGoalExist) {
-            sumVector += cam[i].blueGoalPosition;
+            sumVector += cam[i].blueGoalPosition * cam[i].blueGoalWidth;
             sumWidth += cam[i].blueGoalWidth;
             count += 1;
         }
     }
     if (count != 0) {
-        field_data.blueGoalPosition = sumVector / count;
+        field_data.blueGoalPosition = sumVector / sumWidth;
         field_data.blueGoalWidth = sumWidth / count;
         field_data.blueGoalExist = true;
     } else {
